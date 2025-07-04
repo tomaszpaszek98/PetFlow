@@ -1,6 +1,14 @@
-﻿namespace Application;
+﻿using System.Reflection;
+using Microsoft.Extensions.DependencyInjection;
 
-public class DependencyInjection
+namespace Application;
+
+public static class ServiceRegistryExtensions
 {
-    
+    public static IServiceCollection AddApplication(this IServiceCollection services)
+    {
+        services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
+        
+        return services;
+    }
 }

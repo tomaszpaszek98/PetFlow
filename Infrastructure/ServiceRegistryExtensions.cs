@@ -1,6 +1,11 @@
-﻿namespace PetFlow.Infrastructure;
+﻿using Microsoft.Extensions.DependencyInjection;
 
-public class ServiceRegistryExtensions
+namespace PetFlow.Infrastructure;
+
+public static class ServiceRegistryExtensions
 {
-    
+    public static IServiceCollection AddInfrastructure(this IServiceCollection services)
+    {
+        return services;
+    }
 }

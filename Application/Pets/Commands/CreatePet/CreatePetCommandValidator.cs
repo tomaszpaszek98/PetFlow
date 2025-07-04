@@ -1,6 +1,8 @@
-﻿namespace Application.Pets.Commands.CreatePet;
+﻿using FluentValidation;
 
-public class CreatePetCommandValidator
+namespace Application.Pets.Commands.CreatePet;
+
+public class CreatePetCommandValidator : AbstractValidator<CreatePetCommand>
 {
     
 }

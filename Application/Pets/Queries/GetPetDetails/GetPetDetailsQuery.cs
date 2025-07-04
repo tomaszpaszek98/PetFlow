@@ -1,6 +1,8 @@
-﻿namespace Application.Pets.Queries.GetPetDetails;
+﻿using MediatR;
 
-public class GetPetDetailsQuery
+namespace Application.Pets.Queries.GetPetDetails;
+
+public class GetPetDetailsQuery : IRequest<PetDetailsVm>
 {
-    
+    public int PetId { get; set; }
 }

@@ -16,4 +16,9 @@
       </PackageReference>
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\Application\PetFlow.Application.csproj" />
+      <ProjectReference Include="..\Domain\PetFlow.Domain.csproj" />
+    </ItemGroup>
+
 </Project>

@@ -2,7 +2,7 @@
 
 namespace Domain.Entities;
 
-public class MedicalNotes : AuditableEntity
+public class MedicalNote : AuditableEntity
 {
     public string Title { get; set; }
     public string Description { get; set; }
