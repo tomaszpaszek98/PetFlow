@@ -1,6 +1,6 @@
 ﻿namespace Application.Pets.Queries.GetPetDetails;
 
-public class PetDetailsVm
+public class PetDetailsResponse
 {
     public int Id { get; set; }
     public string Name { get; set; }

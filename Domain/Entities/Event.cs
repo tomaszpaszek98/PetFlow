@@ -2,7 +2,8 @@
 
 namespace Domain.Entities;
 
-public class Event : AuditableEntity
+// Pet prefix is used just to avoid conflicts with .net Event type. :)
+public class PetEvent : AuditableEntity
 {
     public string Title { get; set; }
     public string Description { get; set; }

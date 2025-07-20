@@ -2,7 +2,7 @@
 
 namespace Application.Pets.Queries.GetPetDetails;
 
-public class GetPetDetailsQuery : IRequest<PetDetailsVm>
+public class GetPetDetailsQuery : IRequest<PetResponse>
 {
     public int PetId { get; set; }
 }
