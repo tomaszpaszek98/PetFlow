@@ -1,43 +1,59 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Application.Pets.Commands.CreatePet;
+using Application.Pets.Commands.DeletePet;
+using Application.Pets.Commands.UpdatePet;
+using Application.Pets.Queries.GetPetDetails;
+using Application.Pets.Queries.GetPets;
+using Microsoft.AspNetCore.Mvc;
+using PetFlow.Requests;
 
 namespace PetFlow.Controllers;
 
 public class PetsController : BaseController
 {
     [HttpPost(ApiEndpoints.Pets.Create)]
-    public IActionResult Create()
+    public async Task<IActionResult> Create([FromBody] CreatePetCommand request, CancellationToken cancellationToken)
     {
-        return Created(string.Empty, null);
+        var result = await Mediator.Send(request, cancellationToken);
+        
+        return CreatedAtAction(nameof(Get), new { id = result.Id }, result);
     }
 
     [HttpGet(ApiEndpoints.Pets.Get)]
-    public IActionResult Get(int id)
+    public async Task<IActionResult> Get([FromRoute] int id, CancellationToken cancellationToken)
     {
-        return Ok();
+        var result = await Mediator.Send(new GetPetDetailsQuery { PetId = id }, cancellationToken);
+        
+        return Ok(result);
     }
 
     [HttpGet(ApiEndpoints.Pets.GetAll)]
-    public IActionResult GetAll()
+    public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
     {
-        return Ok();
+        var result = await Mediator.Send(new GetPetsQuery(), cancellationToken);
+        return Ok(result);
     }
 
     [HttpPut(ApiEndpoints.Pets.Update)]
-    public IActionResult Update(int id)
+    public async Task<IActionResult> Update([FromRoute] int id, [FromBody]UpdatePetRequest request, CancellationToken cancellationToken)
     {
-        return Ok();
+        var command = request.MapToCommand(id);
+        var result = await Mediator.Send(command, cancellationToken);
+        return Ok(result);
     }
 
     [HttpDelete(ApiEndpoints.Pets.Delete)]
-    public IActionResult Delete(int id)
+    public async Task<IActionResult> Delete([FromQuery]int id)
     {
+        var command = new DeletePetCommand { PetId = id  };
+        
+        await Mediator.Send(command);
         return NoContent();
     }
     
-    [HttpPost(ApiEndpoints.Pets.Photo.Upload)]
+    [HttpPut(ApiEndpoints.Pets.Photo.Upload)]
     public IActionResult UploadPhoto()
     {
-        return Created(string.Empty, null);
+        return Accepted(string.Empty, null);
     }
     
     [HttpDelete(ApiEndpoints.Pets.Photo.Delete)]

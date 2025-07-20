@@ -2,7 +2,7 @@
 
 namespace PetFlow.Requests;
 
-public static class RequestsMappers
+public static class RequestsMappingExtensions
 {
     public static UpdatePetCommand MapToCommand(this UpdatePetRequest request, int id)
     {

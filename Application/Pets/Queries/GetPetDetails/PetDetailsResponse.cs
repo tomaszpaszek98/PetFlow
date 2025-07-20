@@ -1,6 +1,8 @@
-﻿namespace Application.Pets.Queries.GetPetDetails;
+﻿using Application.Pets.Common;
 
-public class PetDetailsResponse
+namespace Application.Pets.Queries.GetPetDetails;
+
+public class PetDetailsResponse : PetResponse
 {
-    
+    public UpcomingEventResponse? UpcomingEvent { get; set; }
 }
