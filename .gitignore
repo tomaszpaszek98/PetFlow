@@ -3,3 +3,5 @@ obj/
 /packages/
 riderModule.iml
 /_ReSharper.Caches/
+PetFlow/Properties/launchSettings.json
+PetFlow.sln.DotSettings.user
