@@ -23,4 +23,12 @@
         <Using Include="NUnit.Framework"/>
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Pets\Commands\CreatePet\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Application\PetFlow.Application.csproj" />
+    </ItemGroup>
+
 </Project>
