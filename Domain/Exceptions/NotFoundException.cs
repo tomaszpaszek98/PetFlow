@@ -1,8 +1,10 @@
 ﻿namespace Domain.Exceptions;
 
-public class EntityNotFoundException : Exception
+public class NotFoundException : Exception
 {
-    public EntityNotFoundException(string message) : base(message)
+    public NotFoundException(string entityName, int id) :
+        base($"{entityName} with ID {id} does not exist.")
+
     {
     }
 }

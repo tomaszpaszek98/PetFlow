@@ -1,9 +1,8 @@
-﻿using Application.Pets.Common;
-using MediatR;
+﻿using MediatR;
 
 namespace Application.Pets.Queries.GetPetDetails;
 
-public class GetPetDetailsQuery : IRequest<PetResponse>
+public class GetPetDetailsQuery : IRequest<PetDetailsResponse>
 {
     public int PetId { get; set; }
 }

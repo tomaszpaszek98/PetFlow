@@ -1,3 +1,4 @@
+using Domain.Entities;
 using MediatR;
 using Domain.Exceptions;
 using Persistance.Repositories;
@@ -19,7 +20,7 @@ public class DeletePetCommandHandler : IRequestHandler<DeletePetCommand, bool>
         
         if (isDeleted is false)
         {
-            throw new EntityNotFoundException($"Pet with id {request.PetId} is not exists.");
+            throw new NotFoundException(nameof(Pet), request.PetId);
         }
         return true;
     }

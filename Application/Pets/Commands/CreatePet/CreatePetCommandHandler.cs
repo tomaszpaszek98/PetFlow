@@ -23,7 +23,7 @@ public class CreatePetCommandHandler : IRequestHandler<CreatePetCommand, PetResp
 
         if (petHasBeenCreated is false)
         {
-            throw new EntityCreationException($"Unexpected error when creating Pet with name {request.Name}");
+            throw new EntityCreationException($"Unexpected error when creating Pet. Request: {request}");
         }
 
         return pet.MapToResponse();

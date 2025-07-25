@@ -14,9 +14,9 @@ public class CreatePetCommandHandlerTests
         var repository = Substitute.For<IPetRepository>();
         var command = new CreatePetCommand
         {
-            Name = "Burek",
+            Name = "Denny",
             Species = "Dog",
-            Breed = "Mieszaniec",
+            Breed = "Chihuahua",
             DateOfBirth = new DateTime(2020, 1, 1)
         };
         repository.CreateAsync(
@@ -46,9 +46,9 @@ public class CreatePetCommandHandlerTests
         var repository = Substitute.For<IPetRepository>();
         var command = new CreatePetCommand
         {
-            Name = "Burek",
+            Name = "Denny",
             Species = "Dog",
-            Breed = "Mieszaniec",
+            Breed = "Chihuahua",
             DateOfBirth = new DateTime(2020, 1, 1)
         };
         repository.CreateAsync(Arg.Any<Pet>(), Arg.Any<CancellationToken>()).Returns(false);

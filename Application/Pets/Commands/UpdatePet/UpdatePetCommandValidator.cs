@@ -8,13 +8,19 @@ public class UpdatePetCommandValidator : AbstractValidator<UpdatePetCommand>
     {
         RuleFor(x => x.Name)
             .NotEmpty()
-            .MaximumLength(50);
+            .WithMessage("Pet name is required.")
+            .MaximumLength(50)
+            .WithMessage("Pet name must not exceed 50 characters.");;
         RuleFor(x => x.Species)
             .NotEmpty()
-            .MaximumLength(30);
+            .WithMessage("Pet species is required.")
+            .MaximumLength(30)
+            .WithMessage("Pet species must not exceed 30 characters.");;
         RuleFor(x => x.Breed)
             .NotEmpty()
-            .MaximumLength(30);
+            .WithMessage("Pet breed is required.")
+            .MaximumLength(30)
+            .WithMessage("Pet breed must not exceed 30 characters.");
         RuleFor(x => x.DateOfBirth)
             .LessThanOrEqualTo(DateTime.Today)
             .WithMessage("Date of birth cannot be in the future.");

@@ -1,4 +1,5 @@
 using Application;
+using PetFlow.ExceptionHandlers;
 using PetFlow.Infrastructure;
 using PetFlow.Persistance;
 
@@ -11,6 +12,7 @@ builder.Services.AddOpenApi();
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure();
 builder.Services.AddPersistance();
+builder.Services.AddExceptionHandlers();
 builder.Services.AddControllers();
 builder.Services.AddCors(options =>
 {
@@ -30,5 +32,6 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseExceptionHandler();
 app.MapControllers();
 app.Run();

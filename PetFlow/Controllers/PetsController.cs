@@ -30,6 +30,7 @@ public class PetsController : BaseController
     public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
     {
         var result = await Mediator.Send(new GetPetsQuery(), cancellationToken);
+        
         return Ok(result);
     }
 
@@ -38,6 +39,7 @@ public class PetsController : BaseController
     {
         var command = request.MapToCommand(id);
         var result = await Mediator.Send(command, cancellationToken);
+        
         return Ok(result);
     }
 
@@ -45,20 +47,22 @@ public class PetsController : BaseController
     public async Task<IActionResult> Delete([FromQuery]int id)
     {
         var command = new DeletePetCommand { PetId = id  };
-        
         await Mediator.Send(command);
+        
         return NoContent();
     }
     
     [HttpPut(ApiEndpoints.Pets.Photo.Upload)]
     public IActionResult UploadPhoto()
     {
+        //TODO to implement after making POC
         return Accepted(string.Empty, null);
     }
     
     [HttpDelete(ApiEndpoints.Pets.Photo.Delete)]
     public IActionResult DeletePhoto(int id)
     {
+        //TODO to implement after making POC
         return NoContent();
     }
 }
