@@ -12,5 +12,5 @@ public class Pet : AuditableEntity
     public string? PhotoUrl { get; set; }
     public ICollection<MedicalNote> MedicalNotes { get; set; }
     public ICollection<Note> Notes { get; set; }
-    public ICollection<Event> Events { get; set; }
+    public ICollection<PetEvent> PetEvents { get; set; }
 }

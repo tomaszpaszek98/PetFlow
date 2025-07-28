@@ -65,4 +65,11 @@ public class PetsController : BaseController
         //TODO to implement after making POC
         return NoContent();
     }
+
+    [HttpGet(ApiEndpoints.Pets.Events.GetAll)]
+    public async Task<IActionResult> GetAllPetEvents(CancellationToken cancellationToken)
+    {
+        //TODO to implement
+        return Ok();
+    }
 }

@@ -46,4 +46,15 @@ public class PetRepository : IPetRepository
         var petRemoved = removedCount > 0;
         return Task.FromResult(petRemoved);
     }
+
+    public Task<IEnumerable<Event>> GetEventsByPetIdAsync(int petId, CancellationToken cancellationToken = default)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        var pet = _pets.SingleOrDefault(x => x.Id == petId);
+        if (pet == null || pet.PetEvents == null)
+            return Task.FromResult(Enumerable.Empty<Event>());
+        return Task.FromResult(pet.PetEvents
+            .Where(x => x.Event != null)
+            .Select(x => x.Event));
+    }
 }

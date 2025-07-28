@@ -34,4 +34,16 @@ public class EventsController : BaseController
     {
         return NoContent();
     }
+    
+    [HttpPost(ApiEndpoints.Events.Pets.Add)]
+    public IActionResult AddPet()
+    {
+        return Created(string.Empty, null);
+    }
+
+    [HttpDelete(ApiEndpoints.Events.Pets.Delete)]
+    public IActionResult DeletePet(int id)
+    {
+        return NoContent();
+    }
 }

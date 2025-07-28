@@ -9,4 +9,5 @@ public interface IPetRepository
     Task<IEnumerable<Pet>> GetAllAsync(CancellationToken cancellationToken = default);
     Task<bool> UpdateAsync(Pet pet, CancellationToken cancellationToken = default);
     Task<bool> DeleteByIdAsync(int id, CancellationToken cancellationToken = default);
+    Task<IEnumerable<Event>>  GetEventsByPetIdAsync(int petId, CancellationToken cancellationToken = default);
 }

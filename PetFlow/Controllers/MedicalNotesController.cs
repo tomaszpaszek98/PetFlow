@@ -4,37 +4,37 @@ namespace PetFlow.Controllers;
 
 public class MedicalNotesController : BaseController
 {
-    [HttpPost(ApiEndpoints.MedicalNotes.Create)]
+    [HttpPost(ApiEndpoints.Pets.MedicalNotes.Create)]
     public IActionResult Create(int petId)
     {
         return Created(string.Empty, null);
     }
 
-    [HttpGet(ApiEndpoints.MedicalNotes.Get)]
+    [HttpGet(ApiEndpoints.Pets.MedicalNotes.Get)]
     public IActionResult Get(int petId, int id)
     {
         return Ok();
     }
 
-    [HttpGet(ApiEndpoints.MedicalNotes.GetAll)]
+    [HttpGet(ApiEndpoints.Pets.MedicalNotes.GetAll)]
     public IActionResult GetAll(int petId)
     {
         return Ok();
     }
 
-    [HttpPut(ApiEndpoints.MedicalNotes.Update)]
+    [HttpPut(ApiEndpoints.Pets.MedicalNotes.Update)]
     public IActionResult Update(int petId, int id)
     {
         return Ok();
     }
 
-    [HttpDelete(ApiEndpoints.MedicalNotes.Delete)]
+    [HttpDelete(ApiEndpoints.Pets.MedicalNotes.Delete)]
     public IActionResult Delete(int petId, int id)
     {
         return NoContent();
     }
 
-    [HttpGet(ApiEndpoints.MedicalNotes.GetSummary)]
+    [HttpGet(ApiEndpoints.Pets.MedicalNotes.Summary.Get)]
     public IActionResult GetSummary(int petId, int id)
     {
         return Ok();
