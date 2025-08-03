@@ -4,11 +4,11 @@ using Persistance.Repositories;
 
 namespace Application.Pets.Commands.CreatePet;
 
-public class CreateEventCommandHandler : IRequestHandler<CreatePetCommand, PetResponse>
+public class CreatePetCommandHandler : IRequestHandler<CreatePetCommand, PetResponse>
 {
     private readonly IPetRepository _repository;
 
-    public CreateEventCommandHandler(IPetRepository repository)
+    public CreatePetCommandHandler(IPetRepository repository)
     {
         _repository = repository;
     }

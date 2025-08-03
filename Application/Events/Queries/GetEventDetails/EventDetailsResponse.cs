@@ -1,6 +1,9 @@
-﻿namespace Application.Events.Queries.GetEventDetails;
+﻿using Application.Events.Common;
 
-public class EventDetailsResponse
+namespace Application.Events.Queries.GetEventDetails;
+
+public class EventDetailsResponse : EventResponse
 {
-    
+    public DateTime ModifiedAt { get; set; }
+    public IEnumerable<AssignedPetDto> AssignedPets { get; set; } = [];
 }

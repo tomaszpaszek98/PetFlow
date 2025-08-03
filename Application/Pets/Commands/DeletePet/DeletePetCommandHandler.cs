@@ -22,6 +22,7 @@ public class DeletePetCommandHandler : IRequestHandler<DeletePetCommand, bool>
         {
             throw new NotFoundException(nameof(Pet), request.PetId);
         }
+        
         return true;
     }
 }

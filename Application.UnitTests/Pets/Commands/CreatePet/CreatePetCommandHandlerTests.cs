@@ -4,7 +4,7 @@ using Persistance.Repositories;
 
 namespace Application.UnitTests.Pets.Commands.CreatePet;
 
-public class CreateEventCommandHandlerTests
+public class CreatePetCommandHandlerTests
 {
     [Test]
     public async Task ShouldReturnPetResponseWhenPetIsCreatedSuccessfully()
@@ -27,7 +27,7 @@ public class CreateEventCommandHandlerTests
             Breed = command.Breed,
             DateOfBirth = command.DateOfBirth
         };
-        var handler = new CreateEventCommandHandler(repository);
+        var handler = new CreatePetCommandHandler(repository);
         repository.CreateAsync(
                 Arg.Is<Pet>(p => p.Name == command.Name &&
                                  p.Species == command.Species &&

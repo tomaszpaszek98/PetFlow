@@ -8,11 +8,11 @@ public class EventRepository : IEventRepository
 {
     private readonly List<Event> _events = new();
 
-    public Task<bool> CreateAsync(Event pet, CancellationToken cancellationToken = default)
+    public Task<Event> CreateAsync(Event petEvent, CancellationToken cancellationToken = default)
     {
         cancellationToken.ThrowIfCancellationRequested();
-        _events.Add(pet);
-        return Task.FromResult(true);
+        _events.Add(petEvent);
+        return Task.FromResult(petEvent);
     }
 
     public Task<Event?> GetByIdAsync(int id, CancellationToken cancellationToken = default)
@@ -27,8 +27,8 @@ public class EventRepository : IEventRepository
         cancellationToken.ThrowIfCancellationRequested();
         var now = DateTime.Now;
         var petEvent = _events
-            .Where(x => x.PetId == petId && x.DateOfEvent > now)
-            .OrderBy(x => x.DateOfEvent)
+            .Where(e => e.PetEvents.Any(pe => pe.PetId == petId) && e.DateOfEvent > now)
+            .OrderBy(e => e.DateOfEvent)
             .FirstOrDefault();
         return Task.FromResult(petEvent);
     }
@@ -39,23 +39,45 @@ public class EventRepository : IEventRepository
         return Task.FromResult(_events.AsEnumerable());
     }
 
-    public Task<bool> UpdateAsync(Event petEvent, CancellationToken cancellationToken = default)
+    public Task UpdateAsync(Event petEvent, CancellationToken cancellationToken = default)
     {
         cancellationToken.ThrowIfCancellationRequested();
         var eventIndex = _events.FindIndex(x => x.Id == petEvent.Id);
         if (eventIndex == -1)
         {
-            return Task.FromResult(false);
+            throw new Exception($"Event with id {petEvent.Id} not found");
         }
         _events[eventIndex] = petEvent;
-        return Task.FromResult(true);
+        return Task.CompletedTask;
     }
 
     public Task<bool> DeleteByIdAsync(int id, CancellationToken cancellationToken = default)
     {
         cancellationToken.ThrowIfCancellationRequested();
         var removedCount = _events.RemoveAll(x => x.Id == id);
-        var eventRemoved = removedCount > 0;
-        return Task.FromResult(eventRemoved);
+        return Task.FromResult(removedCount > 0);
+    }
+    
+    public Task<IEnumerable<Event>> GetEventsByPetIdAsync(int petId, CancellationToken cancellationToken = default)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        var events = _events.Where(e => e.PetEvents.Any(pe => pe.PetId == petId));
+        return Task.FromResult(events);
+    }
+
+    public Task AddPetsToEventAsync(IList<PetEvent> petEvents, CancellationToken cancellationToken = default)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        foreach (var petEvent in petEvents)
+        {
+            var eventObj = _events.SingleOrDefault(e => e.Id == petEvent.EventId);
+            if (eventObj != null)
+            {
+                if (eventObj.PetEvents == null)
+                    eventObj.PetEvents = new List<PetEvent>();
+                eventObj.PetEvents.Add(petEvent);
+            }
+        }
+        return Task.CompletedTask;
     }
 }

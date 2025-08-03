@@ -2,6 +2,7 @@
 using Application.Pets.Commands.UpdatePet;
 using Application.Pets.Common;
 using Application.Pets.Queries.GetPetDetails;
+using Application.Pets.Queries.GetPetEvents;
 using Application.Pets.Queries.GetPets;
 using Domain.Entities;
 
@@ -54,6 +55,27 @@ public static class MappingExtensions
         return new PetsResponse
         {
             Items = pets.Select(MapToResponse)
+        };
+    }
+
+    public static PetEventsResponse MapToResponse(this IEnumerable<Event> petEvents)
+    {
+        return new PetEventsResponse
+        {
+            Items = petEvents.Select(MapToResponse)
+        };
+    }
+
+    private static PetEventResponse MapToResponse(this Event petEvent)
+    {
+        return new PetEventResponse
+        {
+            Id = petEvent.Id,
+            Title = petEvent.Title,
+            DateOfEvent = petEvent.DateOfEvent,
+            Reminder = petEvent.Reminder,
+            CreatedAt = petEvent.Created,
+            ModifiedAt = petEvent.Modified
         };
     }
 

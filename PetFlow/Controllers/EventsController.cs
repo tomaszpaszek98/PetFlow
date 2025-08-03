@@ -1,3 +1,6 @@
+using Application.Events.Commands.CreateEvent;
+using Application.Events.Queries.GetEventDetails;
+using Application.Events.Queries.GetEvents;
 using Microsoft.AspNetCore.Mvc;
 
 namespace PetFlow.Controllers;
@@ -6,25 +9,31 @@ namespace PetFlow.Controllers;
 public class EventsController : BaseController
 {
     [HttpPost(ApiEndpoints.Events.Create)]
-    public IActionResult Create(int petId)
+    public async Task<IActionResult> Create([FromBody] CreateEventCommand command)
     {
-        return Created(string.Empty, null);
+        var result = await Mediator.Send(command);
+        
+        return CreatedAtAction(nameof(Get), new { id = result.Id }, result);
     }
 
     [HttpGet(ApiEndpoints.Events.Get)]
-    public IActionResult Get(int petId, int id)
+    public async Task<IActionResult> Get(int id)
     {
-        return Ok();
+        var result = await Mediator.Send(new GetEventDetailsQuery { EventId = id });
+        
+        return Ok(result);
     }
 
     [HttpGet(ApiEndpoints.Events.GetAll)]
-    public IActionResult GetAll(int petId)
+    public async Task<IActionResult> GetAll()
     {
-        return Ok();
+        var result = await Mediator.Send(new GetEventsQuery());
+
+        return Ok(result);
     }
 
     [HttpPut(ApiEndpoints.Events.Update)]
-    public IActionResult Update(int petId, int id)
+    public async Task<IActionResult> Update(int id)
     {
         return Ok();
     }

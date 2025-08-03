@@ -17,7 +17,7 @@ public class UpdatePetCommandHandlerTests
             Id = 1,
             Name = "Reksio",
             Species = "Dog",
-            Breed = "Owczarek",
+            Breed = "Chihuahua",
             DateOfBirth = new DateTime(2019, 5, 5)
         };
         var pet = new Pet
@@ -28,16 +28,18 @@ public class UpdatePetCommandHandlerTests
             Breed = "OldBreed",
             DateOfBirth = new DateTime(2018, 1, 1)
         };
-        repository.GetByIdAsync(command.Id, Arg.Any<CancellationToken>()).Returns(pet);
+        var handler = new UpdatePetCommandHandler(repository);
+
+        repository.GetByIdAsync(command.Id, Arg.Any<CancellationToken>())
+            .Returns(pet);
         repository.UpdateAsync(
             Arg.Is<Pet>(p => p.Id == command.Id && 
                              p.Name == command.Name && 
                              p.Species == command.Species && 
                              p.Breed == command.Breed && 
                              p.DateOfBirth == command.DateOfBirth),
-            Arg.Any<CancellationToken>()).Returns(true);
-        var handler = new UpdatePetCommandHandler(repository);
-
+            Arg.Any<CancellationToken>()).Returns(Task.CompletedTask);
+        
         // WHEN
         var result = await handler.Handle(command, CancellationToken.None);
 
@@ -51,7 +53,7 @@ public class UpdatePetCommandHandlerTests
     }
 
     [Test]
-    public void ShouldThrowEntityNotFoundExceptionWhenPetDoesNotExist()
+    public async Task ShouldThrowEntityNotFoundExceptionWhenPetDoesNotExist()
     {
         // GIVEN
         var repository = Substitute.For<IPetRepository>();
@@ -60,17 +62,17 @@ public class UpdatePetCommandHandlerTests
             Id = 99,
             Name = "Reksio",
             Species = "Dog",
-            Breed = "Owczarek",
+            Breed = "Chichuahua",
             DateOfBirth = new DateTime(2019, 5, 5)
         };
-        repository.GetByIdAsync(command.Id, Arg.Any<CancellationToken>()).Returns((Pet)null);
         var handler = new UpdatePetCommandHandler(repository);
-
+        repository.GetByIdAsync(command.Id, Arg.Any<CancellationToken>())
+            .Returns((Pet)null);
+        
         // WHEN
         var act = () => handler.Handle(command, CancellationToken.None);
-        
+
         // THEN
-        act.Should().ThrowAsync<NotFoundException>();
+        await act.Should().ThrowAsync<NotFoundException>();
     }
 }
-

@@ -1,7 +1,7 @@
 ﻿using Application.Pets.Commands.CreatePet;
 using Application.Pets.Commands.DeletePet;
-using Application.Pets.Commands.UpdatePet;
 using Application.Pets.Queries.GetPetDetails;
+using Application.Pets.Queries.GetPetEvents;
 using Application.Pets.Queries.GetPets;
 using Microsoft.AspNetCore.Mvc;
 using PetFlow.Requests;
@@ -67,9 +67,10 @@ public class PetsController : BaseController
     }
 
     [HttpGet(ApiEndpoints.Pets.Events.GetAll)]
-    public async Task<IActionResult> GetAllPetEvents(CancellationToken cancellationToken)
+    public async Task<IActionResult> GetAllPetEvents([FromQuery] int petId, CancellationToken cancellationToken)
     {
-        //TODO to implement
-        return Ok();
+        var result = await Mediator.Send(new GetPetEventsQuery { PetId = petId}, cancellationToken);
+        
+        return Ok(result);
     }
 }
