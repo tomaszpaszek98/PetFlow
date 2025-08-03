@@ -1,17 +1,14 @@
-﻿using System.Runtime.CompilerServices;
-using Application.Pets.Common;
-using Application.Pets.Queries.GetPetDetails;
-using Domain.Exceptions;
+﻿using Application.Pets.Common;
 using MediatR;
 using Persistance.Repositories;
 
 namespace Application.Pets.Commands.CreatePet;
 
-public class CreatePetCommandHandler : IRequestHandler<CreatePetCommand, PetResponse>
+public class CreateEventCommandHandler : IRequestHandler<CreatePetCommand, PetResponse>
 {
     private readonly IPetRepository _repository;
 
-    public CreatePetCommandHandler(IPetRepository repository)
+    public CreateEventCommandHandler(IPetRepository repository)
     {
         _repository = repository;
     }
@@ -19,13 +16,8 @@ public class CreatePetCommandHandler : IRequestHandler<CreatePetCommand, PetResp
     public async Task<PetResponse> Handle(CreatePetCommand request, CancellationToken cancellationToken = default)
     {
         var pet = request.MapToPet();
-        var petHasBeenCreated = await _repository.CreateAsync(pet, cancellationToken);
-
-        if (petHasBeenCreated is false)
-        {
-            throw new EntityCreationException($"Unexpected error when creating Pet. Request: {request}");
-        }
-
-        return pet.MapToResponse();
+        var createdPet = await _repository.CreateAsync(pet, cancellationToken);
+        
+        return createdPet.MapToResponse();
     }
 }
