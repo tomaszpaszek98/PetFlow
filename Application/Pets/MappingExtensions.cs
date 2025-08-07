@@ -1,5 +1,4 @@
 ﻿using Application.Pets.Commands.CreatePet;
-using Application.Pets.Commands.UpdatePet;
 using Application.Pets.Common;
 using Application.Pets.Queries.GetPetDetails;
 using Application.Pets.Queries.GetPetEvents;
@@ -50,14 +49,6 @@ public static class MappingExtensions
         };
     }
     
-    public static PetsResponse MapToResponse(this IEnumerable<Pet> pets)
-    {
-        return new PetsResponse
-        {
-            Items = pets.Select(MapToResponse)
-        };
-    }
-
     public static PetEventsResponse MapToResponse(this IEnumerable<Event> petEvents)
     {
         return new PetEventsResponse

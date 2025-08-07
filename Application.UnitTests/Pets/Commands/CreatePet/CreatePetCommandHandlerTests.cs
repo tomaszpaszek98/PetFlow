@@ -45,5 +45,13 @@ public class CreatePetCommandHandlerTests
         result.Species.Should().Be(command.Species);
         result.Breed.Should().Be(command.Breed);
         result.DateOfBirth.Should().Be(command.DateOfBirth);
+        
+        await repository.Received(1).CreateAsync(
+            Arg.Is<Pet>(p => p.Name == command.Name &&
+                            p.Species == command.Species &&
+                            p.Breed == command.Breed &&
+                            p.DateOfBirth == command.DateOfBirth),
+            Arg.Any<CancellationToken>());
     }
 }
+

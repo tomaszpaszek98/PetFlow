@@ -1,6 +1,9 @@
-﻿namespace Application.Events.Commands.AddPetToEvent;
+﻿using MediatR;
 
-public class AddPetToEventCommand
+namespace Application.Events.Commands.AddPetToEvent;
+
+public class AddPetToEventCommand : IRequest<AddPetToEventResponse>
 {
-    
+    public int EventId { get; set; }
+    public int PetId { get; set; }
 }

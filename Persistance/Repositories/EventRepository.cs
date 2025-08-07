@@ -80,4 +80,24 @@ public class EventRepository : IEventRepository
         }
         return Task.CompletedTask;
     }
+
+    public Task<bool> RemovePetFromEventAsync(int eventId, int petId, CancellationToken cancellationToken = default)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        
+        var eventEntity = _events.SingleOrDefault(e => e.Id == eventId);
+        if (eventEntity == null || eventEntity.PetEvents == null)
+        {
+            return Task.FromResult(false);
+        }
+        
+        var petEventToRemove = eventEntity.PetEvents.FirstOrDefault(pe => pe.PetId == petId);
+        if (petEventToRemove == null)
+        {
+            return Task.FromResult(false);
+        }
+        
+        var removed = eventEntity.PetEvents.Remove(petEventToRemove);
+        return Task.FromResult(removed);
+    }
 }

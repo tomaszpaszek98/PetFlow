@@ -1,4 +1,5 @@
 ﻿using Application.Events.Commands.CreateEvent;
+using Application.Events.Commands.UpdateEvent;
 using Application.Events.Common;
 using Application.Events.Queries.GetEventDetails;
 using Application.Events.Queries.GetEvents;
@@ -71,6 +72,32 @@ public static class MappingExtensions
             ModifiedAt = eventDetails.Modified ?? eventDetails.Created
         };
     }
+    
+    public static Event MapToEvent(this UpdateEventCommand request, Event existingEvent)
+    {
+        existingEvent.Title = request.Title;
+        existingEvent.Description = request.Description;
+        existingEvent.DateOfEvent = request.DateOfEvent;
+        existingEvent.Reminder = request.Reminder;
+        
+        return existingEvent;
+    }
+    
+    public static UpdateEventResponse MapToUpdateResponse(this Event updatedEvent, IList<Pet> assignedPets)
+    {
+        return new UpdateEventResponse
+        {
+            Id = updatedEvent.Id,
+            Title = updatedEvent.Title,
+            Description = updatedEvent.Description,
+            DateOfEvent = updatedEvent.DateOfEvent,
+            Reminder = updatedEvent.Reminder,
+            CreatedAt = updatedEvent.Created,
+            ModifiedAt = updatedEvent.Modified ?? updatedEvent.Created,
+            AssignedPets = assignedPets.Select(MapToAssignedPetDto)
+        };
+    }
+    
     private static AssignedPetDto MapToAssignedPetDto(this Pet pet)
     {
         return new AssignedPetDto

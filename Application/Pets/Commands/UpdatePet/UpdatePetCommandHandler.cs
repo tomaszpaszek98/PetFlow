@@ -25,6 +25,7 @@ public class UpdatePetCommandHandler : IRequestHandler<UpdatePetCommand, PetResp
 
         UpdatePetProperties(ref pet, request);
         await _repository.UpdateAsync(pet, cancellationToken);
+        
         return pet.MapToResponse();
     }
 

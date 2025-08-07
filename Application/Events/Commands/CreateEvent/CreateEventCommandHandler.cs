@@ -26,7 +26,7 @@ public class CreateEventCommandHandler : IRequestHandler<CreateEventCommand, Cre
         var requestedEvent = request.MapToEvent();
         var createdEvent = await _eventRepository.CreateAsync(requestedEvent, cancellationToken);
 
-        if (request.PetToAssignIds is null)
+        if (request.PetToAssignIds is null || !request.PetToAssignIds.Any())
         {
             return createdEvent.MapToResponse();
         }

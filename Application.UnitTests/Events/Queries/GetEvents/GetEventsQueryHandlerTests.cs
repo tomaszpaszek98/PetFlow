@@ -28,6 +28,7 @@ public class GetEventsQueryHandlerTests
         result.Should().NotBeNull();
         result.Items.Should().HaveCount(2);
         result.Items.Select(x => x.Id).Should().BeEquivalentTo(events.Select(x => x.Id));
+        await repository.Received(1).GetAllAsync(Arg.Any<CancellationToken>());
     }
 
     [Test]
@@ -46,5 +47,6 @@ public class GetEventsQueryHandlerTests
         // THEN
         result.Should().NotBeNull();
         result.Items.Should().BeEmpty();
+        await repository.Received(1).GetAllAsync(Arg.Any<CancellationToken>());
     }
 }

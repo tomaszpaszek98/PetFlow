@@ -1,18 +1,19 @@
 using Application.Events.Commands.Common;
-using Application.Events.Commands.CreateEvent;
+using Application.Events.Commands.UpdateEvent;
 using FluentValidation.TestHelper;
 
-namespace Application.UnitTests.Events.Commands.CreateEvent;
+namespace Application.UnitTests.Events.Commands.UpdateEvent;
 
-public class CreateEventCommandValidatorTests
+public class UpdateEventCommandValidatorTests
 {
     [Test]
     public void ShouldNotHaveValidationErrorWhenAllPropertiesAreValid()
     {
         // GIVEN
-        var validator = new CreateEventCommandValidator();
-        var command = new CreateEventCommand
+        var validator = new UpdateEventCommandValidator();
+        var command = new UpdateEventCommand
         {
+            Id = 1,
             Title = "Valid Title",
             Description = "Valid Description",
             DateOfEvent = DateTime.Today.AddDays(1),
@@ -27,12 +28,55 @@ public class CreateEventCommandValidatorTests
     }
 
     [Test]
+    public void ShouldHaveValidationErrorWhenIdIsZero()
+    {
+        // GIVEN
+        var validator = new UpdateEventCommandValidator();
+        var command = new UpdateEventCommand
+        {
+            Id = 0,
+            Title = "Valid Title",
+            Description = "Valid Description",
+            DateOfEvent = DateTime.Today.AddDays(1)
+        };
+
+        // WHEN
+        var result = validator.TestValidate(command);
+
+        // THEN
+        result.ShouldHaveValidationErrorFor(x => x.Id)
+            .WithErrorMessage("Event Id must be greater than zero.");
+    }
+
+    [Test]
+    public void ShouldHaveValidationErrorWhenIdIsNegative()
+    {
+        // GIVEN
+        var validator = new UpdateEventCommandValidator();
+        var command = new UpdateEventCommand
+        {
+            Id = -1,
+            Title = "Valid Title",
+            Description = "Valid Description",
+            DateOfEvent = DateTime.Today.AddDays(1)
+        };
+
+        // WHEN
+        var result = validator.TestValidate(command);
+
+        // THEN
+        result.ShouldHaveValidationErrorFor(x => x.Id)
+            .WithErrorMessage("Event Id must be greater than zero.");
+    }
+
+    [Test]
     public void ShouldHaveValidationErrorWhenTitleIsEmpty()
     {
         // GIVEN
-        var validator = new CreateEventCommandValidator();
-        var command = new CreateEventCommand
+        var validator = new UpdateEventCommandValidator();
+        var command = new UpdateEventCommand
         {
+            Id = 1,
             Title = string.Empty,
             Description = "Valid Description",
             DateOfEvent = DateTime.Today.AddDays(1)
@@ -50,9 +94,10 @@ public class CreateEventCommandValidatorTests
     public void ShouldHaveValidationErrorWhenTitleExceedsMaxLength()
     {
         // GIVEN
-        var validator = new CreateEventCommandValidator();
-        var command = new CreateEventCommand
+        var validator = new UpdateEventCommandValidator();
+        var command = new UpdateEventCommand
         {
+            Id = 1,
             Title = new string('A', EventValidatorsConstants.MaxTitleLength + 1),
             Description = "Valid Description",
             DateOfEvent = DateTime.Today.AddDays(1)
@@ -70,9 +115,10 @@ public class CreateEventCommandValidatorTests
     public void ShouldHaveValidationErrorWhenDescriptionExceedsMaxLength()
     {
         // GIVEN
-        var validator = new CreateEventCommandValidator();
-        var command = new CreateEventCommand
+        var validator = new UpdateEventCommandValidator();
+        var command = new UpdateEventCommand
         {
+            Id = 1,
             Title = "Valid Title",
             Description = new string('A', EventValidatorsConstants.MaxDescriptionLength + 1),
             DateOfEvent = DateTime.Today.AddDays(1)
@@ -90,9 +136,10 @@ public class CreateEventCommandValidatorTests
     public void ShouldHaveValidationErrorWhenDateOfEventIsInPast()
     {
         // GIVEN
-        var validator = new CreateEventCommandValidator();
-        var command = new CreateEventCommand
+        var validator = new UpdateEventCommandValidator();
+        var command = new UpdateEventCommand
         {
+            Id = 1,
             Title = "Valid Title",
             Description = "Valid Description",
             DateOfEvent = DateTime.Today.AddDays(-1)
@@ -110,9 +157,10 @@ public class CreateEventCommandValidatorTests
     public void ShouldNotHaveValidationErrorWhenDateOfEventIsToday()
     {
         // GIVEN
-        var validator = new CreateEventCommandValidator();
-        var command = new CreateEventCommand
+        var validator = new UpdateEventCommandValidator();
+        var command = new UpdateEventCommand
         {
+            Id = 1,
             Title = "Valid Title",
             Description = "Valid Description",
             DateOfEvent = DateTime.Today
@@ -129,9 +177,10 @@ public class CreateEventCommandValidatorTests
     public void ShouldHaveValidationErrorWhenPetToAssignIdsContainsNonPositiveId()
     {
         // GIVEN
-        var validator = new CreateEventCommandValidator();
-        var command = new CreateEventCommand
+        var validator = new UpdateEventCommandValidator();
+        var command = new UpdateEventCommand
         {
+            Id = 1,
             Title = "Valid Title",
             Description = "Valid Description",
             DateOfEvent = DateTime.Today.AddDays(1),
@@ -150,9 +199,10 @@ public class CreateEventCommandValidatorTests
     public void ShouldHaveValidationErrorWhenPetToAssignIdsContainsDuplicates()
     {
         // GIVEN
-        var validator = new CreateEventCommandValidator();
-        var command = new CreateEventCommand
+        var validator = new UpdateEventCommandValidator();
+        var command = new UpdateEventCommand
         {
+            Id = 1,
             Title = "Valid Title",
             Description = "Valid Description",
             DateOfEvent = DateTime.Today.AddDays(1),
@@ -171,9 +221,10 @@ public class CreateEventCommandValidatorTests
     public void ShouldNotHaveValidationErrorWhenPetToAssignIdsIsNull()
     {
         // GIVEN
-        var validator = new CreateEventCommandValidator();
-        var command = new CreateEventCommand
+        var validator = new UpdateEventCommandValidator();
+        var command = new UpdateEventCommand
         {
+            Id = 1,
             Title = "Valid Title",
             Description = "Valid Description",
             DateOfEvent = DateTime.Today.AddDays(1),
@@ -191,9 +242,10 @@ public class CreateEventCommandValidatorTests
     public void ShouldNotHaveValidationErrorWhenPetToAssignIdsIsEmpty()
     {
         // GIVEN
-        var validator = new CreateEventCommandValidator();
-        var command = new CreateEventCommand
+        var validator = new UpdateEventCommandValidator();
+        var command = new UpdateEventCommand
         {
+            Id = 1,
             Title = "Valid Title",
             Description = "Valid Description",
             DateOfEvent = DateTime.Today.AddDays(1),

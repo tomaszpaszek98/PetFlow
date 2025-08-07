@@ -1,6 +1,8 @@
-﻿namespace Application.Events.Commands.DeleteEvent;
+﻿using MediatR;
 
-public class DeleteEventCommand
+namespace Application.Events.Commands.DeleteEvent;
+
+public class DeleteEventCommand : IRequest
 {
-    
+    public int EventId { get; set; }
 }

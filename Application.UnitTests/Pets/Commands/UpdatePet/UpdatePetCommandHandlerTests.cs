@@ -1,4 +1,5 @@
 using Application.Pets.Commands.UpdatePet;
+using Application.Pets.Common;
 using Domain.Entities;
 using Domain.Exceptions;
 using Persistance.Repositories;
@@ -45,11 +46,23 @@ public class UpdatePetCommandHandlerTests
 
         // THEN
         result.Should().NotBeNull();
+        result.Should().BeOfType<PetResponse>();
         result.Id.Should().Be(command.Id);
         result.Name.Should().Be(command.Name);
         result.Species.Should().Be(command.Species);
         result.Breed.Should().Be(command.Breed);
         result.DateOfBirth.Should().Be(command.DateOfBirth);
+        
+        Received.InOrder(() => {
+            repository.GetByIdAsync(command.Id, Arg.Any<CancellationToken>());
+            repository.UpdateAsync(Arg.Is<Pet>(p => 
+                p.Id == command.Id && 
+                p.Name == command.Name && 
+                p.Species == command.Species && 
+                p.Breed == command.Breed && 
+                p.DateOfBirth == command.DateOfBirth), 
+                Arg.Any<CancellationToken>());
+        });
     }
 
     [Test]
@@ -74,5 +87,7 @@ public class UpdatePetCommandHandlerTests
 
         // THEN
         await act.Should().ThrowAsync<NotFoundException>();
+        await repository.Received(1).GetByIdAsync(command.Id, Arg.Any<CancellationToken>());
+        await repository.DidNotReceive().UpdateAsync(default, default);
     }
 }

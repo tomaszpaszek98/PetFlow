@@ -6,6 +6,7 @@ public static class ServiceRegistryExtensions
     {
         services.AddExceptionHandler<ValidationExceptionHandler>();
         services.AddExceptionHandler<NotFoundExceptionHandler>();
+        services.AddExceptionHandler<ConflictingOperationExceptionHandler>();
         
         // GlobalExceptionHandler must be at the end of the chain!
         services.AddExceptionHandler<GlobalExceptionHandler>();

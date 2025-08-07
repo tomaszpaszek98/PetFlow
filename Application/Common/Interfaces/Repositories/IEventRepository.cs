@@ -11,4 +11,5 @@ public interface IEventRepository
     Task<bool> DeleteByIdAsync(int id, CancellationToken cancellationToken = default);
     Task<IEnumerable<Event>> GetEventsByPetIdAsync(int petId, CancellationToken cancellationToken = default);
     Task AddPetsToEventAsync(IList<PetEvent> petEvents, CancellationToken cancellationToken = default);
+    Task<bool> RemovePetFromEventAsync(int eventId, int petId, CancellationToken cancellationToken = default);
 }

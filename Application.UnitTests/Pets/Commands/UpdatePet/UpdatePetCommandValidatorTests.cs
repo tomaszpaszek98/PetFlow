@@ -1,6 +1,5 @@
 using Application.Pets.Commands.UpdatePet;
-using FluentAssertions;
-using NUnit.Framework;
+using FluentValidation.TestHelper;
 
 namespace Application.UnitTests.Pets.Commands.UpdatePet;
 
@@ -21,10 +20,10 @@ public class UpdatePetCommandValidatorTests
         var validator = new UpdatePetCommandValidator();
 
         // WHEN
-        var result = validator.Validate(command);
+        var result = validator.TestValidate(command);
 
         // THEN
-        result.IsValid.Should().BeTrue();
+        result.ShouldNotHaveAnyValidationErrors();
     }
 
     [Test]
@@ -42,11 +41,10 @@ public class UpdatePetCommandValidatorTests
         var validator = new UpdatePetCommandValidator();
 
         // WHEN
-        var result = validator.Validate(command);
+        var result = validator.TestValidate(command);
 
         // THEN
-        result.IsValid.Should().BeFalse();
-        result.Errors.Should().Contain(x => x.PropertyName == "Name");
+        result.ShouldHaveValidationErrorFor(x => x.Name);
     }
 
     [Test]
@@ -64,11 +62,10 @@ public class UpdatePetCommandValidatorTests
         var validator = new UpdatePetCommandValidator();
 
         // WHEN
-        var result = validator.Validate(command);
+        var result = validator.TestValidate(command);
 
         // THEN
-        result.IsValid.Should().BeFalse();
-        result.Errors.Should().Contain(x => x.PropertyName == "Species");
+        result.ShouldHaveValidationErrorFor(x => x.Species);
     }
 
     [Test]
@@ -86,11 +83,10 @@ public class UpdatePetCommandValidatorTests
         var validator = new UpdatePetCommandValidator();
 
         // WHEN
-        var result = validator.Validate(command);
+        var result = validator.TestValidate(command);
 
         // THEN
-        result.IsValid.Should().BeFalse();
-        result.Errors.Should().Contain(x => x.PropertyName == "Breed");
+        result.ShouldHaveValidationErrorFor(x => x.Breed);
     }
 
     [Test]
@@ -108,11 +104,10 @@ public class UpdatePetCommandValidatorTests
         var validator = new UpdatePetCommandValidator();
 
         // WHEN
-        var result = validator.Validate(command);
+        var result = validator.TestValidate(command);
 
         // THEN
-        result.IsValid.Should().BeFalse();
-        result.Errors.Should().Contain(x => x.PropertyName == "DateOfBirth");
+        result.ShouldHaveValidationErrorFor(x => x.DateOfBirth);
     }
 
     [Test]
@@ -130,11 +125,10 @@ public class UpdatePetCommandValidatorTests
         var validator = new UpdatePetCommandValidator();
 
         // WHEN
-        var result = validator.Validate(command);
+        var result = validator.TestValidate(command);
 
         // THEN
-        result.IsValid.Should().BeFalse();
-        result.Errors.Should().Contain(x => x.PropertyName == "Name");
+        result.ShouldHaveValidationErrorFor(x => x.Name);
     }
 
     [Test]
@@ -152,11 +146,10 @@ public class UpdatePetCommandValidatorTests
         var validator = new UpdatePetCommandValidator();
 
         // WHEN
-        var result = validator.Validate(command);
+        var result = validator.TestValidate(command);
 
         // THEN
-        result.IsValid.Should().BeFalse();
-        result.Errors.Should().Contain(x => x.PropertyName == "Species");
+        result.ShouldHaveValidationErrorFor(x => x.Species);
     }
 
     [Test]
@@ -174,11 +167,9 @@ public class UpdatePetCommandValidatorTests
         var validator = new UpdatePetCommandValidator();
 
         // WHEN
-        var result = validator.Validate(command);
+        var result = validator.TestValidate(command);
 
         // THEN
-        result.IsValid.Should().BeFalse();
-        result.Errors.Should().Contain(x => x.PropertyName == "Breed");
+        result.ShouldHaveValidationErrorFor(x => x.Breed);
     }
 }
-

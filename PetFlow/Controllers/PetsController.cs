@@ -44,10 +44,9 @@ public class PetsController : BaseController
     }
 
     [HttpDelete(ApiEndpoints.Pets.Delete)]
-    public async Task<IActionResult> Delete([FromQuery]int id)
+    public async Task<IActionResult> Delete([FromRoute] int id)
     {
-        var command = new DeletePetCommand { PetId = id  };
-        await Mediator.Send(command);
+        await Mediator.Send(new DeletePetCommand { PetId = id  });
         
         return NoContent();
     }

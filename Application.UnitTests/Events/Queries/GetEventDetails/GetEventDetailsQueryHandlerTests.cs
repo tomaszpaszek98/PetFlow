@@ -59,6 +59,13 @@ public class GetEventDetailsQueryHandlerTests
         result.DateOfEvent.Should().Be(eventEntity.DateOfEvent);
         result.AssignedPets.Should().HaveCount(2);
         result.AssignedPets.Should().BeEquivalentTo(expectedAssignedPets);
+        
+        Received.InOrder(() => {
+            eventRepository.GetByIdAsync(eventId, Arg.Any<CancellationToken>());
+            petRepository.GetByIdsAsync(Arg.Is<IEnumerable<int>>(ids => 
+                ids.Contains(pets[0].Id) && ids.Contains(pets[1].Id)), 
+                Arg.Any<CancellationToken>());
+        });
     }
 
     [Test]
@@ -93,6 +100,9 @@ public class GetEventDetailsQueryHandlerTests
         result.Description.Should().Be(eventEntity.Description);
         result.DateOfEvent.Should().Be(eventEntity.DateOfEvent);
         result.AssignedPets.Should().BeEmpty();
+        
+        await eventRepository.Received(1).GetByIdAsync(eventId, Arg.Any<CancellationToken>());
+        await petRepository.DidNotReceive().GetByIdsAsync(default, default);
     }
 
     [Test]
@@ -127,6 +137,9 @@ public class GetEventDetailsQueryHandlerTests
         result.Description.Should().Be(eventEntity.Description);
         result.DateOfEvent.Should().Be(eventEntity.DateOfEvent);
         result.AssignedPets.Should().BeEmpty();
+        
+        await eventRepository.Received(1).GetByIdAsync(eventId, Arg.Any<CancellationToken>());
+        await petRepository.DidNotReceive().GetByIdsAsync(default, default);
     }
 
     [Test]
@@ -147,5 +160,7 @@ public class GetEventDetailsQueryHandlerTests
         
         // THEN
         act.Should().ThrowAsync<NotFoundException>();
+        eventRepository.Received(1).GetByIdAsync(eventId, Arg.Any<CancellationToken>());
+        petRepository.DidNotReceive().GetByIdsAsync(default, default);
     }
 }

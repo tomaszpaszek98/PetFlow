@@ -29,6 +29,7 @@ public class GetPetsQueryHandlerTests
         result.Should().NotBeNull();
         result.Items.Should().HaveCount(2);
         result.Items.Select(x => x.Id).Should().BeEquivalentTo(pets.Select(x => x.Id));
+        await repository.Received(1).GetAllAsync(Arg.Any<CancellationToken>());
     }
 
     [Test]
@@ -36,8 +37,8 @@ public class GetPetsQueryHandlerTests
     {
         // GIVEN
         var repository = Substitute.For<IPetRepository>();
-        var handler = new GetPetsQueryHandler(repository);
         var query = new GetPetsQuery();
+        var handler = new GetPetsQueryHandler(repository);
         
         repository.GetAllAsync(Arg.Any<CancellationToken>()).Returns(new List<Pet>());
 
@@ -47,6 +48,6 @@ public class GetPetsQueryHandlerTests
         // THEN
         result.Should().NotBeNull();
         result.Items.Should().BeEmpty();
+        await repository.Received(1).GetAllAsync(Arg.Any<CancellationToken>());
     }
 }
-

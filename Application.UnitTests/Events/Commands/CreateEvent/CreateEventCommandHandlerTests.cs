@@ -65,6 +65,20 @@ public class CreateEventCommandHandlerTests
         result.Reminder.Should().Be(command.Reminder);
         result.AssignedPets.Should().BeEquivalentTo(expectedAssignedPets);
         result.MissingPetIds.Should().BeNullOrEmpty();
+        
+        Received.InOrder(() => {
+            eventRepository.CreateAsync(
+                Arg.Is<Event>(e => 
+                    e.Title == command.Title && 
+                    e.Description == command.Description && 
+                    e.DateOfEvent == command.DateOfEvent &&
+                    e.Reminder == command.Reminder), 
+                Arg.Any<CancellationToken>());
+            petRepository.GetByIdsAsync(command.PetToAssignIds, Arg.Any<CancellationToken>());
+            eventRepository.AddPetsToEventAsync(
+                Arg.Is<List<PetEvent>>(pe => pe.Count == petIds.Count), 
+                Arg.Any<CancellationToken>());
+        });
     }
 
     [Test]
@@ -120,6 +134,16 @@ public class CreateEventCommandHandlerTests
         result.Id.Should().Be(createdEvent.Id);
         result.AssignedPets.Should().BeEquivalentTo(expectedAssignedPets);
         result.MissingPetIds.Should().BeEquivalentTo(missingPetIds);
+        
+        Received.InOrder(() => {
+            eventRepository.CreateAsync(
+                Arg.Is<Event>(e => e.Title == command.Title && e.Description == command.Description), 
+                Arg.Any<CancellationToken>());
+            petRepository.GetByIdsAsync(command.PetToAssignIds, Arg.Any<CancellationToken>());
+            eventRepository.AddPetsToEventAsync(
+                Arg.Is<List<PetEvent>>(pe => pe.Count == pets.Count), 
+                Arg.Any<CancellationToken>());
+        });
     }
 
     [Test]
@@ -162,8 +186,14 @@ public class CreateEventCommandHandlerTests
         // THEN
         result.Should().NotBeNull();
         result.Id.Should().Be(createdEvent.Id);
-        result.AssignedPets.Should().BeEmpty();
-        result.MissingPetIds.Should().BeEmpty();
+        result.AssignedPets.Should().BeNull();
+        result.MissingPetIds.Should().BeNull();
+        
+        await eventRepository.CreateAsync(
+            Arg.Is<Event>(e => e.Title == command.Title && e.Description == command.Description), 
+            Arg.Any<CancellationToken>());
+        await petRepository.DidNotReceive().GetByIdsAsync(default, default);
+        await eventRepository.DidNotReceive().AddPetsToEventAsync(default, default);
     }
 
     [Test]
@@ -209,6 +239,14 @@ public class CreateEventCommandHandlerTests
         result.Id.Should().Be(createdEvent.Id);
         result.AssignedPets.Should().BeEmpty();
         result.MissingPetIds.Should().BeEquivalentTo(petIds);
+        
+        Received.InOrder(() => {
+            eventRepository.CreateAsync(
+                Arg.Is<Event>(e => e.Title == command.Title && e.Description == command.Description), 
+                Arg.Any<CancellationToken>());
+            petRepository.GetByIdsAsync(command.PetToAssignIds, Arg.Any<CancellationToken>());
+        });
+        await eventRepository.DidNotReceive().AddPetsToEventAsync(default, default);
     }
 
     [Test]
@@ -252,5 +290,11 @@ public class CreateEventCommandHandlerTests
         result.Reminder.Should().Be(command.Reminder);
         result.AssignedPets.Should().BeNull();
         result.MissingPetIds.Should().BeNull();
+        
+        await petRepository.DidNotReceive().GetByIdsAsync(default, default);
+        await eventRepository.Received(1).CreateAsync(
+            Arg.Is<Event>(e => e.Title == command.Title && e.Description == command.Description), 
+            Arg.Any<CancellationToken>());
+        await eventRepository.DidNotReceive().AddPetsToEventAsync(default, default);
     }
 }

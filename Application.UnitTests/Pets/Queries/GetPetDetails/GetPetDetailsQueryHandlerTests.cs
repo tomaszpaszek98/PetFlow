@@ -46,6 +46,10 @@ public class GetPetDetailsQueryHandlerTests
         result.CreatedAt.Should().Be(pet.Created);
         result.ModifiedAt.Should().Be(pet.Modified);
         result.UpcomingEvent.Should().BeNull();
+        
+        // Verify method invocations
+        await repository.Received(1).GetByIdAsync(query.PetId, Arg.Any<CancellationToken>());
+        await eventRepository.Received(1).GetEventsByPetIdAsync(query.PetId, Arg.Any<CancellationToken>());
     }
 
     [Test]
@@ -80,6 +84,9 @@ public class GetPetDetailsQueryHandlerTests
         result.Should().NotBeNull();
         result.Id.Should().Be(pet.Id);
         result.UpcomingEvent.Should().BeNull();
+        
+        await repository.Received(1).GetByIdAsync(query.PetId, Arg.Any<CancellationToken>());
+        await eventRepository.Received(1).GetEventsByPetIdAsync(query.PetId, Arg.Any<CancellationToken>());
     }
 
     [Test]
@@ -123,6 +130,9 @@ public class GetPetDetailsQueryHandlerTests
         result.UpcomingEvent.Id.Should().Be(upcomingEvent.Id);
         result.UpcomingEvent.Title.Should().Be(upcomingEvent.Title);
         result.UpcomingEvent.EventDate.Should().Be(upcomingEvent.DateOfEvent);
+        
+        await repository.Received(1).GetByIdAsync(query.PetId, Arg.Any<CancellationToken>());
+        await eventRepository.Received(1).GetEventsByPetIdAsync(query.PetId, Arg.Any<CancellationToken>());
     }
 
     [Test]
@@ -172,6 +182,9 @@ public class GetPetDetailsQueryHandlerTests
         result.UpcomingEvent.Id.Should().Be(upcomingEvent.Id);
         result.UpcomingEvent.Title.Should().Be(upcomingEvent.Title);
         result.UpcomingEvent.EventDate.Should().Be(upcomingEvent.DateOfEvent);
+        
+        await repository.Received(1).GetByIdAsync(query.PetId, Arg.Any<CancellationToken>());
+        await eventRepository.Received(1).GetEventsByPetIdAsync(query.PetId, Arg.Any<CancellationToken>());
     }
 
     [Test]
@@ -190,5 +203,7 @@ public class GetPetDetailsQueryHandlerTests
 
         // THEN
         await act.Should().ThrowAsync<NotFoundException>();
+        await repository.Received(1).GetByIdAsync(query.PetId, Arg.Any<CancellationToken>());
+        await eventRepository.DidNotReceive().GetEventsByPetIdAsync(default, default);
     }
 }

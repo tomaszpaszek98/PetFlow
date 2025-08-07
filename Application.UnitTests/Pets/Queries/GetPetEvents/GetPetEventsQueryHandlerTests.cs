@@ -47,6 +47,9 @@ public class GetPetEventsQueryHandlerTests
         items[0].Title.Should().Be("Vet");
         items[1].Id.Should().Be(2);
         items[1].Title.Should().Be("Grooming");
+        
+        await petRepository.Received(1).GetByIdAsync(query.PetId, Arg.Any<CancellationToken>());
+        await eventRepository.Received(1).GetEventsByPetIdAsync(query.PetId, Arg.Any<CancellationToken>());
     }
 
     [Test]
@@ -75,6 +78,8 @@ public class GetPetEventsQueryHandlerTests
         // THEN
         result.Should().NotBeNull();
         result.Items.Should().BeEmpty();
+        await petRepository.Received(1).GetByIdAsync(query.PetId, Arg.Any<CancellationToken>());
+        await eventRepository.Received(1).GetEventsByPetIdAsync(query.PetId, Arg.Any<CancellationToken>());
     }
 
     [Test]
@@ -96,5 +101,9 @@ public class GetPetEventsQueryHandlerTests
         
         // THEN
         await act.Should().ThrowAsync<NotFoundException>();
+        
+        // Verify method invocations
+        await petRepository.Received(1).GetByIdAsync(query.PetId, Arg.Any<CancellationToken>());
+        await eventRepository.DidNotReceive().GetEventsByPetIdAsync(default, default);
     }
 }

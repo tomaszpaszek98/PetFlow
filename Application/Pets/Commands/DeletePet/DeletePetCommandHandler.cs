@@ -5,7 +5,7 @@ using Persistance.Repositories;
 
 namespace Application.Pets.Commands.DeletePet;
 
-public class DeletePetCommandHandler : IRequestHandler<DeletePetCommand, bool>
+public class DeletePetCommandHandler : IRequestHandler<DeletePetCommand>
 {
     private readonly IPetRepository _repository;
 
@@ -14,7 +14,7 @@ public class DeletePetCommandHandler : IRequestHandler<DeletePetCommand, bool>
         _repository = repository;
     }
 
-    public async Task<bool> Handle(DeletePetCommand request, CancellationToken cancellationToken = default)
+    public async Task Handle(DeletePetCommand request, CancellationToken cancellationToken = default)
     {
         var isDeleted = await _repository.DeleteByIdAsync(request.PetId, cancellationToken);
         
@@ -22,8 +22,5 @@ public class DeletePetCommandHandler : IRequestHandler<DeletePetCommand, bool>
         {
             throw new NotFoundException(nameof(Pet), request.PetId);
         }
-        
-        return true;
     }
 }
-
