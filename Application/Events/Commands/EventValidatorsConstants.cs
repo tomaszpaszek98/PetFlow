@@ -1,4 +1,4 @@
-﻿namespace Application.Events.Commands.Common;
+﻿namespace Application.Events.Commands;
 
 public static class EventValidatorsConstants
 {

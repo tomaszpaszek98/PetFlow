@@ -1,4 +1,4 @@
-using Application.Events.Commands.Common;
+using Application.Events.Commands;
 using Application.Events.Commands.UpdateEvent;
 using FluentValidation.TestHelper;
 

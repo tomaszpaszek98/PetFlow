@@ -2,4 +2,5 @@
 
 public class NotesResponse
 {
+    public IEnumerable<NoteResponseDto> Notes { get; set; }
 }

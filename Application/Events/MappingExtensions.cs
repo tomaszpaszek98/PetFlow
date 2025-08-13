@@ -73,16 +73,6 @@ public static class MappingExtensions
         };
     }
     
-    public static Event MapToEvent(this UpdateEventCommand request, Event existingEvent)
-    {
-        existingEvent.Title = request.Title;
-        existingEvent.Description = request.Description;
-        existingEvent.DateOfEvent = request.DateOfEvent;
-        existingEvent.Reminder = request.Reminder;
-        
-        return existingEvent;
-    }
-    
     public static UpdateEventResponse MapToUpdateResponse(this Event updatedEvent, IList<Pet> assignedPets)
     {
         return new UpdateEventResponse

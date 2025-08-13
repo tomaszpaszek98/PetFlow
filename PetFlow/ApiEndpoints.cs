@@ -39,7 +39,8 @@ public static class ApiEndpoints
 
             public static class Summary
             {
-                public const string Get = $"{MedicalNotesBase}/{{id}}/summary";
+                public const string GetForTimeRange = $"{MedicalNotesBase}/summary";
+                public const string GetForNote = $"{MedicalNotesBase}/{{id}}/summary";
             }
         }
     
@@ -55,7 +56,8 @@ public static class ApiEndpoints
             
             public static class Summary
             {
-                public const string Get = $"{NotesBase}/{{id}}/summary";
+                public const string GetForTimeRange = $"{NotesBase}/summary";
+                public const string GetForNote = $"{NotesBase}/{{id}}/summary";
             }
         }
     }

@@ -1,6 +1,9 @@
-﻿namespace Application.MedicalNotes.Queries.GetMedicalNoteDetails;
+﻿using Application.MedicalNotes.Common;
 
-public class MedicalNoteDetailsResponse
+namespace Application.MedicalNotes.Queries.GetMedicalNoteDetails;
+
+public class MedicalNoteDetailsResponse : MedicalNoteResponse
 {
-    
+    public string Description { get; set; }
+    public DateTime ModifiedAt { get; set; }
 }

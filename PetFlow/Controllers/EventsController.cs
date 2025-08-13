@@ -7,6 +7,7 @@ using Application.Events.Queries.GetEventDetails;
 using Application.Events.Queries.GetEvents;
 using Microsoft.AspNetCore.Mvc;
 using PetFlow.Requests;
+using PetFlow.Requests.Event;
 
 namespace PetFlow.Controllers;
 

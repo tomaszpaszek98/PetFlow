@@ -1,4 +1,4 @@
-﻿namespace PetFlow.Requests;
+﻿namespace PetFlow.Requests.MedicalNote;
 
 public class UpdateMedicalNoteRequest
 {

@@ -1,5 +1,4 @@
-﻿using Application.Pets.Commands.Common;
-using FluentValidation;
+﻿using FluentValidation;
 
 namespace Application.Pets.Commands.CreatePet;
 

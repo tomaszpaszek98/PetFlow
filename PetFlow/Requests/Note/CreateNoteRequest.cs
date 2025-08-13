@@ -1,6 +1,6 @@
 ﻿using Domain.Enums;
 
-namespace PetFlow.Requests;
+namespace PetFlow.Requests.Note;
 
 public class CreateNoteRequest
 {

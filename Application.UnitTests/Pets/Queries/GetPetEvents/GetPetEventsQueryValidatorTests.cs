@@ -1,4 +1,5 @@
 using Application.Pets.Queries.GetPetEvents;
+using FluentValidation.TestHelper;
 
 namespace Application.UnitTests.Pets.Queries.GetPetEvents;
 
@@ -12,10 +13,10 @@ public class GetPetEventsQueryValidatorTests
         var validator = new GetPetEventsQueryValidator();
 
         // WHEN
-        var result = validator.Validate(query);
+        var result = validator.TestValidate(query);
 
         // THEN
-        result.IsValid.Should().BeTrue();
+        result.ShouldNotHaveAnyValidationErrors();
     }
 
     [Test]
@@ -26,11 +27,10 @@ public class GetPetEventsQueryValidatorTests
         var validator = new GetPetEventsQueryValidator();
 
         // WHEN
-        var result = validator.Validate(query);
+        var result = validator.TestValidate(query);
 
         // THEN
-        result.IsValid.Should().BeFalse();
-        result.Errors.Should().Contain(x => x.PropertyName == "PetId");
+        result.ShouldHaveValidationErrorFor(x => x.PetId);
     }
 
     [Test]
@@ -41,10 +41,9 @@ public class GetPetEventsQueryValidatorTests
         var validator = new GetPetEventsQueryValidator();
 
         // WHEN
-        var result = validator.Validate(query);
+        var result = validator.TestValidate(query);
 
         // THEN
-        result.IsValid.Should().BeFalse();
-        result.Errors.Should().Contain(x => x.PropertyName == "PetId");
+        result.ShouldHaveValidationErrorFor(x => x.PetId);
     }
 }

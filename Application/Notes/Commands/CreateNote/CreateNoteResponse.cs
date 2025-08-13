@@ -1,5 +1,8 @@
-﻿namespace Application.Notes.Commands.CreateNote;
+﻿using Application.Notes.Common;
 
-public class CreateNoteResponse
+namespace Application.Notes.Commands.CreateNote;
+
+public class CreateNoteResponse : NoteResponse
 {
+    public string Content { get; set; }
 }

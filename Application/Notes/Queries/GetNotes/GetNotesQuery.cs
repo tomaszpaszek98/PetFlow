@@ -1,6 +1,8 @@
-﻿HEADERnamespace a;
+﻿using MediatR;
 
-public class GetNotesQuery
+namespace Application.Notes.Queries.GetNotes;
+
+public class GetNotesQuery : IRequest<NotesResponse>
 {
-    
+    public int PetId { get; set; }
 }

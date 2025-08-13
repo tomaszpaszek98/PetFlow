@@ -5,6 +5,7 @@ using Application.Pets.Queries.GetPetEvents;
 using Application.Pets.Queries.GetPets;
 using Microsoft.AspNetCore.Mvc;
 using PetFlow.Requests;
+using PetFlow.Requests.Pet;
 
 namespace PetFlow.Controllers;
 

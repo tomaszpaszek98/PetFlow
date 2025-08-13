@@ -1,4 +1,3 @@
-using Application.Pets.Commands.Common;
 using FluentValidation;
 
 namespace Application.Pets.Commands.UpdatePet;

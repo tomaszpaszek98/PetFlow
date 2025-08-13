@@ -2,5 +2,5 @@
 
 public class MedicalNotesResponse
 {
-    
+    public IEnumerable<MedicalNoteResponseDto> MedicalNotes { get; set; }
 }

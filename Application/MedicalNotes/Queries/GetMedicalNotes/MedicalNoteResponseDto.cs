@@ -1,6 +1,6 @@
 ﻿namespace Application.MedicalNotes.Queries.GetMedicalNotes;
 
-public class MedicalNoteDto
+public class MedicalNoteResponseDto
 {
     public int Id { get; set; }
     public string Title { get; set; }

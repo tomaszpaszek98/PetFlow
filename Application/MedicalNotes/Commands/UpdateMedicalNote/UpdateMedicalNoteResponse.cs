@@ -1,6 +1,9 @@
-﻿HEADERnamespace a;
+﻿using Application.MedicalNotes.Common;
 
-public class UpdateMedicalNoteResponse
+namespace Application.MedicalNotes.Commands.UpdateMedicalNote;
+
+public class UpdateMedicalNoteResponse : MedicalNoteResponse
 {
-    
+    public string Description { get; set; }
+    public DateTime ModifiedAt { get; set; }
 }

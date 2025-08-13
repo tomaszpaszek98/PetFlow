@@ -1,6 +1,9 @@
-﻿namespace Application.Notes.Commands.DeleteNote;
+﻿using MediatR;
 
-public class DeleteNoteCommand
+namespace Application.Notes.Commands.DeleteNote;
+
+public class DeleteNoteCommand : IRequest
 {
-    
+    public int PetId { get; set; }
+    public int NoteId { get; set; }
 }

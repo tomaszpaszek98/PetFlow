@@ -1,5 +1,9 @@
-﻿namespace Application.Notes.Commands.UpdateNote;
+﻿using Application.Notes.Common;
 
-public class UpdateNoteResponse
+namespace Application.Notes.Commands.UpdateNote;
+
+public class UpdateNoteResponse : NoteResponse
 {
+    public string Content { get; set; }
+    public DateTime ModifiedAt { get; set; }
 }

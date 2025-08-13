@@ -1,4 +1,4 @@
-﻿namespace Application.Pets.Commands.Common;
+﻿namespace Application.Pets.Commands;
 
 public static class PetValidatorsConstants
 {

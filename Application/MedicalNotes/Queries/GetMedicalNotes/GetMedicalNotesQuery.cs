@@ -1,6 +1,8 @@
-﻿namespace Application.MedicalNotes.Queries.GetMedicalNotes;
+﻿using MediatR;
 
-public class GetMedicalNotesQuery
+namespace Application.MedicalNotes.Queries.GetMedicalNotes;
+
+public class GetMedicalNotesQuery : IRequest<MedicalNotesResponse>
 {
-    
+    public int PetId { get; set; }
 }

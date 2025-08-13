@@ -1,6 +1,11 @@
-﻿namespace Application.Notes.Commands.CreateNote;
+﻿using Domain.Enums;
+using MediatR;
 
-public class CreateNoteCommand
+namespace Application.Notes.Commands.CreateNote;
+
+public class CreateNoteCommand : IRequest<CreateNoteResponse>
 {
-    
+    public int PetId { get; set; }
+    public string Content { get; set; } 
+    public NoteType Type { get; set; }
 }

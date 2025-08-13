@@ -1,4 +1,3 @@
-using Application.Events.Commands.Common;
 using FluentValidation;
 
 namespace Application.Events.Commands.CreateEvent;

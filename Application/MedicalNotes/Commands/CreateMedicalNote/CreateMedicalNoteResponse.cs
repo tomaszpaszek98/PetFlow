@@ -1,5 +1,8 @@
-﻿namespace Application.MedicalNotes.Commands.CreateMedicalNote;
+﻿using Application.MedicalNotes.Common;
 
-public class CreateMedicalNoteResponse
+namespace Application.MedicalNotes.Commands.CreateMedicalNote;
+
+public class CreateMedicalNoteResponse : MedicalNoteResponse
 {
+    public string Description { get; set; }
 }
