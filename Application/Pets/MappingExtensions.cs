@@ -1,7 +1,7 @@
 ﻿using Application.Pets.Commands.CreatePet;
-using Application.Pets.Commands.UpdatePet;
 using Application.Pets.Common;
 using Application.Pets.Queries.GetPetDetails;
+using Application.Pets.Queries.GetPetEvents;
 using Application.Pets.Queries.GetPets;
 using Domain.Entities;
 
@@ -49,11 +49,24 @@ public static class MappingExtensions
         };
     }
     
-    public static PetsResponse MapToResponse(this IEnumerable<Pet> pets)
+    public static PetEventsResponse MapToResponse(this IEnumerable<Event> petEvents)
     {
-        return new PetsResponse
+        return new PetEventsResponse
         {
-            Items = pets.Select(MapToResponse)
+            Items = petEvents.Select(MapToResponse)
+        };
+    }
+
+    private static PetEventResponse MapToResponse(this Event petEvent)
+    {
+        return new PetEventResponse
+        {
+            Id = petEvent.Id,
+            Title = petEvent.Title,
+            DateOfEvent = petEvent.DateOfEvent,
+            Reminder = petEvent.Reminder,
+            CreatedAt = petEvent.Created,
+            ModifiedAt = petEvent.Modified
         };
     }
 

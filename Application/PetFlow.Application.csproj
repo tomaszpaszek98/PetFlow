@@ -16,7 +16,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Common\Behaviours\" />
       <Folder Include="Pets\Commands\DeletePet\" />
       <Folder Include="Pets\Queries\GetPets\" />
     </ItemGroup>

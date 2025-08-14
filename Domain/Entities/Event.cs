@@ -8,6 +8,5 @@ public class Event : AuditableEntity
     public string Description { get; set; }
     public DateTime DateOfEvent { get; set; }
     public bool Reminder { get; set; }
-    public int PetId { get; set; }
-    public Pet Pet { get; set; }
+    public ICollection<PetEvent> PetEvents { get; set; }
 }

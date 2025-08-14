@@ -1,31 +1,36 @@
 ﻿using Application.Common.Interfaces.Repositories;
-using Application.Pets.Common;
+using Domain.Entities;
 using Domain.Exceptions;
 using MediatR;
 using Persistance.Repositories;
 
 namespace Application.Pets.Queries.GetPetDetails;
 
-public class GetPetDetailsQueryHandler : IRequestHandler<GetPetDetailsQuery, PetResponse>
+public class GetPetDetailsQueryHandler : IRequestHandler<GetPetDetailsQuery, PetDetailsResponse>
 {
-    private readonly IPetRepository _repository;
+    private readonly IPetRepository _petRepository;
     private readonly IEventRepository _eventRepository;
     
-    public GetPetDetailsQueryHandler(IPetRepository repository, IEventRepository eventRepository)
+    public GetPetDetailsQueryHandler(IPetRepository petRepository, IEventRepository eventRepository)
     {
-        _repository = repository;
+        _petRepository = petRepository;
         _eventRepository = eventRepository;
     }
 
-    public async Task<PetResponse> Handle(GetPetDetailsQuery request, CancellationToken cancellationToken)
+    public async Task<PetDetailsResponse> Handle(GetPetDetailsQuery request, CancellationToken cancellationToken)
     {
-        var pet = await _repository.GetByIdAsync(request.PetId, cancellationToken);
+        var pet = await _petRepository.GetByIdAsync(request.PetId, cancellationToken);
         if (pet == null)
         {
-            throw new EntityNotFoundException($"Pet with id {request.PetId} is not exists.");
+            throw new NotFoundException(nameof(Pet), request.PetId);
         }
-        var petEvent = await _eventRepository.GetUpcomingEventForPetAsync(request.PetId, cancellationToken);
         
-        return pet.MapToPetDetailsResponse(petEvent);
+        var petEvents = await _eventRepository.GetEventsByPetIdAsync(request.PetId, cancellationToken);
+        var upcomingEvent = petEvents
+            .Where(e => e.DateOfEvent >= DateTime.UtcNow)
+            .OrderBy(e => e.DateOfEvent)
+            .FirstOrDefault();
+        
+        return pet.MapToPetDetailsResponse(upcomingEvent);
     }
 }

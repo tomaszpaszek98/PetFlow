@@ -1,5 +1,4 @@
 ﻿using Application.Pets.Common;
-using Application.Pets.Queries.GetPetDetails;
 using MediatR;
 
 namespace Application.Pets.Commands.CreatePet;

@@ -25,6 +25,9 @@
 
     <ItemGroup>
       <Folder Include="Pets\Commands\CreatePet\" />
+      <Folder Include="Pets\Commands\UpdatePet\" />
+      <Folder Include="Pets\Queries\GetPetDetails\" />
+      <Folder Include="Pets\Queries\GetPets\" />
     </ItemGroup>
 
     <ItemGroup>

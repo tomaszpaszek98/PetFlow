@@ -1,4 +1,3 @@
-using Application.Pets.Common;
 using MediatR;
 
 namespace Application.Pets.Queries.GetPets;

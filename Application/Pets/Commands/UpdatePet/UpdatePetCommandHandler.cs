@@ -20,14 +20,15 @@ public class UpdatePetCommandHandler : IRequestHandler<UpdatePetCommand, PetResp
         var pet = await _repository.GetByIdAsync(request.Id, cancellationToken);
         if (pet == null)
         {
-            throw new EntityNotFoundException($"Pet with id {request.Id} is not exists.");
+            throw new NotFoundException(nameof(Pet), request.Id);
         }
 
         UpdatePetProperties(ref pet, request);
         await _repository.UpdateAsync(pet, cancellationToken);
+        
         return pet.MapToResponse();
     }
-    
+
     private static void UpdatePetProperties(ref Pet pet, UpdatePetCommand request)
     {
         pet.Name = request.Name;

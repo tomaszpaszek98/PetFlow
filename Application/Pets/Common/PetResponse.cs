@@ -1,6 +1,4 @@
-﻿using Application.Pets.Queries.GetPetDetails;
-
-namespace Application.Pets.Common;
+﻿namespace Application.Pets.Common;
 
 public class PetResponse
 {
