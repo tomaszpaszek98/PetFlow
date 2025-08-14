@@ -15,9 +15,7 @@ public class GetPetsQueryHandler : IRequestHandler<GetPetsQuery, PetsResponse>
     public async Task<PetsResponse> Handle(GetPetsQuery request, CancellationToken cancellationToken)
     {
         var pets = await _repository.GetAllAsync(cancellationToken);
-        return new PetsResponse
-        {
-            Items = pets.Select(p => p.MapToResponse()).ToList()
-        };
+
+        return pets.MapToResponse();
     }
 }

@@ -82,4 +82,12 @@ public static class MappingExtensions
             EventDate = petEvent.DateOfEvent
         };
     }
+
+    public static PetsResponse MapToResponse(this IEnumerable<Pet> pets)
+    {
+        return new PetsResponse
+        {
+            Items = pets.Select(MapToResponse).ToList()
+        };
+    }
 }
