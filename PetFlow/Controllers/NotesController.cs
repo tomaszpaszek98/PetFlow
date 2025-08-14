@@ -10,6 +10,10 @@ namespace PetFlow.Controllers;
 public class NotesController : BaseController
 {
     [HttpPost(ApiEndpoints.Pets.Notes.Create)]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> Create([FromBody] CreateNoteRequest request,
         [FromRoute] int petId, CancellationToken cancellationToken)
     {
@@ -20,6 +24,10 @@ public class NotesController : BaseController
     }
 
     [HttpGet(ApiEndpoints.Pets.Notes.Get)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> Get([FromRoute] int petId, [FromRoute] int noteId, CancellationToken cancellationToken)
     {
         var query = new GetNoteDetailsQuery { PetId = petId, NoteId = noteId };
@@ -29,6 +37,10 @@ public class NotesController : BaseController
     }
 
     [HttpGet(ApiEndpoints.Pets.Notes.GetAll)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetAll([FromRoute] int petId, CancellationToken cancellationToken)
     {
         var query = new GetNotesQuery { PetId = petId };
@@ -38,6 +50,10 @@ public class NotesController : BaseController
     }
 
     [HttpPut(ApiEndpoints.Pets.Notes.Update)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> Update([FromBody] UpdateNoteRequest request,
         [FromRoute] int petId, [FromRoute] int noteId, CancellationToken cancellationToken)
     {
@@ -48,6 +64,10 @@ public class NotesController : BaseController
     }
 
     [HttpDelete(ApiEndpoints.Pets.Notes.Delete)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> Delete([FromRoute] int petId, [FromRoute] int noteId, CancellationToken cancellationToken)
     {
         var command = new DeleteNoteCommand { PetId = petId, NoteId = noteId };
@@ -57,6 +77,10 @@ public class NotesController : BaseController
     }
 
     [HttpGet(ApiEndpoints.Pets.Notes.Summary.GetForNote)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public IActionResult GetSummary([FromRoute] int petId, [FromRoute] int noteId, CancellationToken cancellationToken)
     {
         //TODO to implement
@@ -64,6 +88,10 @@ public class NotesController : BaseController
     }
     
     [HttpGet(ApiEndpoints.Pets.Notes.Summary.GetForTimeRange)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public IActionResult GetSummaryForTimeRange([FromRoute] int petId, CancellationToken cancellationToken)
     {
         //TODO to implement

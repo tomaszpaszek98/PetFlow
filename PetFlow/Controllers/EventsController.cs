@@ -15,6 +15,9 @@ namespace PetFlow.Controllers;
 public class EventsController : BaseController
 {
     [HttpPost(ApiEndpoints.Events.Create)]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> Create([FromBody] CreateEventCommand command, CancellationToken cancellationToken)
     {
         var result = await Mediator.Send(command, cancellationToken);
@@ -23,6 +26,10 @@ public class EventsController : BaseController
     }
 
     [HttpGet(ApiEndpoints.Events.Get)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> Get([FromRoute] int id, CancellationToken cancellationToken)
     {
         var query = new GetEventDetailsQuery { EventId = id };
@@ -32,6 +39,9 @@ public class EventsController : BaseController
     } 
 
     [HttpGet(ApiEndpoints.Events.GetAll)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
     {
         var result = await Mediator.Send(new GetEventsQuery(), cancellationToken);
@@ -40,6 +50,10 @@ public class EventsController : BaseController
     }
 
     [HttpPut(ApiEndpoints.Events.Update)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> Update([FromRoute] int id,
         [FromBody] UpdateEventRequest request, CancellationToken cancellationToken)
     {
@@ -50,6 +64,10 @@ public class EventsController : BaseController
     }
 
     [HttpDelete(ApiEndpoints.Events.Delete)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> Delete([FromRoute] int id, CancellationToken cancellationToken)
     {
         var command = new DeleteEventCommand { EventId = id };
@@ -59,6 +77,11 @@ public class EventsController : BaseController
     }
     
     [HttpPost(ApiEndpoints.Events.Pets.Add)]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> AddPet([FromBody] AddPetToEventCommand command,
         CancellationToken cancellationToken)
     {
@@ -68,6 +91,10 @@ public class EventsController : BaseController
     }
 
     [HttpDelete(ApiEndpoints.Events.Pets.Delete)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> DeletePet([FromRoute] int eventId, [FromRoute] int petId,
         CancellationToken cancellationToken)
     {

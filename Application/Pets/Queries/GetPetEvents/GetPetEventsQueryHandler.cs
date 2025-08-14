@@ -20,11 +20,11 @@ public class GetPetEventsQueryHandler : IRequestHandler<GetPetEventsQuery, PetEv
     public async Task<PetEventsResponse> Handle(GetPetEventsQuery request, CancellationToken cancellationToken)
     {
         var pet = await _petRepository.GetByIdAsync(request.PetId);
-        
         if (pet is null)
         {
             throw new NotFoundException(nameof(Pet), request.PetId);
         }
+        
         var events = await _eventRepository.GetEventsByPetIdAsync(request.PetId, cancellationToken);
 
         return events.MapToResponse();
