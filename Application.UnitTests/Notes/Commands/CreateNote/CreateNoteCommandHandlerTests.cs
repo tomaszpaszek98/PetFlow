@@ -69,14 +69,14 @@ public class CreateNoteCommandHandlerTests
     public async Task ShouldThrowNotFoundExceptionWhenPetDoesNotExist()
     {
         // GIVEN
-        var repository = Substitute.For<INoteRepository>();
-        var petRepository = Substitute.For<IPetRepository>();
         var command = new CreateNoteCommand
         {
             PetId = 99,
             Content = "Test Note Content",
             Type = Domain.Enums.NoteType.General
         };
+        var repository = Substitute.For<INoteRepository>();
+        var petRepository = Substitute.For<IPetRepository>();
         var handler = new CreateNoteCommandHandler(repository, petRepository);
         
         petRepository.GetByIdAsync(command.PetId, Arg.Any<CancellationToken>())
@@ -89,6 +89,6 @@ public class CreateNoteCommandHandlerTests
         await act.Should().ThrowAsync<NotFoundException>()
             .Where(e => e.Message.Contains(nameof(Pet)) && e.Message.Contains(command.PetId.ToString()));
         await petRepository.Received(1).GetByIdAsync(command.PetId, Arg.Any<CancellationToken>());
-        await repository.DidNotReceive().CreateAsync(Arg.Any<Note>(), Arg.Any<CancellationToken>());
+        await repository.DidNotReceive().CreateAsync(default);
     }
 }

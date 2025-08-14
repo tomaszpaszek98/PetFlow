@@ -25,10 +25,7 @@ internal sealed class ConflictingOperationExceptionHandler : IExceptionHandler
         {
             return false;
         }
-        _logger.LogError(
-            conflictException,
-            "Exception occurred: {Message}",
-            conflictException.Message);
+        _logger.LogError(conflictException, "Exception occurred: {Message}", conflictException.Message);
 
         httpContext.Response.StatusCode = StatusCodes.Status409Conflict;
         

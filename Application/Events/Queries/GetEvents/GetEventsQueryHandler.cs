@@ -19,9 +19,6 @@ public class GetEventsQueryHandler : IRequestHandler<GetEventsQuery, EventsRespo
     {
         var events = await _eventRepository.GetAllAsync(cancellationToken);
 
-        return new EventsResponse
-        {
-            Items = events.Select(x => x.MapToResponseDto()).ToList()
-        };
+        return events.MapToResponse();
     }
 }

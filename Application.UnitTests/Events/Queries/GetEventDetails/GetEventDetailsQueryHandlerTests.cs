@@ -14,8 +14,6 @@ public class GetEventDetailsQueryHandlerTests
     public async Task ShouldReturnEventDetailsWithAssignedPetsWhenEventAndPetsExist()
     {
         // GIVEN
-        var eventRepository = Substitute.For<IEventRepository>();
-        var petRepository = Substitute.For<IPetRepository>();
         var eventId = 1;
         var pets = new List<Pet>
         {
@@ -41,6 +39,8 @@ public class GetEventDetailsQueryHandlerTests
             }
         };
         var query = new GetEventDetailsQuery { EventId = eventId };
+        var eventRepository = Substitute.For<IEventRepository>();
+        var petRepository = Substitute.For<IPetRepository>();
         var handler = new GetEventDetailsQueryHandler(eventRepository, petRepository);
         
         eventRepository.GetByIdAsync(eventId, Arg.Any<CancellationToken>())
@@ -72,8 +72,6 @@ public class GetEventDetailsQueryHandlerTests
     public async Task ShouldReturnEventDetailsWithEmptyAssignedPetsWhenNoPetEvents()
     {
         // GIVEN
-        var eventRepository = Substitute.For<IEventRepository>();
-        var petRepository = Substitute.For<IPetRepository>();
         var eventId = 2;
         var eventEntity = new Event
         {
@@ -85,6 +83,8 @@ public class GetEventDetailsQueryHandlerTests
             PetEvents = new List<PetEvent>()
         };
         var query = new GetEventDetailsQuery { EventId = eventId };
+        var eventRepository = Substitute.For<IEventRepository>();
+        var petRepository = Substitute.For<IPetRepository>();
         var handler = new GetEventDetailsQueryHandler(eventRepository, petRepository);
         
         eventRepository.GetByIdAsync(eventId, Arg.Any<CancellationToken>())
@@ -102,15 +102,13 @@ public class GetEventDetailsQueryHandlerTests
         result.AssignedPets.Should().BeEmpty();
         
         await eventRepository.Received(1).GetByIdAsync(eventId, Arg.Any<CancellationToken>());
-        await petRepository.DidNotReceive().GetByIdsAsync(default, default);
+        await petRepository.DidNotReceive().GetByIdsAsync(default);
     }
 
     [Test]
     public async Task ShouldReturnEventDetailsWithEmptyAssignedPetsWhenPetEventsIsNull()
     {
         // GIVEN
-        var eventRepository = Substitute.For<IEventRepository>();
-        var petRepository = Substitute.For<IPetRepository>();
         var eventId = 3;
         var eventEntity = new Event
         {
@@ -122,6 +120,8 @@ public class GetEventDetailsQueryHandlerTests
             PetEvents = new Collection<PetEvent>()
         };
         var query = new GetEventDetailsQuery { EventId = eventId };
+        var eventRepository = Substitute.For<IEventRepository>();
+        var petRepository = Substitute.For<IPetRepository>();
         var handler = new GetEventDetailsQueryHandler(eventRepository, petRepository);
         
         eventRepository.GetByIdAsync(eventId, Arg.Any<CancellationToken>())
@@ -139,7 +139,7 @@ public class GetEventDetailsQueryHandlerTests
         result.AssignedPets.Should().BeEmpty();
         
         await eventRepository.Received(1).GetByIdAsync(eventId, Arg.Any<CancellationToken>());
-        await petRepository.DidNotReceive().GetByIdsAsync(default, default);
+        await petRepository.DidNotReceive().GetByIdsAsync(default);
     }
 
     [Test]
@@ -161,6 +161,6 @@ public class GetEventDetailsQueryHandlerTests
         // THEN
         act.Should().ThrowAsync<NotFoundException>();
         eventRepository.Received(1).GetByIdAsync(eventId, Arg.Any<CancellationToken>());
-        petRepository.DidNotReceive().GetByIdsAsync(default, default);
+        petRepository.DidNotReceive().GetByIdsAsync(default);
     }
 }

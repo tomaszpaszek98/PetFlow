@@ -36,7 +36,7 @@ public class PetsController : BaseController
     }
 
     [HttpPut(ApiEndpoints.Pets.Update)]
-    public async Task<IActionResult> Update([FromRoute] int id, [FromBody]UpdatePetRequest request, CancellationToken cancellationToken)
+    public async Task<IActionResult> Update([FromRoute] int id, [FromBody] UpdatePetRequest request, CancellationToken cancellationToken)
     {
         var command = request.MapToCommand(id);
         var result = await Mediator.Send(command, cancellationToken);
@@ -45,9 +45,9 @@ public class PetsController : BaseController
     }
 
     [HttpDelete(ApiEndpoints.Pets.Delete)]
-    public async Task<IActionResult> Delete([FromRoute] int id)
+    public async Task<IActionResult> Delete([FromRoute] int id, CancellationToken cancellationToken)
     {
-        await Mediator.Send(new DeletePetCommand { PetId = id  });
+        await Mediator.Send(new DeletePetCommand { PetId = id  }, cancellationToken);
         
         return NoContent();
     }
@@ -60,14 +60,14 @@ public class PetsController : BaseController
     }
     
     [HttpDelete(ApiEndpoints.Pets.Photo.Delete)]
-    public IActionResult DeletePhoto(int id)
+    public IActionResult DeletePhoto([FromRoute] int id)
     {
         //TODO to implement after making POC
         return NoContent();
     }
 
     [HttpGet(ApiEndpoints.Pets.Events.GetAll)]
-    public async Task<IActionResult> GetAllPetEvents([FromQuery] int petId, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetAllPetEvents([FromRoute] int petId, CancellationToken cancellationToken)
     {
         var result = await Mediator.Send(new GetPetEventsQuery { PetId = petId}, cancellationToken);
         

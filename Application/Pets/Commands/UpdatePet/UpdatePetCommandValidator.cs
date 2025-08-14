@@ -4,7 +4,6 @@ namespace Application.Pets.Commands.UpdatePet;
 
 public class UpdatePetCommandValidator : AbstractValidator<UpdatePetCommand>
 {
-    
     public UpdatePetCommandValidator()
     {
         RuleFor(x => x.Name)

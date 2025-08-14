@@ -12,8 +12,6 @@ public class CreateMedicalNoteCommandHandlerTests
     public async Task ShouldReturnMedicalNoteResponseWhenNoteIsCreatedSuccessfully()
     {
         // GIVEN
-        var repository = Substitute.For<IMedicalNoteRepository>();
-        var petRepository = Substitute.For<IPetRepository>();
         var command = new CreateMedicalNoteCommand
         {
             PetId = 1,
@@ -33,6 +31,8 @@ public class CreateMedicalNoteCommandHandlerTests
             Description = command.Description,
             Created = DateTime.UtcNow
         };
+        var repository = Substitute.For<IMedicalNoteRepository>();
+        var petRepository = Substitute.For<IPetRepository>();
         var handler = new CreateMedicalNoteCommandHandler(repository, petRepository);
         
         petRepository.GetByIdAsync(command.PetId, Arg.Any<CancellationToken>())
@@ -54,26 +54,29 @@ public class CreateMedicalNoteCommandHandlerTests
         result.Description.Should().Be(command.Description);
         result.CreatedAt.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(1));
         
-        await petRepository.Received(1).GetByIdAsync(command.PetId, Arg.Any<CancellationToken>());
-        await repository.Received(1).CreateAsync(
-            Arg.Is<MedicalNote>(n => n.PetId == command.PetId &&
-                                   n.Title == command.Title &&
-                                   n.Description == command.Description),
-            Arg.Any<CancellationToken>());
+        Received.InOrder(() =>
+        {
+            petRepository.Received(1).GetByIdAsync(command.PetId, Arg.Any<CancellationToken>());
+            repository.Received(1).CreateAsync(
+                Arg.Is<MedicalNote>(n => n.PetId == command.PetId &&
+                                         n.Title == command.Title &&
+                                         n.Description == command.Description),
+                Arg.Any<CancellationToken>());
+        });
     }
     
     [Test]
     public async Task ShouldThrowNotFoundExceptionWhenPetDoesNotExist()
     {
         // GIVEN
-        var repository = Substitute.For<IMedicalNoteRepository>();
-        var petRepository = Substitute.For<IPetRepository>();
         var command = new CreateMedicalNoteCommand
         {
             PetId = 99,
             Title = "Test Medical Note",
             Description = "This is a test medical note description"
         };
+        var repository = Substitute.For<IMedicalNoteRepository>();
+        var petRepository = Substitute.For<IPetRepository>();
         var handler = new CreateMedicalNoteCommandHandler(repository, petRepository);
         
         petRepository.GetByIdAsync(command.PetId, Arg.Any<CancellationToken>())
@@ -86,6 +89,6 @@ public class CreateMedicalNoteCommandHandlerTests
         await act.Should().ThrowAsync<NotFoundException>()
             .Where(e => e.Message.Contains(nameof(Pet)) && e.Message.Contains(command.PetId.ToString()));
         await petRepository.Received(1).GetByIdAsync(command.PetId, Arg.Any<CancellationToken>());
-        await repository.DidNotReceive().CreateAsync(Arg.Any<MedicalNote>(), Arg.Any<CancellationToken>());
+        await repository.DidNotReceive().CreateAsync(default);
     }
 }

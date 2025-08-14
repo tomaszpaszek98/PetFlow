@@ -13,9 +13,6 @@ public class UpdateEventCommandHandlerTests
     public async Task ShouldUpdateEventPropertiesAndAssignPetsWhenEventAndPetExists()
     {
         // GIVEN
-        var petRepository = Substitute.For<IPetRepository>();
-        var eventRepository = Substitute.For<IEventRepository>();
-        var logger = Substitute.For<ILogger<UpdateEventCommandHandler>>();
         var petIds = new List<int> { 1, 2 };
         var command = new UpdateEventCommand
         {
@@ -42,6 +39,9 @@ public class UpdateEventCommandHandlerTests
             new() { Id = petIds[0], Name = "Pet1", PhotoUrl = "url1" },
             new() { Id = petIds[1], Name = "Pet2", PhotoUrl = "url2" }
         };
+        var petRepository = Substitute.For<IPetRepository>();
+        var eventRepository = Substitute.For<IEventRepository>();
+        var logger = Substitute.For<ILogger<UpdateEventCommandHandler>>();
         var handler = new UpdateEventCommandHandler(petRepository, eventRepository, logger);
         
         eventRepository.GetByIdAsync(command.Id, Arg.Any<CancellationToken>())
@@ -90,9 +90,6 @@ public class UpdateEventCommandHandlerTests
     public async Task ShouldThrowNotFoundExceptionWhenEventDoesNotExist()
     {
         // GIVEN
-        var petRepository = Substitute.For<IPetRepository>();
-        var eventRepository = Substitute.For<IEventRepository>();
-        var logger = Substitute.For<ILogger<UpdateEventCommandHandler>>();
         var command = new UpdateEventCommand
         {
             Id = 999,
@@ -102,6 +99,9 @@ public class UpdateEventCommandHandlerTests
             Reminder = false,
             PetToAssignIds = new List<int> { 1, 2 }
         };
+        var petRepository = Substitute.For<IPetRepository>();
+        var eventRepository = Substitute.For<IEventRepository>();
+        var logger = Substitute.For<ILogger<UpdateEventCommandHandler>>();
         var handler = new UpdateEventCommandHandler(petRepository, eventRepository, logger);
         
         eventRepository.GetByIdAsync(command.Id, Arg.Any<CancellationToken>())
@@ -111,20 +111,16 @@ public class UpdateEventCommandHandlerTests
         await FluentActions.Invoking(() => handler.Handle(command, CancellationToken.None))
             .Should().ThrowAsync<NotFoundException>()
             .WithMessage($"Event with ID {command.Id} does not exist.");
-            
         await eventRepository.Received(1).GetByIdAsync(command.Id, Arg.Any<CancellationToken>());
-        await eventRepository.DidNotReceive().UpdateAsync(default, default);
-        await petRepository.DidNotReceive().GetByIdsAsync(default, default);
-        await eventRepository.DidNotReceive().AddPetsToEventAsync(default, default);
+        await eventRepository.DidNotReceive().UpdateAsync(default);
+        await petRepository.DidNotReceive().GetByIdsAsync(default);
+        await eventRepository.DidNotReceive().AddPetsToEventAsync(default);
     }
     
     [Test]
     public async Task ShouldClearPetAssignmentsWhenPetToAssignIdsIsNull()
     {
         // GIVEN
-        var petRepository = Substitute.For<IPetRepository>();
-        var eventRepository = Substitute.For<IEventRepository>();
-        var logger = Substitute.For<ILogger<UpdateEventCommandHandler>>();
         var command = new UpdateEventCommand
         {
             Id = 10,
@@ -149,6 +145,9 @@ public class UpdateEventCommandHandlerTests
                 new() { PetId = 2, EventId = 10 }
             }
         };
+        var petRepository = Substitute.For<IPetRepository>();
+        var eventRepository = Substitute.For<IEventRepository>();
+        var logger = Substitute.For<ILogger<UpdateEventCommandHandler>>();
         var handler = new UpdateEventCommandHandler(petRepository, eventRepository, logger);
         
         eventRepository.GetByIdAsync(command.Id, Arg.Any<CancellationToken>())
@@ -170,16 +169,13 @@ public class UpdateEventCommandHandlerTests
             eventRepository.UpdateAsync(Arg.Is<Event>(e => e.Id == command.Id), Arg.Any<CancellationToken>());
             eventRepository.AddPetsToEventAsync(Arg.Is<List<PetEvent>>(list => list.Count == 0), Arg.Any<CancellationToken>());
         });
-        await petRepository.DidNotReceive().GetByIdsAsync(default, default);
+        await petRepository.DidNotReceive().GetByIdsAsync(default);
     }
     
     [Test]
     public async Task ShouldClearPetAssignmentsWhenPetToAssignIdsIsEmpty()
     {
         // GIVEN
-        var petRepository = Substitute.For<IPetRepository>();
-        var eventRepository = Substitute.For<IEventRepository>();
-        var logger = Substitute.For<ILogger<UpdateEventCommandHandler>>();
         var command = new UpdateEventCommand
         {
             Id = 10,
@@ -204,6 +200,9 @@ public class UpdateEventCommandHandlerTests
                 new() { PetId = 2, EventId = 10 }
             }
         };
+        var petRepository = Substitute.For<IPetRepository>();
+        var eventRepository = Substitute.For<IEventRepository>();
+        var logger = Substitute.For<ILogger<UpdateEventCommandHandler>>();
         var handler = new UpdateEventCommandHandler(petRepository, eventRepository, logger);
         
         eventRepository.GetByIdAsync(command.Id, Arg.Any<CancellationToken>())
@@ -225,16 +224,13 @@ public class UpdateEventCommandHandlerTests
             eventRepository.UpdateAsync(Arg.Is<Event>(e => e.Id == command.Id), Arg.Any<CancellationToken>());
             eventRepository.AddPetsToEventAsync(Arg.Is<List<PetEvent>>(list => list.Count == 0), Arg.Any<CancellationToken>());
         });
-        await petRepository.DidNotReceive().GetByIdsAsync(default, default);
+        await petRepository.DidNotReceive().GetByIdsAsync(default);
     }
     
     [Test]
     public async Task ShouldSkipPetAssignmentWhenNoPetsFound()
     {
         // GIVEN
-        var petRepository = Substitute.For<IPetRepository>();
-        var eventRepository = Substitute.For<IEventRepository>();
-        var logger = Substitute.For<ILogger<UpdateEventCommandHandler>>();
         var petIds = new List<int> { 999, 998 };
         var command = new UpdateEventCommand
         {
@@ -256,6 +252,9 @@ public class UpdateEventCommandHandlerTests
             Modified = null,
             PetEvents = new List<PetEvent>()
         };
+        var petRepository = Substitute.For<IPetRepository>();
+        var eventRepository = Substitute.For<IEventRepository>();
+        var logger = Substitute.For<ILogger<UpdateEventCommandHandler>>();
         var handler = new UpdateEventCommandHandler(petRepository, eventRepository, logger);
         
         eventRepository.GetByIdAsync(command.Id, Arg.Any<CancellationToken>())
@@ -277,17 +276,14 @@ public class UpdateEventCommandHandlerTests
             eventRepository.UpdateAsync(Arg.Is<Event>(e => e.Id == command.Id), Arg.Any<CancellationToken>());
             petRepository.GetByIdsAsync(petIds, Arg.Any<CancellationToken>());
         });
-        await eventRepository.DidNotReceive().AddPetsToEventAsync(default, default);
+        await eventRepository.DidNotReceive().AddPetsToEventAsync(default);
     }
     
     [Test]
     public async Task ShouldAssignOnlyFoundPetsWhenListOfPetsToAssignContainsExistingAndNotExistingPets()
     {
         // GIVEN
-        var petRepository = Substitute.For<IPetRepository>();
-        var eventRepository = Substitute.For<IEventRepository>();
-        var logger = Substitute.For<ILogger<UpdateEventCommandHandler>>();
-        var requestedPetIds = new List<int> { 1, 2, 999 }; // 999 nie istnieje
+        var requestedPetIds = new List<int> { 1, 2, 999 }; // 999 not exists
         var existingPetIds = new List<int> { 1, 2 };
         var command = new UpdateEventCommand
         {
@@ -314,6 +310,9 @@ public class UpdateEventCommandHandlerTests
             new() { Id = existingPetIds[0], Name = "Pet1", PhotoUrl = "url1" },
             new() { Id = existingPetIds[1], Name = "Pet2", PhotoUrl = "url2" }
         };
+        var petRepository = Substitute.For<IPetRepository>();
+        var eventRepository = Substitute.For<IEventRepository>();
+        var logger = Substitute.For<ILogger<UpdateEventCommandHandler>>();
         var handler = new UpdateEventCommandHandler(petRepository, eventRepository, logger);
         
         eventRepository.GetByIdAsync(command.Id, Arg.Any<CancellationToken>())

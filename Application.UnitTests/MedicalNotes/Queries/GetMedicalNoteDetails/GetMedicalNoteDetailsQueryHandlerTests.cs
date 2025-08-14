@@ -2,6 +2,7 @@ using Application.Common.Interfaces.Repositories;
 using Application.MedicalNotes.Queries.GetMedicalNoteDetails;
 using Domain.Entities;
 using Domain.Exceptions;
+using Persistance.Repositories;
 
 namespace Application.UnitTests.MedicalNotes.Queries.GetMedicalNoteDetails;
 
@@ -11,7 +12,6 @@ public class GetMedicalNoteDetailsQueryHandlerTests
     public async Task ShouldReturnMedicalNoteDetailsResponseWhenNoteExistsAndBelongsToPet()
     {
         // GIVEN
-        var repository = Substitute.For<IMedicalNoteRepository>();
         var query = new GetMedicalNoteDetailsQuery
         {
             PetId = 1,
@@ -26,9 +26,11 @@ public class GetMedicalNoteDetailsQueryHandlerTests
             Created = DateTime.UtcNow.AddDays(-1),
             Modified = DateTime.UtcNow
         };
-        var handler = new GetMedicalNoteDetailsQueryHandler(repository);
+        var medicalNoteRepository = Substitute.For<IMedicalNoteRepository>();
+        var petRepository = Substitute.For<IPetRepository>();
+        var handler = new GetMedicalNoteDetailsQueryHandler(medicalNoteRepository, petRepository);
         
-        repository.GetByIdAsync(query.MedicalNoteId, Arg.Any<CancellationToken>())
+        medicalNoteRepository.GetByIdAsync(query.MedicalNoteId, Arg.Any<CancellationToken>())
             .Returns(medicalNote);
         
         // WHEN
@@ -41,22 +43,23 @@ public class GetMedicalNoteDetailsQueryHandlerTests
         result.Description.Should().Be(medicalNote.Description);
         result.CreatedAt.Should().Be(medicalNote.Created);
         result.ModifiedAt.Should().Be(medicalNote.Modified.Value);
-        await repository.Received(1).GetByIdAsync(query.MedicalNoteId, Arg.Any<CancellationToken>());
+        await medicalNoteRepository.Received(1).GetByIdAsync(query.MedicalNoteId, Arg.Any<CancellationToken>());
     }
     
     [Test]
     public async Task ShouldThrowNotFoundExceptionWhenMedicalNoteDoesNotExist()
     {
         // GIVEN
-        var repository = Substitute.For<IMedicalNoteRepository>();
         var query = new GetMedicalNoteDetailsQuery
         {
             PetId = 1,
             MedicalNoteId = 99
         };
-        var handler = new GetMedicalNoteDetailsQueryHandler(repository);
+        var medicalNoteRepository = Substitute.For<IMedicalNoteRepository>();
+        var petRepository = Substitute.For<IPetRepository>();
+        var handler = new GetMedicalNoteDetailsQueryHandler(medicalNoteRepository, petRepository);
         
-        repository.GetByIdAsync(query.MedicalNoteId, Arg.Any<CancellationToken>())
+        medicalNoteRepository.GetByIdAsync(query.MedicalNoteId, Arg.Any<CancellationToken>())
             .Returns((MedicalNote)null);
         
         // WHEN
@@ -65,14 +68,13 @@ public class GetMedicalNoteDetailsQueryHandlerTests
         // THEN
         await act.Should().ThrowAsync<NotFoundException>()
             .Where(e => e.Message.Contains(nameof(MedicalNote)) && e.Message.Contains(query.MedicalNoteId.ToString()));
-        await repository.Received(1).GetByIdAsync(query.MedicalNoteId, Arg.Any<CancellationToken>());
+        await medicalNoteRepository.Received(1).GetByIdAsync(query.MedicalNoteId, Arg.Any<CancellationToken>());
     }
     
     [Test]
     public async Task ShouldThrowNotFoundExceptionWhenMedicalNoteDoesNotBelongToPet()
     {
         // GIVEN
-        var repository = Substitute.For<IMedicalNoteRepository>();
         var petId = 1;
         var differentPetId = 999;
         var query = new GetMedicalNoteDetailsQuery
@@ -88,9 +90,11 @@ public class GetMedicalNoteDetailsQueryHandlerTests
             Description = "This is a test medical note description",
             Created = DateTime.UtcNow
         };
-        var handler = new GetMedicalNoteDetailsQueryHandler(repository);
+        var medicalNoteRepository = Substitute.For<IMedicalNoteRepository>();
+        var petRepository = Substitute.For<IPetRepository>();
+        var handler = new GetMedicalNoteDetailsQueryHandler(medicalNoteRepository, petRepository);
         
-        repository.GetByIdAsync(query.MedicalNoteId, Arg.Any<CancellationToken>())
+        medicalNoteRepository.GetByIdAsync(query.MedicalNoteId, Arg.Any<CancellationToken>())
             .Returns(medicalNote);
         
         // WHEN
@@ -99,6 +103,32 @@ public class GetMedicalNoteDetailsQueryHandlerTests
         // THEN
         await act.Should().ThrowAsync<NotFoundException>()
             .Where(e => e.Message.Contains(query.MedicalNoteId.ToString()) && e.Message.Contains(query.PetId.ToString()));
-        await repository.Received(1).GetByIdAsync(query.MedicalNoteId, Arg.Any<CancellationToken>());
+        await medicalNoteRepository.Received(1).GetByIdAsync(query.MedicalNoteId, Arg.Any<CancellationToken>());
+    }
+    
+    [Test]
+    public async Task ShouldThrowNotFoundExceptionWhenPetDoesNotExist()
+    {
+        // GIVEN
+        var query = new GetMedicalNoteDetailsQuery
+        {
+            PetId = 999,
+            MedicalNoteId = 1
+        };
+        var medicalNoteRepository = Substitute.For<IMedicalNoteRepository>();
+        var petRepository = Substitute.For<IPetRepository>();
+        var handler = new GetMedicalNoteDetailsQueryHandler(medicalNoteRepository, petRepository);
+        
+        petRepository.GetByIdAsync(query.PetId, Arg.Any<CancellationToken>())
+            .Returns((Pet)null);
+        
+        // WHEN
+        var act = () => handler.Handle(query, CancellationToken.None);
+        
+        // THEN
+        await act.Should().ThrowAsync<NotFoundException>()
+            .Where(e => e.Message.Contains(nameof(Pet)) && e.Message.Contains(query.PetId.ToString()));
+        await petRepository.Received(1).GetByIdAsync(query.PetId, Arg.Any<CancellationToken>());
+        await medicalNoteRepository.DidNotReceive().GetByIdAsync(default);
     }
 }

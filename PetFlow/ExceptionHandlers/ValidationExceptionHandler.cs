@@ -23,11 +23,7 @@ internal sealed class ValidationExceptionHandler : IExceptionHandler
         {
             return false;
         }
-
-        _logger.LogError(
-            exception,
-            "Exception occurred: {Message}",
-            exception.Message);
+        _logger.LogError(exception, "Exception occurred: {Message}", exception.Message);
 
         httpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
         var context = new ProblemDetailsContext
@@ -36,7 +32,7 @@ internal sealed class ValidationExceptionHandler : IExceptionHandler
             Exception = exception,
             ProblemDetails = new ProblemDetails
             {
-                Title = "Validation Error",
+                Title = "Validation error.",
                 Detail = "One or more validation errors occurred",
                 Status = StatusCodes.Status400BadRequest
             }

@@ -97,4 +97,12 @@ public static class MappingExtensions
             PhotoUrl = pet.PhotoUrl
         };
     }
+
+    public static EventsResponse MapToResponse(this IEnumerable<Event> events)
+    {
+        return new EventsResponse
+        {
+            Items = events.Select(MapToResponseDto).ToList()
+        };
+    }
 }

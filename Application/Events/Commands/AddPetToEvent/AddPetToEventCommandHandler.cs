@@ -26,7 +26,7 @@ public class AddPetToEventCommandHandler : IRequestHandler<AddPetToEventCommand,
         }
         
         await ValidateIfPetExistsAsync(request.PetId, cancellationToken);
-        ValidateIfPetIsNotAssignedToEvent(eventEntity, request.PetId);
+        ValidateIfPetIsAssignedToEvent(eventEntity, request.PetId);
         await AssignPetToEventAsync(request.EventId, request.PetId, cancellationToken);
         
         return CreateResponse(request.EventId, request.PetId);
@@ -41,7 +41,7 @@ public class AddPetToEventCommandHandler : IRequestHandler<AddPetToEventCommand,
         }
     }
     
-    private void ValidateIfPetIsNotAssignedToEvent(Event eventEntity, int petId)
+    private void ValidateIfPetIsAssignedToEvent(Event eventEntity, int petId)
     {
         if (eventEntity.PetEvents.Any(x => x.PetId == petId))
         {

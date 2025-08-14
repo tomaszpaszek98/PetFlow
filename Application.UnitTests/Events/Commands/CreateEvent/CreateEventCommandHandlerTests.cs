@@ -13,9 +13,6 @@ public class CreateEventCommandHandlerTests
     public async Task ShouldCreateEventAssignPetAndReturnResponseWithoutMissingIdsWhenAllPetsExists()
     {
         // GIVEN
-        var petRepository = Substitute.For<IPetRepository>();
-        var eventRepository = Substitute.For<IEventRepository>();
-        var logger = Substitute.For<ILogger<CreateEventCommandHandler>>();
         var petIds = new List<int> { 1, 2 };
         var command = new CreateEventCommand
         {
@@ -44,6 +41,9 @@ public class CreateEventCommandHandlerTests
             new() { Id = pets[0].Id, Name = pets[0].Name, PhotoUrl = pets[0].PhotoUrl },
             new() { Id = pets[1].Id, Name = pets[1].Name, PhotoUrl = pets[1].PhotoUrl } 
         };
+        var petRepository = Substitute.For<IPetRepository>();
+        var eventRepository = Substitute.For<IEventRepository>();
+        var logger = Substitute.For<ILogger<CreateEventCommandHandler>>();
         var handler = new CreateEventCommandHandler(petRepository, eventRepository, logger);
         
         petRepository.GetByIdsAsync(command.PetToAssignIds, Arg.Any<CancellationToken>())
@@ -85,9 +85,6 @@ public class CreateEventCommandHandlerTests
     public async Task ShouldCreateEventAssignExistingPetsAndReturnResponseWithMissingIdsWhenSomePetsDoNotExist()
     {
         // GIVEN
-        var petRepository = Substitute.For<IPetRepository>();
-        var eventRepository = Substitute.For<IEventRepository>();
-        var logger = Substitute.For<ILogger<CreateEventCommandHandler>>();
         var petIds = new List<int> { 1, 2 };
         var missingPetIds = new List<int> { 3 };
         var command = new CreateEventCommand
@@ -117,6 +114,9 @@ public class CreateEventCommandHandlerTests
             new() { Id = pets[0].Id, Name = pets[0].Name, PhotoUrl = pets[0].PhotoUrl },
             new() { Id = pets[1].Id, Name = pets[1].Name, PhotoUrl = pets[1].PhotoUrl } 
         };
+        var petRepository = Substitute.For<IPetRepository>();
+        var eventRepository = Substitute.For<IEventRepository>();
+        var logger = Substitute.For<ILogger<CreateEventCommandHandler>>();
         var handler = new CreateEventCommandHandler(petRepository, eventRepository, logger);
         
         petRepository.GetByIdsAsync(command.PetToAssignIds, Arg.Any<CancellationToken>())
@@ -150,9 +150,6 @@ public class CreateEventCommandHandlerTests
     public async Task ShouldCreateEventWithoutAssignPetsAndReturnResponseWithoutPetIdsWhenNoPetsProvided()
     {
         // GIVEN
-        var petRepository = Substitute.For<IPetRepository>();
-        var eventRepository = Substitute.For<IEventRepository>();
-        var logger = Substitute.For<ILogger<CreateEventCommandHandler>>();
         var command = new CreateEventCommand
         {
             Title = "Test Event",
@@ -171,6 +168,9 @@ public class CreateEventCommandHandlerTests
             Reminder = command.Reminder,
             PetEvents = new List<PetEvent>()
         };
+        var petRepository = Substitute.For<IPetRepository>();
+        var eventRepository = Substitute.For<IEventRepository>();
+        var logger = Substitute.For<ILogger<CreateEventCommandHandler>>();
         var handler = new CreateEventCommandHandler(petRepository, eventRepository, logger);
         
         petRepository.GetByIdsAsync(command.PetToAssignIds, Arg.Any<CancellationToken>())
@@ -192,17 +192,14 @@ public class CreateEventCommandHandlerTests
         await eventRepository.CreateAsync(
             Arg.Is<Event>(e => e.Title == command.Title && e.Description == command.Description), 
             Arg.Any<CancellationToken>());
-        await petRepository.DidNotReceive().GetByIdsAsync(default, default);
-        await eventRepository.DidNotReceive().AddPetsToEventAsync(default, default);
+        await petRepository.DidNotReceive().GetByIdsAsync(default);
+        await eventRepository.DidNotReceive().AddPetsToEventAsync(default);
     }
 
     [Test]
     public async Task ShouldCreateEventAndReturnAllMissingPetIdsWhenAllPetsFromCommandDoesNotExist()
     {
         // GIVEN
-        var petRepository = Substitute.For<IPetRepository>();
-        var eventRepository = Substitute.For<IEventRepository>();
-        var logger = Substitute.For<ILogger<CreateEventCommandHandler>>();
         var petIds = new List<int> { 5, 6, 7 };
         var command = new CreateEventCommand
         {
@@ -222,6 +219,9 @@ public class CreateEventCommandHandlerTests
             Reminder = command.Reminder,
             PetEvents = new List<PetEvent>()
         };
+        var petRepository = Substitute.For<IPetRepository>();
+        var eventRepository = Substitute.For<IEventRepository>();
+        var logger = Substitute.For<ILogger<CreateEventCommandHandler>>();
         var handler = new CreateEventCommandHandler(petRepository, eventRepository, logger);
         
         petRepository.GetByIdsAsync(command.PetToAssignIds, Arg.Any<CancellationToken>())
@@ -246,16 +246,13 @@ public class CreateEventCommandHandlerTests
                 Arg.Any<CancellationToken>());
             petRepository.GetByIdsAsync(command.PetToAssignIds, Arg.Any<CancellationToken>());
         });
-        await eventRepository.DidNotReceive().AddPetsToEventAsync(default, default);
+        await eventRepository.DidNotReceive().AddPetsToEventAsync(default);
     }
 
     [Test]
     public async Task ShouldCreateEventAndReturnResponseWithoutMissingIdsAndAssignedPetsWhenPetToAssignIdsIsNull()
     {
         // GIVEN
-        var petRepository = Substitute.For<IPetRepository>();
-        var eventRepository = Substitute.For<IEventRepository>();
-        var logger = Substitute.For<ILogger<CreateEventCommandHandler>>();
         var command = new CreateEventCommand
         {
             Title = "Test Event",
@@ -273,6 +270,9 @@ public class CreateEventCommandHandlerTests
             Reminder = command.Reminder,
             PetEvents = new List<PetEvent>()
         };
+        var petRepository = Substitute.For<IPetRepository>();
+        var eventRepository = Substitute.For<IEventRepository>();
+        var logger = Substitute.For<ILogger<CreateEventCommandHandler>>();
         var handler = new CreateEventCommandHandler(petRepository, eventRepository, logger);
         
         eventRepository.CreateAsync(Arg.Any<Event>(), Arg.Any<CancellationToken>())
@@ -291,10 +291,10 @@ public class CreateEventCommandHandlerTests
         result.AssignedPets.Should().BeNull();
         result.MissingPetIds.Should().BeNull();
         
-        await petRepository.DidNotReceive().GetByIdsAsync(default, default);
         await eventRepository.Received(1).CreateAsync(
             Arg.Is<Event>(e => e.Title == command.Title && e.Description == command.Description), 
             Arg.Any<CancellationToken>());
-        await eventRepository.DidNotReceive().AddPetsToEventAsync(default, default);
+        await petRepository.DidNotReceive().GetByIdsAsync(default);
+        await eventRepository.DidNotReceive().AddPetsToEventAsync(default);
     }
 }

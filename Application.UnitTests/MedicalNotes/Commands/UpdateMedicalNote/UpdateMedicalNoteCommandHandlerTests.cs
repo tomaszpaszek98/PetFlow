@@ -85,8 +85,8 @@ public class UpdateMedicalNoteCommandHandlerTests
         await act.Should().ThrowAsync<NotFoundException>()
             .Where(e => e.Message.Contains(nameof(Pet)) && e.Message.Contains(command.PetId.ToString()));
         await petRepository.Received(1).GetByIdAsync(command.PetId, Arg.Any<CancellationToken>());
-        await medicalNoteRepository.DidNotReceive().GetByIdAsync(Arg.Any<int>(), Arg.Any<CancellationToken>());
-        await medicalNoteRepository.DidNotReceive().UpdateAsync(Arg.Any<MedicalNote>(), Arg.Any<CancellationToken>());
+        await medicalNoteRepository.DidNotReceive().GetByIdAsync(default);
+        await medicalNoteRepository.DidNotReceive().UpdateAsync(default);
     }
     
     [Test]
@@ -118,7 +118,7 @@ public class UpdateMedicalNoteCommandHandlerTests
             .Where(e => e.Message.Contains(nameof(MedicalNote)) && e.Message.Contains(command.MedicalNoteId.ToString()));
         await petRepository.Received(1).GetByIdAsync(command.PetId, Arg.Any<CancellationToken>());
         await medicalNoteRepository.Received(1).GetByIdAsync(command.MedicalNoteId, Arg.Any<CancellationToken>());
-        await medicalNoteRepository.DidNotReceive().UpdateAsync(Arg.Any<MedicalNote>(), Arg.Any<CancellationToken>());
+        await medicalNoteRepository.DidNotReceive().UpdateAsync(default);
     }
     
     [Test]
@@ -159,6 +159,6 @@ public class UpdateMedicalNoteCommandHandlerTests
             .Where(e => e.Message.Contains(command.MedicalNoteId.ToString()) && e.Message.Contains(command.PetId.ToString()));
         await petRepository.Received(1).GetByIdAsync(command.PetId, Arg.Any<CancellationToken>());
         await medicalNoteRepository.Received(1).GetByIdAsync(command.MedicalNoteId, Arg.Any<CancellationToken>());
-        await medicalNoteRepository.DidNotReceive().UpdateAsync(Arg.Any<MedicalNote>(), Arg.Any<CancellationToken>());
+        await medicalNoteRepository.DidNotReceive().UpdateAsync(default);
     }
 }

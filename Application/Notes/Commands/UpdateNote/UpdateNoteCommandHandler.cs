@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using Application.Common.Interfaces.Repositories;
 using Application.Notes;
 using Domain.Entities;
@@ -20,11 +21,7 @@ public class UpdateNoteCommandHandler : IRequestHandler<UpdateNoteCommand, Updat
 
     public async Task<UpdateNoteResponse> Handle(UpdateNoteCommand request, CancellationToken cancellationToken)
     {
-        var pet = await _petRepository.GetByIdAsync(request.PetId, cancellationToken);
-        if (pet is null)
-        {
-            throw new NotFoundException(nameof(Pet), request.PetId);
-        }
+        await ValidateIfPetExistsAsync(request.PetId, cancellationToken);
         
         var note = await _noteRepository.GetByIdAsync(request.NoteId, cancellationToken);
         if (note is null)
@@ -41,6 +38,15 @@ public class UpdateNoteCommandHandler : IRequestHandler<UpdateNoteCommand, Updat
         await _noteRepository.UpdateAsync(note, cancellationToken);
         
         return note.MapToUpdateResponse();
+    }
+    
+    private async Task ValidateIfPetExistsAsync(int petId, CancellationToken cancellationToken)
+    {
+        var pet = await _petRepository.GetByIdAsync(petId, cancellationToken);
+        if (pet == null)
+        {
+            throw new NotFoundException(nameof(Pet), petId);
+        }
     }
     
     private static void UpdateNoteProperties(Note note, UpdateNoteCommand request)

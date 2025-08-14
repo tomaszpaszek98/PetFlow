@@ -59,8 +59,8 @@ public class DeletePetFromEventCommandHandlerTests
         await act.Should().ThrowAsync<NotFoundException>()
             .Where(e => e.Message.Contains(nameof(Event)) && e.Message.Contains(command.EventId.ToString()));
         await eventRepository.Received(1).GetByIdAsync(command.EventId, Arg.Any<CancellationToken>());
-        await petRepository.DidNotReceive().GetByIdAsync(Arg.Any<int>(), Arg.Any<CancellationToken>());
-        await eventRepository.DidNotReceive().RemovePetFromEventAsync(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<CancellationToken>());
+        await petRepository.DidNotReceive().GetByIdAsync(default);
+        await eventRepository.DidNotReceive().RemovePetFromEventAsync(default, default);
     }
     
     [Test]
@@ -89,7 +89,7 @@ public class DeletePetFromEventCommandHandlerTests
             .Where(e => e.Message.Contains(nameof(Pet)) && e.Message.Contains(command.PetId.ToString()));
         await eventRepository.Received(1).GetByIdAsync(command.EventId, Arg.Any<CancellationToken>());
         await petRepository.Received(1).GetByIdAsync(command.PetId, Arg.Any<CancellationToken>());
-        await eventRepository.DidNotReceive().RemovePetFromEventAsync(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<CancellationToken>());
+        await eventRepository.DidNotReceive().RemovePetFromEventAsync(default, default);
     }
     
     [Test]
@@ -118,8 +118,11 @@ public class DeletePetFromEventCommandHandlerTests
         // THEN
         await act.Should().ThrowAsync<NotFoundException>()
             .Where(e => e.Message.Contains(command.PetId.ToString()) && e.Message.Contains(command.EventId.ToString()));
-        await eventRepository.Received(1).GetByIdAsync(command.EventId, Arg.Any<CancellationToken>());
-        await petRepository.Received(1).GetByIdAsync(command.PetId, Arg.Any<CancellationToken>());
-        await eventRepository.Received(1).RemovePetFromEventAsync(command.EventId, command.PetId, Arg.Any<CancellationToken>());
+        Received.InOrder(() =>
+        {
+            eventRepository.Received(1).GetByIdAsync(command.EventId, Arg.Any<CancellationToken>());
+            petRepository.Received(1).GetByIdAsync(command.PetId, Arg.Any<CancellationToken>());
+            eventRepository.Received(1).RemovePetFromEventAsync(command.EventId, command.PetId, Arg.Any<CancellationToken>());
+        });
     }
 }

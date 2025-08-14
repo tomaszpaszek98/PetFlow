@@ -67,6 +67,26 @@ public class CreateEventCommandValidatorTests
     }
 
     [Test]
+    public void ShouldHaveValidationErrorWhenDescriptionIsEmpty()
+    {
+        // GIVEN
+        var validator = new CreateEventCommandValidator();
+        var command = new CreateEventCommand
+        {
+            Title = "Valid Title",
+            Description = string.Empty,
+            DateOfEvent = DateTime.Today.AddDays(1)
+        };
+
+        // WHEN
+        var result = validator.TestValidate(command);
+
+        // THEN
+        result.ShouldHaveValidationErrorFor(x => x.Description)
+            .WithErrorMessage("Event description is required.");
+    }
+
+    [Test]
     public void ShouldHaveValidationErrorWhenDescriptionExceedsMaxLength()
     {
         // GIVEN

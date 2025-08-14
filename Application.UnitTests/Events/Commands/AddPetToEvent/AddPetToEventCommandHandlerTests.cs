@@ -12,8 +12,6 @@ public class AddPetToEventCommandHandlerTests
     public async Task ShouldAddPetToEventAndReturnResponseWhenEventAndPetExistAndPetNotAssigned()
     {
         // GIVEN
-        var eventRepository = Substitute.For<IEventRepository>();
-        var petRepository = Substitute.For<IPetRepository>();
         var eventId = 1;
         var petId = 2;
         var command = new AddPetToEventCommand
@@ -28,6 +26,8 @@ public class AddPetToEventCommandHandlerTests
             PetEvents = new List<PetEvent>()
         };
         var pet = new Pet { Id = petId, Name = "Test Pet" };
+        var eventRepository = Substitute.For<IEventRepository>();
+        var petRepository = Substitute.For<IPetRepository>();
         var handler = new AddPetToEventCommandHandler(eventRepository, petRepository);
         
         eventRepository.GetByIdAsync(eventId, Arg.Any<CancellationToken>())
@@ -62,8 +62,6 @@ public class AddPetToEventCommandHandlerTests
     public async Task ShouldThrowNotFoundExceptionWhenEventDoesNotExist()
     {
         // GIVEN
-        var eventRepository = Substitute.For<IEventRepository>();
-        var petRepository = Substitute.For<IPetRepository>();
         var eventId = 1;
         var petId = 2;
         var command = new AddPetToEventCommand
@@ -71,6 +69,8 @@ public class AddPetToEventCommandHandlerTests
             EventId = eventId,
             PetId = petId
         };
+        var eventRepository = Substitute.For<IEventRepository>();
+        var petRepository = Substitute.For<IPetRepository>();
         var handler = new AddPetToEventCommandHandler(eventRepository, petRepository);
         
         eventRepository.GetByIdAsync(eventId, Arg.Any<CancellationToken>())
@@ -84,17 +84,14 @@ public class AddPetToEventCommandHandlerTests
             .Where(e => e.Message.Contains(eventId.ToString()) && e.Message.Contains(nameof(Event)));
         
         await eventRepository.Received(1).GetByIdAsync(eventId, Arg.Any<CancellationToken>());
-        await petRepository.DidNotReceive().GetByIdAsync(Arg.Any<int>(), Arg.Any<CancellationToken>());
-        await eventRepository.DidNotReceive().AddPetsToEventAsync(
-            Arg.Any<IList<PetEvent>>(), Arg.Any<CancellationToken>());
+        await petRepository.DidNotReceive().GetByIdAsync(default);
+        await eventRepository.DidNotReceive().AddPetsToEventAsync(default);
     }
     
     [Test]
     public async Task ShouldThrowNotFoundExceptionWhenPetDoesNotExist()
     {
         // GIVEN
-        var eventRepository = Substitute.For<IEventRepository>();
-        var petRepository = Substitute.For<IPetRepository>();
         var eventId = 1;
         var petId = 2;
         var command = new AddPetToEventCommand
@@ -108,6 +105,8 @@ public class AddPetToEventCommandHandlerTests
             Title = "Test Event",
             PetEvents = new List<PetEvent>()
         };
+        var eventRepository = Substitute.For<IEventRepository>();
+        var petRepository = Substitute.For<IPetRepository>();
         var handler = new AddPetToEventCommandHandler(eventRepository, petRepository);
         
         eventRepository.GetByIdAsync(eventId, Arg.Any<CancellationToken>())
@@ -122,18 +121,18 @@ public class AddPetToEventCommandHandlerTests
         await act.Should().ThrowAsync<NotFoundException>()
             .Where(e => e.Message.Contains(petId.ToString()) && e.Message.Contains(nameof(Pet)));
         
-        await eventRepository.Received(1).GetByIdAsync(eventId, Arg.Any<CancellationToken>());
-        await petRepository.Received(1).GetByIdAsync(petId, Arg.Any<CancellationToken>());
-        await eventRepository.DidNotReceive().AddPetsToEventAsync(
-            Arg.Any<IList<PetEvent>>(), Arg.Any<CancellationToken>());
+        Received.InOrder(() =>
+        {
+            eventRepository.Received(1).GetByIdAsync(eventId, Arg.Any<CancellationToken>());
+            petRepository.Received(1).GetByIdAsync(petId, Arg.Any<CancellationToken>());
+        });
+        await eventRepository.DidNotReceive().AddPetsToEventAsync(default);
     }
     
     [Test]
     public async Task ShouldThrowConflictingOperationExceptionWhenPetAlreadyAssignedToEvent()
     {
         // GIVEN
-        var eventRepository = Substitute.For<IEventRepository>();
-        var petRepository = Substitute.For<IPetRepository>();
         var eventId = 1;
         var petId = 2;
         var command = new AddPetToEventCommand
@@ -149,6 +148,8 @@ public class AddPetToEventCommandHandlerTests
             PetEvents = new List<PetEvent> { petEvent }
         };
         var pet = new Pet { Id = petId, Name = "Test Pet" };
+        var eventRepository = Substitute.For<IEventRepository>();
+        var petRepository = Substitute.For<IPetRepository>();
         var handler = new AddPetToEventCommandHandler(eventRepository, petRepository);
         
         eventRepository.GetByIdAsync(eventId, Arg.Any<CancellationToken>())
@@ -168,8 +169,7 @@ public class AddPetToEventCommandHandlerTests
             eventRepository.Received(1).GetByIdAsync(eventId, Arg.Any<CancellationToken>());
             petRepository.Received(1).GetByIdAsync(petId, Arg.Any<CancellationToken>());
         });
-        await eventRepository.DidNotReceive().AddPetsToEventAsync(
-            Arg.Any<IList<PetEvent>>(), Arg.Any<CancellationToken>());
+        await eventRepository.DidNotReceive().AddPetsToEventAsync(default);
     }
 }
 

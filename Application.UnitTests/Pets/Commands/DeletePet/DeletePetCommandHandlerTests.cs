@@ -10,8 +10,8 @@ public class DeletePetCommandHandlerTests
     public async Task ShouldCompleteSuccessfullyWhenPetIsDeleted()
     {
         // GIVEN
-        var repository = Substitute.For<IPetRepository>();
         var command = new DeletePetCommand { PetId = 1 };
+        var repository = Substitute.For<IPetRepository>();
         var handler = new DeletePetCommandHandler(repository);
         
         repository.DeleteByIdAsync(command.PetId, Arg.Any<CancellationToken>()).Returns(true);
@@ -28,8 +28,8 @@ public class DeletePetCommandHandlerTests
     public async Task ShouldThrowEntityNotFoundExceptionWhenPetDoesNotExist()
     {
         // GIVEN
-        var repository = Substitute.For<IPetRepository>();
         var command = new DeletePetCommand { PetId = 99 };
+        var repository = Substitute.For<IPetRepository>();
         var handler = new DeletePetCommandHandler(repository);
 
         repository.DeleteByIdAsync(command.PetId, Arg.Any<CancellationToken>()).Returns(false);

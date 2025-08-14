@@ -12,7 +12,6 @@ public class UpdatePetCommandHandlerTests
     public async Task ShouldReturnPetResponseWhenPetIsUpdatedSuccessfully()
     {
         // GIVEN
-        var repository = Substitute.For<IPetRepository>();
         var command = new UpdatePetCommand
         {
             Id = 1,
@@ -29,6 +28,7 @@ public class UpdatePetCommandHandlerTests
             Breed = "OldBreed",
             DateOfBirth = new DateTime(2018, 1, 1)
         };
+        var repository = Substitute.For<IPetRepository>();
         var handler = new UpdatePetCommandHandler(repository);
 
         repository.GetByIdAsync(command.Id, Arg.Any<CancellationToken>())
@@ -69,7 +69,6 @@ public class UpdatePetCommandHandlerTests
     public async Task ShouldThrowEntityNotFoundExceptionWhenPetDoesNotExist()
     {
         // GIVEN
-        var repository = Substitute.For<IPetRepository>();
         var command = new UpdatePetCommand
         {
             Id = 99,
@@ -78,6 +77,7 @@ public class UpdatePetCommandHandlerTests
             Breed = "Chichuahua",
             DateOfBirth = new DateTime(2019, 5, 5)
         };
+        var repository = Substitute.For<IPetRepository>();
         var handler = new UpdatePetCommandHandler(repository);
         repository.GetByIdAsync(command.Id, Arg.Any<CancellationToken>())
             .Returns((Pet)null);
@@ -88,6 +88,6 @@ public class UpdatePetCommandHandlerTests
         // THEN
         await act.Should().ThrowAsync<NotFoundException>();
         await repository.Received(1).GetByIdAsync(command.Id, Arg.Any<CancellationToken>());
-        await repository.DidNotReceive().UpdateAsync(default, default);
+        await repository.DidNotReceive().UpdateAsync(default);
     }
 }

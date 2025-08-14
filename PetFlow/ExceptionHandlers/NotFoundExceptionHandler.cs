@@ -23,10 +23,7 @@ internal sealed class NotFoundExceptionHandler : IExceptionHandler
         {
             return false;
         }
-        _logger.LogError(
-            notFoundException,
-            "Exception occurred: {Message}",
-            notFoundException.Message);
+        _logger.LogError(notFoundException, "Exception occurred: {Message}", notFoundException.Message);
 
         httpContext.Response.StatusCode = StatusCodes.Status404NotFound;
         

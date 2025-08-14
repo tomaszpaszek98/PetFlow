@@ -106,8 +106,8 @@ public class UpdateNoteCommandHandlerTests
         await act.Should().ThrowAsync<NotFoundException>()
             .Where(e => e.Message.Contains(nameof(Pet)) && e.Message.Contains(request.PetId.ToString()));
         await petRepository.Received(1).GetByIdAsync(request.PetId, Arg.Any<CancellationToken>());
-        await noteRepository.DidNotReceive().GetByIdAsync(Arg.Any<int>(), Arg.Any<CancellationToken>());
-        await noteRepository.DidNotReceive().UpdateAsync(Arg.Any<Note>(), Arg.Any<CancellationToken>());
+        await noteRepository.DidNotReceive().GetByIdAsync(default);
+        await noteRepository.DidNotReceive().UpdateAsync(default);
     }
     
     [Test]
@@ -146,7 +146,7 @@ public class UpdateNoteCommandHandlerTests
             petRepository.Received(1).GetByIdAsync(request.PetId, Arg.Any<CancellationToken>());
             noteRepository.Received(1).GetByIdAsync(request.NoteId, Arg.Any<CancellationToken>());
         }); 
-        await noteRepository.DidNotReceive().UpdateAsync(Arg.Any<Note>(), Arg.Any<CancellationToken>());
+        await noteRepository.DidNotReceive().UpdateAsync(default);
     }
     
     [Test]
@@ -160,7 +160,7 @@ public class UpdateNoteCommandHandlerTests
             PetId = petId,
             NoteId = 1,
             Content = "Updated Note Content",
-            Type = Domain.Enums.NoteType.General
+            Type = NoteType.General
         };
         var pet = new Pet
         {
@@ -199,6 +199,6 @@ public class UpdateNoteCommandHandlerTests
             petRepository.Received(1).GetByIdAsync(request.PetId, Arg.Any<CancellationToken>());
             noteRepository.Received(1).GetByIdAsync(request.NoteId, Arg.Any<CancellationToken>());
         });
-        await noteRepository.DidNotReceive().UpdateAsync(Arg.Any<Note>(), Arg.Any<CancellationToken>());
+        await noteRepository.DidNotReceive().UpdateAsync(default);
     }
 }

@@ -7,17 +7,23 @@ public class CreateEventCommandValidator : AbstractValidator<CreateEventCommand>
     public CreateEventCommandValidator()
     {
         RuleFor(x => x.Title)
-            .NotEmpty().WithMessage("Event title is required.")
+            .NotEmpty()
+            .WithMessage("Event title is required.")
             .MaximumLength(EventValidatorsConstants.MaxTitleLength)
             .WithMessage($"Event title must not exceed {EventValidatorsConstants.MaxTitleLength} characters.");
         RuleFor(x => x.Description)
+            .NotEmpty()
+            .WithMessage("Event description is required.")
             .MaximumLength(EventValidatorsConstants.MaxDescriptionLength)
             .WithMessage($"Event description must not exceed {EventValidatorsConstants.MaxDescriptionLength} characters.");
         RuleFor(x => x.DateOfEvent)
-            .GreaterThanOrEqualTo(DateTime.Today).WithMessage("Event date must be today or in the future.");
+            .GreaterThanOrEqualTo(DateTime.Today)
+            .WithMessage("Event date must be today or in the future.");
         RuleFor(x => x.PetToAssignIds)
-            .Must(AllIdsGreaterThanZero).WithMessage("All PetToAssignIds must be greater than zero.")
-            .Must(NoDuplicateIds).WithMessage("PetToAssignIds cannot contain duplicates.");
+            .Must(AllIdsGreaterThanZero)
+            .WithMessage("All PetToAssignIds must be greater than zero.")
+            .Must(NoDuplicateIds)
+            .WithMessage("PetToAssignIds cannot contain duplicates.");
     }
 
     private bool AllIdsGreaterThanZero(IEnumerable<int>? ids)

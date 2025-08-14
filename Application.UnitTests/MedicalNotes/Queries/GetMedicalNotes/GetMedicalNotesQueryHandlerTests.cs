@@ -36,8 +36,11 @@ public class GetMedicalNotesQueryHandlerTests
         result.Should().NotBeNull();
         result.MedicalNotes.Should().NotBeNull();
         result.MedicalNotes.Should().HaveCount(2);
-        await petRepository.Received(1).GetByIdAsync(query.PetId, Arg.Any<CancellationToken>());
-        await medicalNoteRepository.Received(1).GetAllByPetIdAsync(query.PetId, Arg.Any<CancellationToken>());
+        Received.InOrder(() =>
+        {
+            petRepository.Received(1).GetByIdAsync(query.PetId, Arg.Any<CancellationToken>());
+            medicalNoteRepository.Received(1).GetAllByPetIdAsync(query.PetId, Arg.Any<CancellationToken>()); 
+        });
     }
     
     [Test]
@@ -58,7 +61,6 @@ public class GetMedicalNotesQueryHandlerTests
         // THEN
         await act.Should().ThrowAsync<NotFoundException>()
             .Where(e => e.Message.Contains(nameof(Pet)) && e.Message.Contains(query.PetId.ToString()));
-        
         await petRepository.Received(1).GetByIdAsync(query.PetId, Arg.Any<CancellationToken>());
         await medicalNoteRepository.DidNotReceive().GetAllByPetIdAsync(default);
     }
@@ -86,7 +88,10 @@ public class GetMedicalNotesQueryHandlerTests
         result.Should().NotBeNull();
         result.MedicalNotes.Should().NotBeNull();
         result.MedicalNotes.Should().BeEmpty();
-        await petRepository.Received(1).GetByIdAsync(query.PetId, Arg.Any<CancellationToken>());
-        await medicalNoteRepository.Received(1).GetAllByPetIdAsync(query.PetId, Arg.Any<CancellationToken>());
+        Received.InOrder(() =>
+        {
+            petRepository.Received(1).GetByIdAsync(query.PetId, Arg.Any<CancellationToken>());
+            medicalNoteRepository.Received(1).GetAllByPetIdAsync(query.PetId, Arg.Any<CancellationToken>());
+        });
     }
 }

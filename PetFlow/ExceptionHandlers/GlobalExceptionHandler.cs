@@ -18,10 +18,7 @@ internal sealed class GlobalExceptionHandler : IExceptionHandler
         Exception exception,
         CancellationToken cancellationToken)
     {
-        _logger.LogError(
-            exception,
-            "Exception occurred: {Message}",
-            exception.Message);
+        _logger.LogError(exception, "Exception occurred: {Message}", exception.Message);
 
         httpContext.Response.StatusCode = StatusCodes.Status500InternalServerError;
         
@@ -31,7 +28,7 @@ internal sealed class GlobalExceptionHandler : IExceptionHandler
             Exception = exception,
             ProblemDetails = new ProblemDetails
             {
-                Title = "Internal Server Error",
+                Title = "Internal server error.",
                 Detail = "Unexpected error occurred while processing request.",
                 Status = StatusCodes.Status500InternalServerError
             }

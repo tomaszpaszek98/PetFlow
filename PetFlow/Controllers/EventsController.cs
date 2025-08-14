@@ -15,58 +15,65 @@ namespace PetFlow.Controllers;
 public class EventsController : BaseController
 {
     [HttpPost(ApiEndpoints.Events.Create)]
-    public async Task<IActionResult> Create([FromBody] CreateEventCommand command)
+    public async Task<IActionResult> Create([FromBody] CreateEventCommand command, CancellationToken cancellationToken)
     {
-        var result = await Mediator.Send(command);
+        var result = await Mediator.Send(command, cancellationToken);
         
         return CreatedAtAction(nameof(Get), new { id = result.Id }, result);
     }
 
     [HttpGet(ApiEndpoints.Events.Get)]
-    public async Task<IActionResult> Get([FromRoute] int id)
+    public async Task<IActionResult> Get([FromRoute] int id, CancellationToken cancellationToken)
     {
-        var result = await Mediator.Send(new GetEventDetailsQuery { EventId = id });
+        var query = new GetEventDetailsQuery { EventId = id };
+        var result = await Mediator.Send(query, cancellationToken);
         
         return Ok(result);
     } 
 
     [HttpGet(ApiEndpoints.Events.GetAll)]
-    public async Task<IActionResult> GetAll()
+    public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
     {
-        var result = await Mediator.Send(new GetEventsQuery());
+        var result = await Mediator.Send(new GetEventsQuery(), cancellationToken);
 
         return Ok(result);
     }
 
     [HttpPut(ApiEndpoints.Events.Update)]
-    public async Task<IActionResult> Update([FromRoute] int id, [FromBody] UpdateEventRequest request)
+    public async Task<IActionResult> Update([FromRoute] int id,
+        [FromBody] UpdateEventRequest request, CancellationToken cancellationToken)
     {
         var command = request.MapToCommand(id);
-        var result = await Mediator.Send(command);
+        var result = await Mediator.Send(command, cancellationToken);
         
         return Ok(result);
     }
 
     [HttpDelete(ApiEndpoints.Events.Delete)]
-    public async Task<IActionResult> Delete([FromRoute] int id)
+    public async Task<IActionResult> Delete([FromRoute] int id, CancellationToken cancellationToken)
     {
-        await Mediator.Send(new DeleteEventCommand { EventId = id });
+        var command = new DeleteEventCommand { EventId = id };
+        await Mediator.Send(command, cancellationToken);
 
         return NoContent();
     }
     
     [HttpPost(ApiEndpoints.Events.Pets.Add)]
-    public async Task<IActionResult> AddPet([FromBody] AddPetToEventCommand command)
+    public async Task<IActionResult> AddPet([FromBody] AddPetToEventCommand command,
+        CancellationToken cancellationToken)
     {
-        var result = await Mediator.Send(command);
+        var result = await Mediator.Send(command, cancellationToken);
         
         return CreatedAtAction(nameof(Get), new { Id = result.EventId });
     }
 
     [HttpDelete(ApiEndpoints.Events.Pets.Delete)]
-    public async Task<IActionResult> DeletePet([FromRoute] int eventId, [FromRoute] int petId)
+    public async Task<IActionResult> DeletePet([FromRoute] int eventId, [FromRoute] int petId,
+        CancellationToken cancellationToken)
     {
-        await Mediator.Send(new DeletePetFromEventCommand { EventId = eventId, PetId = petId });
+        var command = new DeletePetFromEventCommand { EventId = eventId, PetId = petId };
+        await Mediator.Send(command, cancellationToken);
+        
         return NoContent();
     }
 }

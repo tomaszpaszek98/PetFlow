@@ -34,9 +34,9 @@ public class UpdateEventCommandHandler : IRequestHandler<UpdateEventCommand, Upd
         UpdateEventProperties(existingEvent, request);
         await _eventRepository.UpdateAsync(existingEvent, cancellationToken);
         
-        var petsToAssign = await HandlePetAssignments(request, existingEvent.Id, cancellationToken);
+        var assignedPets = await HandlePetAssignments(request, existingEvent.Id, cancellationToken);
         
-        return existingEvent.MapToUpdateResponse(petsToAssign);
+        return existingEvent.MapToUpdateResponse(assignedPets);
     }
     
     private static void UpdateEventProperties(Event eventEntity, UpdateEventCommand request)

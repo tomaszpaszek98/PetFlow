@@ -90,7 +90,7 @@ public class CreateMedicalNoteCommandValidatorTests
         var validator = new CreateMedicalNoteCommandValidator();
         var command = new CreateMedicalNoteCommand
         {
-            Title = new string('A', 101), // 101 znaków przekracza limit 100
+            Title = new string('A', 101),
             Description = "Valid Description"
         };
 
@@ -129,7 +129,7 @@ public class CreateMedicalNoteCommandValidatorTests
         var command = new CreateMedicalNoteCommand
         {
             Title = "Valid Title",
-            Description = new string('A', 2001) // 2001 znaków przekracza limit 2000
+            Description = new string('A', 2001)
         };
 
         // WHEN
