@@ -7,26 +7,27 @@ namespace Application.MedicalNotes.Commands.DeleteMedicalNote;
 
 public class DeleteMedicalNoteCommandHandler : IRequestHandler<DeleteMedicalNoteCommand>
 {
-    private readonly IMedicalNoteRepository _repository;
+    private readonly IMedicalNoteRepository _medicalNoteRepository;
+    private readonly IPetRepository _petRepository;
 
-    public DeleteMedicalNoteCommandHandler(IMedicalNoteRepository repository)
+    public DeleteMedicalNoteCommandHandler(IMedicalNoteRepository medicalNoteRepository, IPetRepository petRepository)
     {
-        _repository = repository;
+        _medicalNoteRepository = medicalNoteRepository;
+        _petRepository = petRepository;
     }
 
     public async Task Handle(DeleteMedicalNoteCommand command, CancellationToken cancellationToken)
     {
-        var medicalNote = await _repository.GetByIdAsync(command.MedicalNoteId, cancellationToken);
-        if (medicalNote == null)
+        var petExists = await _petRepository.ExistsAsync(command.PetId, cancellationToken);
+        if (!petExists)
+        {
+            throw new NotFoundException(nameof(Pet), command.PetId);
+        }
+
+        var isDeleted = await _medicalNoteRepository.DeleteByIdAsync(command.MedicalNoteId, command.PetId, cancellationToken);
+        if (!isDeleted)
         {
             throw new NotFoundException(nameof(MedicalNote), command.MedicalNoteId);
         }
-        
-        if (medicalNote.PetId != command.PetId)
-        {
-            throw new NotFoundException($"Medical note with ID {command.MedicalNoteId} does not belong to pet with ID {command.PetId}");
-        }
-        
-        await _repository.DeleteByIdAsync(command.MedicalNoteId, cancellationToken);
     }
 }

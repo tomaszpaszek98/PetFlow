@@ -1,3 +1,4 @@
+using Domain.Constants;
 using Domain.Enums;
 using FluentValidation;
 
@@ -18,8 +19,8 @@ public class UpdateNoteCommandValidator : AbstractValidator<UpdateNoteCommand>
         RuleFor(x => x.Content)
             .NotEmpty()
             .WithMessage("Content is required.")
-            .MaximumLength(NoteValidatorsConstants.MaxContentLength)
-            .WithMessage($"Content must not exceed {NoteValidatorsConstants.MaxContentLength} characters.");
+            .MaximumLength(EntityConstants.Note.MaxContentLength)
+            .WithMessage($"Content must not exceed {EntityConstants.Note.MaxContentLength} characters.");
             
         RuleFor(x => x.Type)
             .IsInEnum()

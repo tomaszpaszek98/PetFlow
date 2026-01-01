@@ -1,4 +1,5 @@
 using Application.MedicalNotes.Commands;
+using Domain.Constants;
 using FluentValidation;
 
 namespace Application.MedicalNotes.Commands.UpdateMedicalNote;
@@ -18,13 +19,13 @@ public class UpdateMedicalNoteCommandValidator : AbstractValidator<UpdateMedical
         RuleFor(x => x.Title)
             .NotEmpty()
             .WithMessage("Title is required.")
-            .MaximumLength(MedicalNoteValidatorsConstants.MaxTitleLength)
-            .WithMessage($"Title must not exceed {MedicalNoteValidatorsConstants.MaxTitleLength} characters.");
+            .MaximumLength(EntityConstants.MedicalNote.MaxTitleLength)
+            .WithMessage($"Title must not exceed {EntityConstants.MedicalNote.MaxTitleLength} characters.");
             
         RuleFor(x => x.Description)
             .NotEmpty()
             .WithMessage("Description is required.")
-            .MaximumLength(MedicalNoteValidatorsConstants.MaxDescriptionLength)
-            .WithMessage($"Description must not exceed {MedicalNoteValidatorsConstants.MaxDescriptionLength} characters.");
+            .MaximumLength(EntityConstants.MedicalNote.MaxDescriptionLength)
+            .WithMessage($"Description must not exceed {EntityConstants.MedicalNote.MaxDescriptionLength} characters.");
     }
 }

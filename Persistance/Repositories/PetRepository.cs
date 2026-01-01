@@ -1,78 +1,105 @@
+using Application.Common.Interfaces.Repositories;
 using Domain.Entities;
-using Persistance.Repositories;
+using Microsoft.EntityFrameworkCore;
 
-namespace PetFlow.Persistance.Repositories;
+namespace PetFlow.Persistence.Repositories;
 
 public class PetRepository : IPetRepository
 {
-    private readonly List<Pet> _pets = new();
+    private readonly PetFlowFlowDbContext _dbContext;
 
-    public Task<Pet> CreateAsync(Pet pet, CancellationToken cancellationToken = default)
+    public PetRepository(PetFlowFlowDbContext dbContext)
     {
-        cancellationToken.ThrowIfCancellationRequested();
-        _pets.Add(pet);
-        return Task.FromResult(pet);
+        _dbContext = dbContext;
     }
 
-    public Task<Pet?> GetByIdAsync(int id, CancellationToken cancellationToken = default)
+    public async Task<Pet> CreateAsync(Pet pet, CancellationToken cancellationToken = default)
     {
-        cancellationToken.ThrowIfCancellationRequested();
-        var pet = _pets.SingleOrDefault(x => x.Id == id);
+        await _dbContext.Pets.AddAsync(pet, cancellationToken);
+        await _dbContext.SaveChangesAsync(cancellationToken);
         
-        return Task.FromResult(pet);
+        return pet;
     }
 
-    public Task<IEnumerable<Pet>> GetAllAsync(CancellationToken cancellationToken = default)
+    public async Task<Pet?> GetByIdAsync(int id, CancellationToken cancellationToken = default)
     {
-        cancellationToken.ThrowIfCancellationRequested();
-        
-        return Task.FromResult(_pets.AsEnumerable());
+        return await _dbContext.Pets
+            .AsNoTracking()
+            .FirstOrDefaultAsync(p => p.Id == id, cancellationToken);
     }
 
-    public Task UpdateAsync(Pet pet, CancellationToken cancellationToken = default)
+    public async Task<IList<Pet>> GetAllAsync(CancellationToken cancellationToken = default)
     {
-        cancellationToken.ThrowIfCancellationRequested();
-        var petIndex = _pets.FindIndex(x => x.Id == pet.Id);
-        if (petIndex == -1)
-        {
-            throw new Exception($"Pet with id {pet.Id} not found");
-        }
-        _pets[petIndex] = pet;
-        
-        return Task.CompletedTask;
+        return await _dbContext.Pets
+            .AsNoTracking()
+            .ToListAsync(cancellationToken);
     }
 
-    public Task<bool> DeleteByIdAsync(int id, CancellationToken cancellationToken = default)
+    public async Task UpdateAsync(Pet pet, CancellationToken cancellationToken = default)
     {
-        cancellationToken.ThrowIfCancellationRequested();
-        var removedCount = _pets.RemoveAll(x => x.Id == id);
-        
-        return Task.FromResult(removedCount > 0);
-    }
-    
-
-    public Task<Event?> GetUpcomingEventForPetAsync(int petId, CancellationToken cancellationToken = default)
-    {
-        cancellationToken.ThrowIfCancellationRequested();
-        var pet = _pets.SingleOrDefault(x => x.Id == petId);
-        if (pet == null || pet.PetEvents == null)
-            return Task.FromResult<Event?>(null);
-        var now = DateTime.Now;
-        var upcomingEvent = pet.PetEvents
-            .Select(pe => pe.Event)
-            .Where(e => e != null && e.DateOfEvent > now)
-            .OrderBy(e => e.DateOfEvent)
-            .FirstOrDefault();
-        
-        return Task.FromResult(upcomingEvent);
+        _dbContext.Pets.Update(pet);
+        await _dbContext.SaveChangesAsync(cancellationToken);
     }
 
-    public Task<IEnumerable<Pet>> GetByIdsAsync(IEnumerable<int> ids, CancellationToken cancellationToken = default)
+    public async Task<bool> DeleteByIdAsync(int id, CancellationToken cancellationToken = default)
     {
-        cancellationToken.ThrowIfCancellationRequested();
-        var idSet = ids.ToHashSet();
-        var pets = _pets.Where(x => idSet.Contains(x.Id));
+        var removed = await _dbContext.Pets
+            .Where(p => p.Id == id)
+            .ExecuteDeleteAsync(cancellationToken);
+
+        return removed > 0;
+    }
+
+    public async Task<bool> ExistsAsync(int id, CancellationToken cancellationToken = default)
+    {
+        return await _dbContext.Pets
+            .AsNoTracking()
+            .AnyAsync(p => p.Id == id, cancellationToken);
+    }
+
+    public async Task<IList<Pet>> GetByIdsAsync(IEnumerable<int> ids, CancellationToken cancellationToken = default)
+    {
+        var idList = ids.ToHashSet();
         
-        return Task.FromResult(pets);
+        if (!idList.Any())
+            return [];
+        
+        return await _dbContext.Pets
+            .AsNoTracking()
+            .Where(x => idList.Contains(x.Id))
+            .ToListAsync(cancellationToken);
+    }
+
+    // TODO it should be better to use dapper for this kind of queries
+    public async Task<Pet?> GetByIdWithUpcomingEventAsync(int id, CancellationToken cancellationToken = default)
+    {
+        return await _dbContext.Pets
+            .AsNoTracking()
+            .Where(p => p.Id == id)
+            .Select(p => new Pet
+            {
+                Id = p.Id,
+                Name = p.Name,
+                Species = p.Species,
+                Breed = p.Breed,
+                DateOfBirth = p.DateOfBirth,
+                PhotoUrl = p.PhotoUrl,
+                Created = p.Created,
+                Modified = p.Modified,
+                Events = p.Events
+                    .Where(e => e.DateOfEvent >= DateTime.UtcNow)
+                    .OrderBy(e => e.DateOfEvent)
+                    .Take(1)
+                    .ToList()
+            })
+            .FirstOrDefaultAsync(cancellationToken);
+    }
+
+    public async Task<Pet?> GetByIdWithEventsAsync(int id, CancellationToken cancellationToken = default)
+    {
+        return await _dbContext.Pets
+            .AsNoTracking()
+            .Include(p => p.Events)
+            .FirstOrDefaultAsync(p => p.Id == id, cancellationToken);
     }
 }

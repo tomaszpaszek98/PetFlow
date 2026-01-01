@@ -1,9 +1,9 @@
 using Application.Common.Interfaces.Repositories;
 using Domain.Entities;
 using Domain.Exceptions;
+using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.Logging;
-using Persistance.Repositories;
 
 namespace Application.Events.Commands.UpdateEvent;
 
@@ -14,7 +14,7 @@ public class UpdateEventCommandHandler : IRequestHandler<UpdateEventCommand, Upd
     private readonly ILogger<UpdateEventCommandHandler> _logger;
 
     public UpdateEventCommandHandler(IPetRepository petRepository,
-        IEventRepository eventRepository, 
+        IEventRepository eventRepository,
         ILogger<UpdateEventCommandHandler> logger)
     {
         _petRepository = petRepository;
@@ -24,17 +24,16 @@ public class UpdateEventCommandHandler : IRequestHandler<UpdateEventCommand, Upd
 
     public async Task<UpdateEventResponse> Handle(UpdateEventCommand request, CancellationToken cancellationToken)
     {
-        var existingEvent = await _eventRepository.GetByIdAsync(request.Id, cancellationToken);
-        
+        var existingEvent = await _eventRepository.GetByIdWithPetsAsync(request.Id, cancellationToken);
         if (existingEvent is null)
         {
             throw new NotFoundException(nameof(Event), request.Id);
         }
+
+        var assignedPets = await HandlePetAssignments(request, existingEvent, cancellationToken);
         
         UpdateEventProperties(existingEvent, request);
         await _eventRepository.UpdateAsync(existingEvent, cancellationToken);
-        
-        var assignedPets = await HandlePetAssignments(request, existingEvent.Id, cancellationToken);
         
         return existingEvent.MapToUpdateResponse(assignedPets);
     }
@@ -47,52 +46,38 @@ public class UpdateEventCommandHandler : IRequestHandler<UpdateEventCommand, Upd
         eventEntity.Reminder = request.Reminder;
     }
     
-    private async Task<List<Pet>> HandlePetAssignments(UpdateEventCommand request, int eventId, CancellationToken cancellationToken)
+    private async Task<IList<Pet>> HandlePetAssignments(UpdateEventCommand request, Event eventEntity, CancellationToken cancellationToken)
     {
-        var petsToAssign = new List<Pet>();
-        
-        if (request.PetToAssignIds != null && request.PetToAssignIds.Any())
+        if (!request.AssignedPetsIds.Any())
         {
-            petsToAssign = await GetPetsToAssign(request.PetToAssignIds, cancellationToken);
-            await AssignPetsToEvent(petsToAssign, eventId, cancellationToken);
+            eventEntity.Pets.Clear();
+            _logger.LogInformation($"Removed all pet assignments for event {eventEntity.Id}.");
+            return [];
         }
-        else
-        {
-            await ClearPetAssignments(eventId, cancellationToken);
-        }
+
+        var petsToAssignIds = request.AssignedPetsIds.Distinct().ToList();
+        var petsToAssign = await _petRepository.GetByIdsAsync(petsToAssignIds, cancellationToken);
         
+        ValidateAllPetsExistOrThrow(petsToAssign, petsToAssignIds);
+        
+        eventEntity.Pets.Clear();
+        foreach (var pet in petsToAssign)
+        {
+            eventEntity.Pets.Add(pet);
+        }
+
         return petsToAssign;
     }
-    
-    private async Task<List<Pet>> GetPetsToAssign(IEnumerable<int> petIds, CancellationToken cancellationToken)
+
+    private static void ValidateAllPetsExistOrThrow(IList<Pet> foundPets, IList<int> requestedPetIds)
     {
-        var pets = (await _petRepository.GetByIdsAsync(petIds, cancellationToken)).ToList();
-        
-        if (!pets.Any())
+        var foundPetIds = foundPets.Select(p => p.Id).Distinct();
+        var missingPetIds = requestedPetIds.Where(id => !foundPetIds.Contains(id)).ToList();
+
+        if (missingPetIds.Any())
         {
-            _logger.LogWarning($"None of the provided pet ids ({string.Join(", ", petIds)}) were found.");
+            throw new ValidationException($"Pets not found: {string.Join(", ", missingPetIds)}");
         }
-        
-        return pets;
-    }
-    
-    private async Task AssignPetsToEvent(List<Pet> petsToAssign, int eventId, CancellationToken cancellationToken)
-    {
-        if (!petsToAssign.Any())
-            return;
-            
-        var petIdsToAssign = petsToAssign.Select(p => p.Id).ToHashSet();
-        var petEvents = petIdsToAssign
-            .Select(petId => new PetEvent { PetId = petId, EventId = eventId })
-            .ToList();
-        
-        await _eventRepository.AddPetsToEventAsync(petEvents, cancellationToken);
-        _logger.LogInformation($"Updated pet assignments for event {eventId}. Assigned {petIdsToAssign.Count} pets.");
-    }
-    
-    private async Task ClearPetAssignments(int eventId, CancellationToken cancellationToken)
-    {
-        await _eventRepository.AddPetsToEventAsync(new List<PetEvent>(), cancellationToken);
-        _logger.LogInformation($"Removed all pet assignments for event {eventId}.");
     }
 }
+

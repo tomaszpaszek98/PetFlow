@@ -1,3 +1,4 @@
+using Domain.Constants;
 using FluentValidation;
 
 namespace Application.Events.Commands.CreateEvent;
@@ -9,13 +10,13 @@ public class CreateEventCommandValidator : AbstractValidator<CreateEventCommand>
         RuleFor(x => x.Title)
             .NotEmpty()
             .WithMessage("Event title is required.")
-            .MaximumLength(EventValidatorsConstants.MaxTitleLength)
-            .WithMessage($"Event title must not exceed {EventValidatorsConstants.MaxTitleLength} characters.");
+            .MaximumLength(EntityConstants.Event.MaxTitleLength)
+            .WithMessage($"Event title must not exceed {EntityConstants.Event.MaxTitleLength} characters.");
         RuleFor(x => x.Description)
             .NotEmpty()
             .WithMessage("Event description is required.")
-            .MaximumLength(EventValidatorsConstants.MaxDescriptionLength)
-            .WithMessage($"Event description must not exceed {EventValidatorsConstants.MaxDescriptionLength} characters.");
+            .MaximumLength(EntityConstants.Event.MaxDescriptionLength)
+            .WithMessage($"Event description must not exceed {EntityConstants.Event.MaxDescriptionLength} characters.");
         RuleFor(x => x.DateOfEvent)
             .GreaterThanOrEqualTo(DateTime.Today)
             .WithMessage("Event date must be today or in the future.");

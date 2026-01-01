@@ -3,7 +3,6 @@ using Application.MedicalNotes;
 using Domain.Entities;
 using Domain.Exceptions;
 using MediatR;
-using Persistance.Repositories;
 
 namespace Application.MedicalNotes.Commands.UpdateMedicalNote;
 
@@ -20,21 +19,16 @@ public class UpdateMedicalNoteCommandHandler : IRequestHandler<UpdateMedicalNote
 
     public async Task<UpdateMedicalNoteResponse> Handle(UpdateMedicalNoteCommand request, CancellationToken cancellationToken)
     {
-        var pet = await _petRepository.GetByIdAsync(request.PetId, cancellationToken);
-        if (pet is null)
+        var petExists = await _petRepository.ExistsAsync(request.PetId, cancellationToken);
+        if (!petExists)
         {
             throw new NotFoundException(nameof(Pet), request.PetId);
         }
-        
-        var medicalNote = await _medicalNoteRepository.GetByIdAsync(request.MedicalNoteId, cancellationToken);
+
+        var medicalNote = await _medicalNoteRepository.GetByIdWithPetAsync(request.MedicalNoteId, request.PetId, cancellationToken);
         if (medicalNote is null)
         {
             throw new NotFoundException(nameof(MedicalNote), request.MedicalNoteId);
-        }
-        
-        if (medicalNote.PetId != request.PetId)
-        {
-            throw new NotFoundException($"Medical note with ID {request.MedicalNoteId} does not belong to pet with ID {request.PetId}");
         }
 
         UpdateMedicalNoteProperties(medicalNote, request);

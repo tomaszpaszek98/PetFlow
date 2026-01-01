@@ -2,32 +2,31 @@ using Application.Common.Interfaces.Repositories;
 using Domain.Entities;
 using Domain.Exceptions;
 using MediatR;
-using Persistance.Repositories;
 
 namespace Application.Notes.Commands.CreateNote;
 
 public class CreateNoteCommandHandler : IRequestHandler<CreateNoteCommand, CreateNoteResponse>
 {
-    private readonly INoteRepository _repository;
+    private readonly INoteRepository _noteRepository;
     private readonly IPetRepository _petRepository;
 
-    public CreateNoteCommandHandler(INoteRepository repository, IPetRepository petRepository)
+    public CreateNoteCommandHandler(INoteRepository noteRepository, IPetRepository petRepository)
     {
-        _repository = repository;
+        _noteRepository = noteRepository;
         _petRepository = petRepository;
     }
 
     public async Task<CreateNoteResponse> Handle(CreateNoteCommand command, CancellationToken cancellationToken)
     {
-        var pet = await _petRepository.GetByIdAsync(command.PetId, cancellationToken);
-        if (pet == null)
+        var petExists = await _petRepository.ExistsAsync(command.PetId, cancellationToken);
+        if (!petExists)
         {
             throw new NotFoundException(nameof(Pet), command.PetId);
         }
-        
-        var requestedNote = command.MapToNote();
-        var createdNote = await _repository.CreateAsync(requestedNote, cancellationToken);
 
+        var requestedNote = command.MapToNote();
+        var createdNote = await _noteRepository.CreateAsync(requestedNote, cancellationToken);
+        
         return createdNote.MapToCreateResponse();
     }
 }

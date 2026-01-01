@@ -2,7 +2,6 @@ using Application.Common.Interfaces.Repositories;
 using Application.Notes.Queries.GetNoteDetails;
 using Domain.Entities;
 using Domain.Exceptions;
-using Persistance.Repositories;
 
 namespace Application.UnitTests.Notes.Queries.GetNoteDetails;
 
@@ -17,19 +16,27 @@ public class GetNoteDetailsQueryHandlerTests
             PetId = 1,
             NoteId = 2
         };
+        var pet = new Pet
+        {
+            Id = query.PetId,
+            Name = "Test Pet"
+        };
         var note = new Note
         {
             Id = query.NoteId,
             PetId = query.PetId,
             Content = "Test Note Content",
             Type = Domain.Enums.NoteType.General,
-            Created = DateTime.UtcNow.AddDays(-1)
+            Created = DateTime.UtcNow.AddDays(-1),
+            Pet = pet
         };
         var noteRepository = Substitute.For<INoteRepository>();
         var petRepository = Substitute.For<IPetRepository>();
         var handler = new GetNoteDetailsQueryHandler(noteRepository, petRepository);
         
-        noteRepository.GetByIdAsync(query.NoteId, Arg.Any<CancellationToken>())
+        petRepository.ExistsAsync(query.PetId, Arg.Any<CancellationToken>())
+            .Returns(true);
+        noteRepository.GetByIdWithPetAsync(query.NoteId, query.PetId, Arg.Any<CancellationToken>())
             .Returns(note);
         
         // WHEN
@@ -41,7 +48,12 @@ public class GetNoteDetailsQueryHandlerTests
         result.Content.Should().Be(note.Content);
         result.Type.Should().Be(note.Type);
         result.CreatedAt.Should().Be(note.Created);
-        await noteRepository.Received(1).GetByIdAsync(query.NoteId, Arg.Any<CancellationToken>());
+        
+        Received.InOrder(() =>
+        {
+            petRepository.ExistsAsync(query.PetId, Arg.Any<CancellationToken>());
+            noteRepository.GetByIdWithPetAsync(query.NoteId, query.PetId, Arg.Any<CancellationToken>());
+        });
     }
     
     [Test]
@@ -57,16 +69,23 @@ public class GetNoteDetailsQueryHandlerTests
         var petRepository = Substitute.For<IPetRepository>();
         var handler = new GetNoteDetailsQueryHandler(noteRepository, petRepository);
         
-        noteRepository.GetByIdAsync(query.NoteId, Arg.Any<CancellationToken>())
-            .Returns((Note)null);
+        petRepository.ExistsAsync(query.PetId, Arg.Any<CancellationToken>())
+            .Returns(true);
+        noteRepository.GetByIdWithPetAsync(query.NoteId, query.PetId, Arg.Any<CancellationToken>())
+            .Returns(Task.FromResult<Note>(null));
         
         // WHEN
-        var act = () => handler.Handle(query, CancellationToken.None);
+        var act = async () => await handler.Handle(query, CancellationToken.None);
         
         // THEN
         await act.Should().ThrowAsync<NotFoundException>()
             .Where(e => e.Message.Contains(nameof(Note)) && e.Message.Contains(query.NoteId.ToString()));
-        await noteRepository.Received(1).GetByIdAsync(query.NoteId, Arg.Any<CancellationToken>());
+        
+        Received.InOrder(() =>
+        {
+            petRepository.ExistsAsync(query.PetId, Arg.Any<CancellationToken>());
+            noteRepository.GetByIdWithPetAsync(query.NoteId, query.PetId, Arg.Any<CancellationToken>());
+        });
     }
     
     [Test]
@@ -78,29 +97,26 @@ public class GetNoteDetailsQueryHandlerTests
             PetId = 1,
             NoteId = 2
         };
-        var note = new Note
-        {
-            Id = query.NoteId,
-            PetId = 3, // Different pet ID
-            Content = "Test Note Content",
-            Type = Domain.Enums.NoteType.General,
-            Created = DateTime.UtcNow.AddDays(-1)
-        };
         var noteRepository = Substitute.For<INoteRepository>();
         var petRepository = Substitute.For<IPetRepository>();
         var handler = new GetNoteDetailsQueryHandler(noteRepository, petRepository);
         
-        noteRepository.GetByIdAsync(query.NoteId, Arg.Any<CancellationToken>())
-            .Returns(note);
+        petRepository.ExistsAsync(query.PetId, Arg.Any<CancellationToken>())
+            .Returns(true);
+        noteRepository.GetByIdWithPetAsync(query.NoteId, query.PetId, Arg.Any<CancellationToken>())
+            .Returns(Task.FromResult<Note>(null));
         
         // WHEN
-        var act = () => handler.Handle(query, CancellationToken.None);
+        var act = async () => await handler.Handle(query, CancellationToken.None);
         
         // THEN
-        await act.Should().ThrowAsync<NotFoundException>()
-            .Where(e => e.Message.Contains($"Note with ID {query.NoteId}") && 
-                   e.Message.Contains($"does not belong to pet with ID {query.PetId}"));
-        await noteRepository.Received(1).GetByIdAsync(query.NoteId, Arg.Any<CancellationToken>());
+        await act.Should().ThrowAsync<NotFoundException>();
+        
+        Received.InOrder(() =>
+        {
+            petRepository.ExistsAsync(query.PetId, Arg.Any<CancellationToken>());
+            noteRepository.GetByIdWithPetAsync(query.NoteId, query.PetId, Arg.Any<CancellationToken>());
+        });
     }
     
     [Test]
@@ -116,16 +132,17 @@ public class GetNoteDetailsQueryHandlerTests
         var petRepository = Substitute.For<IPetRepository>();
         var handler = new GetNoteDetailsQueryHandler(noteRepository, petRepository);
         
-        petRepository.GetByIdAsync(query.PetId, Arg.Any<CancellationToken>())
-            .Returns((Pet)null);
+        petRepository.ExistsAsync(query.PetId, Arg.Any<CancellationToken>())
+            .Returns(false);
         
         // WHEN
-        var act = () => handler.Handle(query, CancellationToken.None);
+        var act = async () => await handler.Handle(query, CancellationToken.None);
         
         // THEN
         await act.Should().ThrowAsync<NotFoundException>()
             .Where(e => e.Message.Contains(nameof(Pet)) && e.Message.Contains(query.PetId.ToString()));
-        await petRepository.Received(1).GetByIdAsync(query.PetId, Arg.Any<CancellationToken>());
-        await noteRepository.DidNotReceive().GetByIdAsync(default);
+        
+        await petRepository.Received(1).ExistsAsync(query.PetId, Arg.Any<CancellationToken>());
+        await noteRepository.DidNotReceive().GetByIdWithPetAsync(default, default);
     }
 }

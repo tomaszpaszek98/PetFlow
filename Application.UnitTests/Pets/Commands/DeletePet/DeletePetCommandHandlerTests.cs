@@ -1,6 +1,6 @@
+using Application.Common.Interfaces.Repositories;
 using Application.Pets.Commands.DeletePet;
 using Domain.Exceptions;
-using Persistance.Repositories;
 
 namespace Application.UnitTests.Pets.Commands.DeletePet;
 

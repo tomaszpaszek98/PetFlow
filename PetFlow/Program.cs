@@ -1,7 +1,7 @@
 using Application;
 using PetFlow.ExceptionHandlers;
 using PetFlow.Infrastructure;
-using PetFlow.Persistance;
+using PetFlow.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,7 +11,7 @@ builder.Services.AddOpenApi();
 
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure();
-builder.Services.AddPersistance();
+builder.Services.AddPersistance(builder.Configuration);
 builder.Services.AddExceptionHandlers();
 builder.Services.AddControllers();
 builder.Services.AddCors(options =>

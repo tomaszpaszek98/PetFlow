@@ -14,7 +14,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Infrastructure\PetFlow.Infrastructure.csproj" />
-      <ProjectReference Include="..\Persistance\PetFlow.Persistance.csproj" />
+      <ProjectReference Include="..\Persistance\PetFlow.Persistence.csproj" />
     </ItemGroup>
 
 </Project>

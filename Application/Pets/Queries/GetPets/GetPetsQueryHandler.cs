@@ -1,5 +1,5 @@
+using Application.Common.Interfaces.Repositories;
 using MediatR;
-using Persistance.Repositories;
 
 namespace Application.Pets.Queries.GetPets;
 

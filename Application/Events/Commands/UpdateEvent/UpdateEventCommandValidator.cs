@@ -1,3 +1,4 @@
+using Domain.Constants;
 using FluentValidation;
 
 namespace Application.Events.Commands.UpdateEvent;
@@ -13,20 +14,20 @@ public class UpdateEventCommandValidator : AbstractValidator<UpdateEventCommand>
         RuleFor(x => x.Title)
             .NotEmpty()
             .WithMessage("Event title is required.")
-            .MaximumLength(EventValidatorsConstants.MaxTitleLength)
-            .WithMessage($"Event title must not exceed {EventValidatorsConstants.MaxTitleLength} characters.");
+            .MaximumLength(EntityConstants.Event.MaxTitleLength)
+            .WithMessage($"Event title must not exceed {EntityConstants.Event.MaxTitleLength} characters.");
         
         RuleFor(x => x.Description)
             .NotEmpty()
             .WithMessage("Event Description is required.")
-            .MaximumLength(EventValidatorsConstants.MaxDescriptionLength)
-            .WithMessage($"Event description must not exceed {EventValidatorsConstants.MaxDescriptionLength} characters.");
+            .MaximumLength(EntityConstants.Event.MaxDescriptionLength)
+            .WithMessage($"Event description must not exceed {EntityConstants.Event.MaxDescriptionLength} characters.");
         
         RuleFor(x => x.DateOfEvent)
             .GreaterThanOrEqualTo(DateTime.Today)
             .WithMessage("Event date must be today or in the future.");
         
-        RuleFor(x => x.PetToAssignIds)
+        RuleFor(x => x.AssignedPetsIds)
             .Must(AllIdsGreaterThanZero)
             .WithMessage("All PetToAssignIds must be greater than zero.")
             .Must(NoDuplicateIds)

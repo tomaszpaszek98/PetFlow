@@ -1,61 +1,54 @@
 using Application.Common.Interfaces.Repositories;
 using Domain.Entities;
+using Microsoft.EntityFrameworkCore;
 
-namespace PetFlow.Persistance.Repositories;
+namespace PetFlow.Persistence.Repositories;
 
 public class MedicalNoteRepository : IMedicalNoteRepository
 {
-    private readonly List<MedicalNote> _medicalNotes = new();
+    private readonly PetFlowFlowDbContext _dbContext;
 
-    public Task<MedicalNote> CreateAsync(MedicalNote medicalNote, CancellationToken cancellationToken = default)
+    public MedicalNoteRepository(PetFlowFlowDbContext dbContext)
     {
-        cancellationToken.ThrowIfCancellationRequested();
-        _medicalNotes.Add(medicalNote);
-        return Task.FromResult(medicalNote);
+        _dbContext = dbContext;
     }
 
-    public Task<MedicalNote?> GetByIdAsync(int id, CancellationToken cancellationToken = default)
+    public async Task<MedicalNote> CreateAsync(MedicalNote medicalNote, CancellationToken cancellationToken = default)
     {
-        cancellationToken.ThrowIfCancellationRequested();
-        var medicalNote = _medicalNotes.SingleOrDefault(x => x.Id == id);
+        await _dbContext.MedicalNotes.AddAsync(medicalNote, cancellationToken);
+        await _dbContext.SaveChangesAsync(cancellationToken);
         
-        return Task.FromResult(medicalNote);
+        return medicalNote;
     }
 
-    public Task<IEnumerable<MedicalNote>> GetAllAsync(CancellationToken cancellationToken = default)
+    public async Task<MedicalNote?> GetByIdWithPetAsync(int medicalNoteId, int petId, CancellationToken cancellationToken = default)
     {
-        cancellationToken.ThrowIfCancellationRequested();
-        
-        return Task.FromResult(_medicalNotes.AsEnumerable());
+        return await _dbContext.MedicalNotes
+            .AsNoTracking()
+            .Include(m => m.Pet)
+            .FirstOrDefaultAsync(m => m.Id == medicalNoteId && m.PetId == petId, cancellationToken);
     }
 
-    public Task UpdateAsync(MedicalNote medicalNote, CancellationToken cancellationToken = default)
+    public async Task UpdateAsync(MedicalNote medicalNote, CancellationToken cancellationToken = default)
     {
-        cancellationToken.ThrowIfCancellationRequested();
-        var noteIndex = _medicalNotes.FindIndex(x => x.Id == medicalNote.Id);
-        if (noteIndex == -1)
-        {
-            throw new Exception($"Medical note with id {medicalNote.Id} not found");
-        }
-        _medicalNotes[noteIndex] = medicalNote;
-        
-        return Task.CompletedTask;
+        _dbContext.MedicalNotes.Update(medicalNote);
+        await _dbContext.SaveChangesAsync(cancellationToken);
     }
 
-    public Task<bool> DeleteByIdAsync(int id, CancellationToken cancellationToken = default)
+    public async Task<bool> DeleteByIdAsync(int medicalNoteId, int petId, CancellationToken cancellationToken = default)
     {
-        cancellationToken.ThrowIfCancellationRequested();
-        var removedCount = _medicalNotes.RemoveAll(x => x.Id == id);
-        
-        return Task.FromResult(removedCount > 0);
+        var removed = await _dbContext.MedicalNotes
+            .Where(m => m.Id == medicalNoteId && m.PetId == petId)
+            .ExecuteDeleteAsync(cancellationToken);
+
+        return removed > 0;
     }
     
-    public Task<IEnumerable<MedicalNote>> GetAllByPetIdAsync(int petId, CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<MedicalNote>> GetAllByPetIdAsync(int petId, CancellationToken cancellationToken = default)
     {
-        cancellationToken.ThrowIfCancellationRequested();
-        var medicalNotes = _medicalNotes.Where(x => x.PetId == petId);
-        
-        return Task.FromResult(medicalNotes);
+        return await _dbContext.MedicalNotes
+            .AsNoTracking()
+            .Where(m => m.PetId == petId)
+            .ToListAsync(cancellationToken);
     }
 }
-

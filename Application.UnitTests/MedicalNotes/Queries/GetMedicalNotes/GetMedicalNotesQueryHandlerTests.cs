@@ -3,7 +3,6 @@ using Application.MedicalNotes;
 using Application.MedicalNotes.Queries.GetMedicalNotes;
 using Domain.Entities;
 using Domain.Exceptions;
-using Persistance.Repositories;
 
 namespace Application.UnitTests.MedicalNotes.Queries.GetMedicalNotes;
 
@@ -14,7 +13,6 @@ public class GetMedicalNotesQueryHandlerTests
     {
         // GIVEN
         var query = new GetMedicalNotesQuery { PetId = 1 };
-        var pet = new Pet { Id = query.PetId, Name = "Test Pet" };
         var medicalNotes = new List<MedicalNote>
         {
             new() { Id = 1, PetId = query.PetId, Title = "Note 1", Created = DateTime.UtcNow.AddDays(-1) },
@@ -24,8 +22,8 @@ public class GetMedicalNotesQueryHandlerTests
         var petRepository = Substitute.For<IPetRepository>();
         var handler = new GetMedicalNotesQueryHandler(medicalNoteRepository, petRepository);
         
-        petRepository.GetByIdAsync(query.PetId, Arg.Any<CancellationToken>())
-            .Returns(pet);
+        petRepository.ExistsAsync(query.PetId, Arg.Any<CancellationToken>())
+            .Returns(true);
         medicalNoteRepository.GetAllByPetIdAsync(query.PetId, Arg.Any<CancellationToken>())
             .Returns(medicalNotes);
         
@@ -36,10 +34,11 @@ public class GetMedicalNotesQueryHandlerTests
         result.Should().NotBeNull();
         result.MedicalNotes.Should().NotBeNull();
         result.MedicalNotes.Should().HaveCount(2);
+        
         Received.InOrder(() =>
         {
-            petRepository.Received(1).GetByIdAsync(query.PetId, Arg.Any<CancellationToken>());
-            medicalNoteRepository.Received(1).GetAllByPetIdAsync(query.PetId, Arg.Any<CancellationToken>()); 
+            petRepository.ExistsAsync(query.PetId, Arg.Any<CancellationToken>());
+            medicalNoteRepository.GetAllByPetIdAsync(query.PetId, Arg.Any<CancellationToken>());
         });
     }
     
@@ -52,8 +51,8 @@ public class GetMedicalNotesQueryHandlerTests
         var petRepository = Substitute.For<IPetRepository>();
         var handler = new GetMedicalNotesQueryHandler(medicalNoteRepository, petRepository);
         
-        petRepository.GetByIdAsync(query.PetId, Arg.Any<CancellationToken>())
-            .Returns((Pet)null);
+        petRepository.ExistsAsync(query.PetId, Arg.Any<CancellationToken>())
+            .Returns(false);
         
         // WHEN
         var act = () => handler.Handle(query, CancellationToken.None);
@@ -61,7 +60,8 @@ public class GetMedicalNotesQueryHandlerTests
         // THEN
         await act.Should().ThrowAsync<NotFoundException>()
             .Where(e => e.Message.Contains(nameof(Pet)) && e.Message.Contains(query.PetId.ToString()));
-        await petRepository.Received(1).GetByIdAsync(query.PetId, Arg.Any<CancellationToken>());
+        
+        await petRepository.Received(1).ExistsAsync(query.PetId, Arg.Any<CancellationToken>());
         await medicalNoteRepository.DidNotReceive().GetAllByPetIdAsync(default);
     }
     
@@ -70,14 +70,13 @@ public class GetMedicalNotesQueryHandlerTests
     {
         // GIVEN
         var query = new GetMedicalNotesQuery { PetId = 1 };
-        var pet = new Pet { Id = query.PetId, Name = "Test Pet" };
         var emptyNotes = new List<MedicalNote>();
         var medicalNoteRepository = Substitute.For<IMedicalNoteRepository>();
         var petRepository = Substitute.For<IPetRepository>();
         var handler = new GetMedicalNotesQueryHandler(medicalNoteRepository, petRepository);
         
-        petRepository.GetByIdAsync(query.PetId, Arg.Any<CancellationToken>())
-            .Returns(pet);
+        petRepository.ExistsAsync(query.PetId, Arg.Any<CancellationToken>())
+            .Returns(true);
         medicalNoteRepository.GetAllByPetIdAsync(query.PetId, Arg.Any<CancellationToken>())
             .Returns(emptyNotes);
         
@@ -88,10 +87,11 @@ public class GetMedicalNotesQueryHandlerTests
         result.Should().NotBeNull();
         result.MedicalNotes.Should().NotBeNull();
         result.MedicalNotes.Should().BeEmpty();
+        
         Received.InOrder(() =>
         {
-            petRepository.Received(1).GetByIdAsync(query.PetId, Arg.Any<CancellationToken>());
-            medicalNoteRepository.Received(1).GetAllByPetIdAsync(query.PetId, Arg.Any<CancellationToken>());
+            petRepository.ExistsAsync(query.PetId, Arg.Any<CancellationToken>());
+            medicalNoteRepository.GetAllByPetIdAsync(query.PetId, Arg.Any<CancellationToken>());
         });
     }
 }

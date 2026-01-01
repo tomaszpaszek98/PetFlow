@@ -33,7 +33,7 @@ public static class MappingExtensions
         };
     }
 
-    public static PetDetailsResponse MapToPetDetailsResponse(this Pet pet, Event? petEvent)
+    public static PetDetailsResponse MapToPetDetailsResponse(this Pet pet)
     {
         return new PetDetailsResponse
         {
@@ -45,7 +45,7 @@ public static class MappingExtensions
             PhotoUrl = pet.PhotoUrl,
             CreatedAt = pet.Created,
             ModifiedAt = pet.Modified,
-            UpcomingEvent = MapUpcomingEvent(petEvent)
+            UpcomingEvent = MapUpcomingEvent(pet.Events.FirstOrDefault())
         };
     }
     

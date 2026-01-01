@@ -1,13 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace Application.Common.Interfaces;
 
-namespace MovieManagement.Application.Common.Interfaces
+public interface IDateTime
 {
-    public interface IDateTime
-    {
-        DateTime Now { get; }
-    }
+    DateTime Now { get; }
 }

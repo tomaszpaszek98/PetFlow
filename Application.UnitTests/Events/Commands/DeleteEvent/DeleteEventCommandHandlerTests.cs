@@ -11,36 +11,38 @@ public class DeleteEventCommandHandlerTests
     public async Task ShouldCompleteSuccessfullyWhenEventIsDeleted()
     {
         // GIVEN
-        var command = new DeleteEventCommand { EventId = 1 };
+        var eventId = 1;
+        var command = new DeleteEventCommand { EventId = eventId };
         var repository = Substitute.For<IEventRepository>();
         var handler = new DeleteEventCommandHandler(repository);
         
-        repository.DeleteByIdAsync(command.EventId, Arg.Any<CancellationToken>()).Returns(true);
+        repository.DeleteByIdAsync(eventId, Arg.Any<CancellationToken>()).Returns(true);
         
         // WHEN
         var act = async () => await handler.Handle(command, CancellationToken.None);
 
         // THEN
         await act.Should().NotThrowAsync();
-        await repository.Received(1).DeleteByIdAsync(command.EventId, Arg.Any<CancellationToken>());
+        await repository.Received(1).DeleteByIdAsync(eventId, Arg.Any<CancellationToken>());
     }
 
     [Test]
     public async Task ShouldThrowNotFoundExceptionWhenEventDoesNotExist()
     {
         // GIVEN
-        var command = new DeleteEventCommand { EventId = 99 };
+        var eventId = 99;
+        var command = new DeleteEventCommand { EventId = eventId };
         var repository = Substitute.For<IEventRepository>();
         var handler = new DeleteEventCommandHandler(repository);
 
-        repository.DeleteByIdAsync(command.EventId, Arg.Any<CancellationToken>()).Returns(false);
+        repository.DeleteByIdAsync(eventId, Arg.Any<CancellationToken>()).Returns(false);
         
         // WHEN
         var act = () => handler.Handle(command, CancellationToken.None);
 
         // THEN
         await act.Should().ThrowAsync<NotFoundException>()
-            .Where(e => e.Message.Contains(nameof(Event)) && e.Message.Contains(command.EventId.ToString()));
-        await repository.Received(1).DeleteByIdAsync(command.EventId, Arg.Any<CancellationToken>());
+            .Where(e => e.Message.Contains(nameof(Event)) && e.Message.Contains(eventId.ToString()));
+        await repository.Received(1).DeleteByIdAsync(eventId, Arg.Any<CancellationToken>());
     }
 }

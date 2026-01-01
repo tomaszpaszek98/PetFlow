@@ -6,21 +6,21 @@ using Microsoft.EntityFrameworkCore;
 
 namespace PetFlow.Persistence;
 
-public class PetFlowDbContext : DbContext, IPetDbContext
+public class PetFlowFlowDbContext : DbContext, IPetFlowDbContext
 {
     public DbSet<Event> Events { get; set; }
     public DbSet<MedicalNote> MedicalNotes { get; set; }
+    public DbSet<Note> Notes { get; set; }
     public DbSet<Pet> Pets { get; set; }
-    public DbSet<PetEvent> PetEvents { get; set; }
     
     private readonly IDateTime _dateTime;
     private readonly ICurrentUserService _userService;
     
-    public PetFlowDbContext(DbContextOptions<PetFlowDbContext> options) : base(options)
+    public PetFlowFlowDbContext(DbContextOptions<PetFlowFlowDbContext> options) : base(options)
     {
     }
     
-    public PetFlowDbContext(DbContextOptions<PetFlowDbContext> options, IDateTime dateTime, ICurrentUserService userService ) : base(options)
+    public PetFlowFlowDbContext(DbContextOptions<PetFlowFlowDbContext> options, IDateTime dateTime, ICurrentUserService userService ) : base(options)
     {
         _dateTime = dateTime;
         _userService = userService;

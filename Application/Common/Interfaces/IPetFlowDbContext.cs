@@ -3,12 +3,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Common.Interfaces;
 
-public interface IPetDbContext
+public interface IPetFlowDbContext
 {
     DbSet<Event> Events { get; set; }
     DbSet<MedicalNote> MedicalNotes { get; set; }
+    DbSet<Note> Notes { get; set; }
     DbSet<Pet> Pets { get; set; }
-    DbSet<PetEvent> PetEvents { get; set; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken);
 }

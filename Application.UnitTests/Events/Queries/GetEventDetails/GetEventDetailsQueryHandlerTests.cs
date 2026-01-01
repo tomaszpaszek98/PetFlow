@@ -1,10 +1,8 @@
-using System.Collections.ObjectModel;
 using Application.Events.Queries.GetEventDetails;
 using Application.Common.Interfaces.Repositories;
 using Application.Events.Common;
 using Domain.Entities;
 using Domain.Exceptions;
-using Persistance.Repositories;
 
 namespace Application.UnitTests.Events.Queries.GetEventDetails;
 
@@ -32,21 +30,14 @@ public class GetEventDetailsQueryHandlerTests
             Description = "Desc",
             DateOfEvent = new DateTime(2025, 8, 3),
             Reminder = true,
-            PetEvents = new List<PetEvent>
-            {
-                new() { PetId =  pets[0].Id },
-                new() { PetId = pets[1].Id }
-            }
+            Pets = pets
         };
         var query = new GetEventDetailsQuery { EventId = eventId };
         var eventRepository = Substitute.For<IEventRepository>();
-        var petRepository = Substitute.For<IPetRepository>();
-        var handler = new GetEventDetailsQueryHandler(eventRepository, petRepository);
+        var handler = new GetEventDetailsQueryHandler(eventRepository);
         
-        eventRepository.GetByIdAsync(eventId, Arg.Any<CancellationToken>())
+        eventRepository.GetByIdWithPetsAsync(eventId, Arg.Any<CancellationToken>())
             .Returns(eventEntity);
-        petRepository.GetByIdsAsync(Arg.Is<IEnumerable<int>>(ids => ids.Contains(10) && ids.Contains(20)), Arg.Any<CancellationToken>())
-            .Returns(pets);
         
         // WHEN
         var result = await handler.Handle(query, CancellationToken.None);
@@ -57,19 +48,15 @@ public class GetEventDetailsQueryHandlerTests
         result.Title.Should().Be(eventEntity.Title);
         result.Description.Should().Be(eventEntity.Description);
         result.DateOfEvent.Should().Be(eventEntity.DateOfEvent);
+        result.Reminder.Should().Be(eventEntity.Reminder);
         result.AssignedPets.Should().HaveCount(2);
         result.AssignedPets.Should().BeEquivalentTo(expectedAssignedPets);
         
-        Received.InOrder(() => {
-            eventRepository.GetByIdAsync(eventId, Arg.Any<CancellationToken>());
-            petRepository.GetByIdsAsync(Arg.Is<IEnumerable<int>>(ids => 
-                ids.Contains(pets[0].Id) && ids.Contains(pets[1].Id)), 
-                Arg.Any<CancellationToken>());
-        });
+        await eventRepository.Received(1).GetByIdWithPetsAsync(eventId, Arg.Any<CancellationToken>());
     }
 
     [Test]
-    public async Task ShouldReturnEventDetailsWithEmptyAssignedPetsWhenNoPetEvents()
+    public async Task ShouldReturnEventDetailsWithEmptyAssignedPetsWhenNoPetsAssigned()
     {
         // GIVEN
         var eventId = 2;
@@ -80,14 +67,13 @@ public class GetEventDetailsQueryHandlerTests
             Description = "No pets assigned",
             DateOfEvent = new DateTime(2025, 8, 3),
             Reminder = false,
-            PetEvents = new List<PetEvent>()
+            Pets = new List<Pet>()
         };
         var query = new GetEventDetailsQuery { EventId = eventId };
         var eventRepository = Substitute.For<IEventRepository>();
-        var petRepository = Substitute.For<IPetRepository>();
-        var handler = new GetEventDetailsQueryHandler(eventRepository, petRepository);
+        var handler = new GetEventDetailsQueryHandler(eventRepository);
         
-        eventRepository.GetByIdAsync(eventId, Arg.Any<CancellationToken>())
+        eventRepository.GetByIdWithPetsAsync(eventId, Arg.Any<CancellationToken>())
             .Returns(eventEntity);
         
         // WHEN
@@ -99,68 +85,30 @@ public class GetEventDetailsQueryHandlerTests
         result.Title.Should().Be(eventEntity.Title);
         result.Description.Should().Be(eventEntity.Description);
         result.DateOfEvent.Should().Be(eventEntity.DateOfEvent);
+        result.Reminder.Should().Be(eventEntity.Reminder);
         result.AssignedPets.Should().BeEmpty();
         
-        await eventRepository.Received(1).GetByIdAsync(eventId, Arg.Any<CancellationToken>());
-        await petRepository.DidNotReceive().GetByIdsAsync(default);
+        await eventRepository.Received(1).GetByIdWithPetsAsync(eventId, Arg.Any<CancellationToken>());
     }
 
     [Test]
-    public async Task ShouldReturnEventDetailsWithEmptyAssignedPetsWhenPetEventsIsNull()
+    public async Task ShouldThrowNotFoundExceptionWhenEventDoesNotExist()
     {
         // GIVEN
-        var eventId = 3;
-        var eventEntity = new Event
-        {
-            Id = eventId,
-            Title = "Event Null Pets",
-            Description = "Null pets",
-            DateOfEvent = new DateTime(2025, 8, 3),
-            Reminder = false,
-            PetEvents = new Collection<PetEvent>()
-        };
-        var query = new GetEventDetailsQuery { EventId = eventId };
-        var eventRepository = Substitute.For<IEventRepository>();
-        var petRepository = Substitute.For<IPetRepository>();
-        var handler = new GetEventDetailsQueryHandler(eventRepository, petRepository);
-        
-        eventRepository.GetByIdAsync(eventId, Arg.Any<CancellationToken>())
-            .Returns(eventEntity);
-        
-        // WHEN
-        var result = await handler.Handle(query, CancellationToken.None);
-        
-        // THEN
-        result.Should().NotBeNull();
-        result.Id.Should().Be(eventId);
-        result.Title.Should().Be(eventEntity.Title);
-        result.Description.Should().Be(eventEntity.Description);
-        result.DateOfEvent.Should().Be(eventEntity.DateOfEvent);
-        result.AssignedPets.Should().BeEmpty();
-        
-        await eventRepository.Received(1).GetByIdAsync(eventId, Arg.Any<CancellationToken>());
-        await petRepository.DidNotReceive().GetByIdsAsync(default);
-    }
-
-    [Test]
-    public void ShouldThrowNotFoundExceptionWhenEventDoesNotExist()
-    {
-        // GIVEN
-        var eventRepository = Substitute.For<IEventRepository>();
-        var petRepository = Substitute.For<IPetRepository>();
         var eventId = 99;
         var query = new GetEventDetailsQuery { EventId = eventId };
-        var handler = new GetEventDetailsQueryHandler(eventRepository, petRepository);
+        var eventRepository = Substitute.For<IEventRepository>();
+        var handler = new GetEventDetailsQueryHandler(eventRepository);
         
-        eventRepository.GetByIdAsync(eventId, Arg.Any<CancellationToken>())
+        eventRepository.GetByIdWithPetsAsync(eventId, Arg.Any<CancellationToken>())
             .Returns((Event)null);
         
         // WHEN
         var act = () => handler.Handle(query, CancellationToken.None);
         
         // THEN
-        act.Should().ThrowAsync<NotFoundException>();
-        eventRepository.Received(1).GetByIdAsync(eventId, Arg.Any<CancellationToken>());
-        petRepository.DidNotReceive().GetByIdsAsync(default);
+        await act.Should().ThrowAsync<NotFoundException>()
+            .Where(e => e.Message.Contains(nameof(Event)) && e.Message.Contains(eventId.ToString()));
+        await eventRepository.Received(1).GetByIdWithPetsAsync(eventId, Arg.Any<CancellationToken>());
     }
 }

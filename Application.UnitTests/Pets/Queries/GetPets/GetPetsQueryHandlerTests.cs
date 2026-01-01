@@ -1,6 +1,6 @@
+using Application.Common.Interfaces.Repositories;
 using Application.Pets.Queries.GetPets;
 using Domain.Entities;
-using Persistance.Repositories;
 
 namespace Application.UnitTests.Pets.Queries.GetPets;
 

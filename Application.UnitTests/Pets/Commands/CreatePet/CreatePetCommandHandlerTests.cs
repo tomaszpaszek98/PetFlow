@@ -1,6 +1,6 @@
+using Application.Common.Interfaces.Repositories;
 using Application.Pets.Commands.CreatePet;
 using Domain.Entities;
-using Persistance.Repositories;
 
 namespace Application.UnitTests.Pets.Commands.CreatePet;
 

@@ -1,4 +1,5 @@
-﻿using FluentValidation;
+﻿using Domain.Constants;
+using FluentValidation;
 
 namespace Application.Pets.Commands.CreatePet;
 
@@ -9,20 +10,20 @@ public class CreatePetCommandValidator : AbstractValidator<CreatePetCommand>
         RuleFor(x => x.Name)
             .NotEmpty()
             .WithMessage("Pet name is required.")
-            .MaximumLength(PetValidatorsConstants.MaxNameLength)
-            .WithMessage($"Pet name must not exceed {PetValidatorsConstants.MaxNameLength} characters.");
+            .MaximumLength(EntityConstants.Pet.MaxNameLength)
+            .WithMessage($"Pet name must not exceed {EntityConstants.Pet.MaxNameLength} characters.");
         
         RuleFor(x => x.Species)
             .NotEmpty()
             .WithMessage("Pet species is required.")
-            .MaximumLength(PetValidatorsConstants.MaxSpeciesLength)
-            .WithMessage($"Pet species must not exceed {PetValidatorsConstants.MaxSpeciesLength} characters.");
+            .MaximumLength(EntityConstants.Pet.MaxSpeciesLength)
+            .WithMessage($"Pet species must not exceed {EntityConstants.Pet.MaxSpeciesLength} characters.");
         
         RuleFor(x => x.Breed)
             .NotEmpty()
             .WithMessage("Pet breed is required.")
-            .MaximumLength(PetValidatorsConstants.MaxBreedLength)
-            .WithMessage($"Pet breed must not exceed {PetValidatorsConstants.MaxBreedLength} characters.");
+            .MaximumLength(EntityConstants.Pet.MaxBreedLength)
+            .WithMessage($"Pet breed must not exceed {EntityConstants.Pet.MaxBreedLength} characters.");
         
         RuleFor(x => x.DateOfBirth)
             .LessThanOrEqualTo(DateTime.Today)

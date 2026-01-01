@@ -1,10 +1,8 @@
-using System.Runtime.CompilerServices;
 using Application.Common.Interfaces.Repositories;
 using Application.Notes;
 using Domain.Entities;
 using Domain.Exceptions;
 using MediatR;
-using Persistance.Repositories;
 
 namespace Application.Notes.Commands.UpdateNote;
 
@@ -21,17 +19,16 @@ public class UpdateNoteCommandHandler : IRequestHandler<UpdateNoteCommand, Updat
 
     public async Task<UpdateNoteResponse> Handle(UpdateNoteCommand request, CancellationToken cancellationToken)
     {
-        await ValidateIfPetExistsAsync(request.PetId, cancellationToken);
-        
-        var note = await _noteRepository.GetByIdAsync(request.NoteId, cancellationToken);
+        var petExists = await _petRepository.ExistsAsync(request.PetId, cancellationToken);
+        if (!petExists)
+        {
+            throw new NotFoundException(nameof(Pet), request.PetId);
+        }
+
+        var note = await _noteRepository.GetByIdWithPetAsync(request.NoteId, request.PetId, cancellationToken);
         if (note is null)
         {
             throw new NotFoundException(nameof(Note), request.NoteId);
-        }
-        
-        if (note.PetId != request.PetId)
-        {
-            throw new NotFoundException($"Note with ID {request.NoteId} does not belong to pet with ID {request.PetId}");
         }
 
         UpdateNoteProperties(note, request);
@@ -39,16 +36,7 @@ public class UpdateNoteCommandHandler : IRequestHandler<UpdateNoteCommand, Updat
         
         return note.MapToUpdateResponse();
     }
-    
-    private async Task ValidateIfPetExistsAsync(int petId, CancellationToken cancellationToken)
-    {
-        var pet = await _petRepository.GetByIdAsync(petId, cancellationToken);
-        if (pet == null)
-        {
-            throw new NotFoundException(nameof(Pet), petId);
-        }
-    }
-    
+
     private static void UpdateNoteProperties(Note note, UpdateNoteCommand request)
     {
         note.Content = request.Content;

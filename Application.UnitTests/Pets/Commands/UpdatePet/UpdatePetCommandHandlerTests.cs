@@ -1,8 +1,8 @@
+using Application.Common.Interfaces.Repositories;
 using Application.Pets.Commands.UpdatePet;
 using Application.Pets.Common;
 using Domain.Entities;
 using Domain.Exceptions;
-using Persistance.Repositories;
 
 namespace Application.UnitTests.Pets.Commands.UpdatePet;
 
@@ -89,5 +89,97 @@ public class UpdatePetCommandHandlerTests
         await act.Should().ThrowAsync<NotFoundException>();
         await repository.Received(1).GetByIdAsync(command.Id, Arg.Any<CancellationToken>());
         await repository.DidNotReceive().UpdateAsync(default);
+    }
+
+    [Test]
+    public async Task ShouldUpdateOnlyNameWhenOnlyNameIsChanged()
+    {
+        // GIVEN
+        var command = new UpdatePetCommand
+        {
+            Id = 1,
+            Name = "NewName",
+            Species = "Dog",
+            Breed = "Chihuahua",
+            DateOfBirth = new DateTime(2019, 5, 5)
+        };
+        var existingPet = new Pet
+        {
+            Id = 1,
+            Name = "OldName",
+            Species = "Dog",
+            Breed = "Chihuahua",
+            DateOfBirth = new DateTime(2019, 5, 5)
+        };
+        var repository = Substitute.For<IPetRepository>();
+        var handler = new UpdatePetCommandHandler(repository);
+
+        repository.GetByIdAsync(command.Id, Arg.Any<CancellationToken>())
+            .Returns(existingPet);
+        repository.UpdateAsync(
+            Arg.Is<Pet>(p => p.Id == command.Id && 
+                             p.Name == "NewName" && 
+                             p.Species == "Dog" && 
+                             p.Breed == "Chihuahua" && 
+                             p.DateOfBirth == new DateTime(2019, 5, 5)),
+            Arg.Any<CancellationToken>()).Returns(Task.CompletedTask);
+        
+        // WHEN
+        var result = await handler.Handle(command, CancellationToken.None);
+
+        // THEN
+        result.Should().NotBeNull();
+        result.Name.Should().Be("NewName");
+        result.Species.Should().Be("Dog");
+        
+        Received.InOrder(() => {
+            repository.GetByIdAsync(command.Id, Arg.Any<CancellationToken>());
+            repository.UpdateAsync(Arg.Is<Pet>(p => p.Name == "NewName"), Arg.Any<CancellationToken>());
+        });
+    }
+
+    [Test]
+    public async Task ShouldUpdateDateOfBirthWhenChanged()
+    {
+        // GIVEN
+        var newDateOfBirth = new DateTime(2018, 3, 3);
+        var command = new UpdatePetCommand
+        {
+            Id = 1,
+            Name = "Rex",
+            Species = "Dog",
+            Breed = "Labrador",
+            DateOfBirth = newDateOfBirth
+        };
+        var existingPet = new Pet
+        {
+            Id = 1,
+            Name = "Rex",
+            Species = "Dog",
+            Breed = "Labrador",
+            DateOfBirth = new DateTime(2020, 1, 1)
+        };
+        var repository = Substitute.For<IPetRepository>();
+        var handler = new UpdatePetCommandHandler(repository);
+
+        repository.GetByIdAsync(command.Id, Arg.Any<CancellationToken>())
+            .Returns(existingPet);
+        repository.UpdateAsync(
+            Arg.Is<Pet>(p => p.Id == command.Id && 
+                             p.DateOfBirth == newDateOfBirth),
+            Arg.Any<CancellationToken>()).Returns(Task.CompletedTask);
+        
+        // WHEN
+        var result = await handler.Handle(command, CancellationToken.None);
+
+        // THEN
+        result.Should().NotBeNull();
+        result.Name.Should().Be(existingPet.Name);
+        result.DateOfBirth.Should().Be(newDateOfBirth);
+        
+        Received.InOrder(() => {
+            repository.GetByIdAsync(command.Id, Arg.Any<CancellationToken>());
+            repository.UpdateAsync(Arg.Is<Pet>(p => p.DateOfBirth == newDateOfBirth), Arg.Any<CancellationToken>());
+        });
     }
 }

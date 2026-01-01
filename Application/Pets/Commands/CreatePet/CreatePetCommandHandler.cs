@@ -1,6 +1,6 @@
-﻿using Application.Pets.Common;
+﻿using Application.Common.Interfaces.Repositories;
+using Application.Pets.Common;
 using MediatR;
-using Persistance.Repositories;
 
 namespace Application.Pets.Commands.CreatePet;
 

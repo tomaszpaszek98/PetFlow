@@ -1,5 +1,6 @@
 using Application.Events.Commands;
 using Application.Events.Commands.UpdateEvent;
+using Domain.Constants;
 using FluentValidation.TestHelper;
 
 namespace Application.UnitTests.Events.Commands.UpdateEvent;
@@ -17,7 +18,7 @@ public class UpdateEventCommandValidatorTests
             Title = "Valid Title",
             Description = "Valid Description",
             DateOfEvent = DateTime.Today.AddDays(1),
-            PetToAssignIds = new List<int> { 1, 2, 3 }
+            AssignedPetsIds = new List<int> { 1, 2, 3 }
         };
 
         // WHEN
@@ -98,7 +99,7 @@ public class UpdateEventCommandValidatorTests
         var command = new UpdateEventCommand
         {
             Id = 1,
-            Title = new string('A', EventValidatorsConstants.MaxTitleLength + 1),
+            Title = new string('A', EntityConstants.Event.MaxTitleLength + 1),
             Description = "Valid Description",
             DateOfEvent = DateTime.Today.AddDays(1)
         };
@@ -108,7 +109,7 @@ public class UpdateEventCommandValidatorTests
 
         // THEN
         result.ShouldHaveValidationErrorFor(x => x.Title)
-            .WithErrorMessage($"Event title must not exceed {EventValidatorsConstants.MaxTitleLength} characters.");
+            .WithErrorMessage($"Event title must not exceed {EntityConstants.Event.MaxTitleLength} characters.");
     }
 
     [Test]
@@ -141,7 +142,7 @@ public class UpdateEventCommandValidatorTests
         {
             Id = 1,
             Title = "Valid Title",
-            Description = new string('A', EventValidatorsConstants.MaxDescriptionLength + 1),
+            Description = new string('A', EntityConstants.Event.MaxDescriptionLength + 1),
             DateOfEvent = DateTime.Today.AddDays(1)
         };
 
@@ -150,7 +151,7 @@ public class UpdateEventCommandValidatorTests
 
         // THEN
         result.ShouldHaveValidationErrorFor(x => x.Description)
-            .WithErrorMessage($"Event description must not exceed {EventValidatorsConstants.MaxDescriptionLength} characters.");
+            .WithErrorMessage($"Event description must not exceed {EntityConstants.Event.MaxDescriptionLength} characters.");
     }
 
     [Test]
@@ -205,14 +206,14 @@ public class UpdateEventCommandValidatorTests
             Title = "Valid Title",
             Description = "Valid Description",
             DateOfEvent = DateTime.Today.AddDays(1),
-            PetToAssignIds = new List<int> { 1, 0, 3 }
+            AssignedPetsIds = new List<int> { 1, 0, 3 }
         };
 
         // WHEN
         var result = validator.TestValidate(command);
 
         // THEN
-        result.ShouldHaveValidationErrorFor(x => x.PetToAssignIds)
+        result.ShouldHaveValidationErrorFor(x => x.AssignedPetsIds)
             .WithErrorMessage("All PetToAssignIds must be greater than zero.");
     }
 
@@ -227,14 +228,14 @@ public class UpdateEventCommandValidatorTests
             Title = "Valid Title",
             Description = "Valid Description",
             DateOfEvent = DateTime.Today.AddDays(1),
-            PetToAssignIds = new List<int> { 1, 2, 2 }
+            AssignedPetsIds = new List<int> { 1, 2, 2 }
         };
 
         // WHEN
         var result = validator.TestValidate(command);
 
         // THEN
-        result.ShouldHaveValidationErrorFor(x => x.PetToAssignIds)
+        result.ShouldHaveValidationErrorFor(x => x.AssignedPetsIds)
             .WithErrorMessage("PetToAssignIds cannot contain duplicates.");
     }
 
@@ -249,14 +250,14 @@ public class UpdateEventCommandValidatorTests
             Title = "Valid Title",
             Description = "Valid Description",
             DateOfEvent = DateTime.Today.AddDays(1),
-            PetToAssignIds = null
+            AssignedPetsIds = null
         };
 
         // WHEN
         var result = validator.TestValidate(command);
 
         // THEN
-        result.ShouldNotHaveValidationErrorFor(x => x.PetToAssignIds);
+        result.ShouldNotHaveValidationErrorFor(x => x.AssignedPetsIds);
     }
 
     [Test]
@@ -270,13 +271,13 @@ public class UpdateEventCommandValidatorTests
             Title = "Valid Title",
             Description = "Valid Description",
             DateOfEvent = DateTime.Today.AddDays(1),
-            PetToAssignIds = new List<int>()
+            AssignedPetsIds = new List<int>()
         };
 
         // WHEN
         var result = validator.TestValidate(command);
 
         // THEN
-        result.ShouldNotHaveValidationErrorFor(x => x.PetToAssignIds);
+        result.ShouldNotHaveValidationErrorFor(x => x.AssignedPetsIds);
     }
 }

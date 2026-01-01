@@ -8,7 +8,7 @@ namespace Application.UnitTests.MedicalNotes.Commands.DeleteMedicalNote;
 public class DeleteMedicalNoteCommandHandlerTests
 {
     [Test]
-    public async Task ShouldDeleteMedicalNoteSuccessfullyWhenMedicalNoteExistsAndBelongToSpecificPet()
+    public async Task ShouldDeleteMedicalNoteSuccessfullyWhenMedicalNoteExistsAndBelongsToSpecificPet()
     {
         // GIVEN
         var command = new DeleteMedicalNoteCommand
@@ -16,28 +16,28 @@ public class DeleteMedicalNoteCommandHandlerTests
             PetId = 1,
             MedicalNoteId = 1
         };
-        var medicalNote = new MedicalNote
-        {
-            Id = command.MedicalNoteId,
-            PetId = command.PetId,
-            Title = "Test Medical Note",
-            Description = "This is a test medical note description"
-        };
-        var repository = Substitute.For<IMedicalNoteRepository>();
-        var handler = new DeleteMedicalNoteCommandHandler(repository);
+        var medicalNoteRepository = Substitute.For<IMedicalNoteRepository>();
+        var petRepository = Substitute.For<IPetRepository>();
+        var handler = new DeleteMedicalNoteCommandHandler(medicalNoteRepository, petRepository);
         
-        repository.GetByIdAsync(command.MedicalNoteId)
-            .Returns(Task.FromResult(medicalNote));
+        petRepository.ExistsAsync(command.PetId, Arg.Any<CancellationToken>())
+            .Returns(true);
+        medicalNoteRepository.DeleteByIdAsync(command.MedicalNoteId, command.PetId, Arg.Any<CancellationToken>())
+            .Returns(true);
         
         // WHEN
         await handler.Handle(command, CancellationToken.None);
 
         // THEN
-        await repository.Received(1).DeleteByIdAsync(command.MedicalNoteId, Arg.Any<CancellationToken>());
+        Received.InOrder(() =>
+        {
+            petRepository.ExistsAsync(command.PetId, Arg.Any<CancellationToken>());
+            medicalNoteRepository.DeleteByIdAsync(command.MedicalNoteId, command.PetId, Arg.Any<CancellationToken>());
+        });
     }
     
     [Test]
-    public Task ShouldThrowNotFoundExceptionWhenMedicalNoteDoesNotExist()
+    public async Task ShouldThrowNotFoundExceptionWhenMedicalNoteDoesNotExist()
     {
         // GIVEN
         var command = new DeleteMedicalNoteCommand
@@ -45,53 +45,53 @@ public class DeleteMedicalNoteCommandHandlerTests
             PetId = 1,
             MedicalNoteId = 999
         };
-        var repository = Substitute.For<IMedicalNoteRepository>();
-        var handler = new DeleteMedicalNoteCommandHandler(repository);
+        var medicalNoteRepository = Substitute.For<IMedicalNoteRepository>();
+        var petRepository = Substitute.For<IPetRepository>();
+        var handler = new DeleteMedicalNoteCommandHandler(medicalNoteRepository, petRepository);
         
-        repository.GetByIdAsync(command.MedicalNoteId)
-            .Returns(Task.FromResult<MedicalNote>(null));
+        petRepository.ExistsAsync(command.PetId, Arg.Any<CancellationToken>())
+            .Returns(true);
+        medicalNoteRepository.DeleteByIdAsync(command.MedicalNoteId, command.PetId, Arg.Any<CancellationToken>())
+            .Returns(false);
         
-        // WHEN/THEN
+        // WHEN
         var act = async () => await handler.Handle(command, CancellationToken.None);
+
+        // THEN
+        await act.Should().ThrowAsync<NotFoundException>()
+            .Where(e => e.Message.Contains(nameof(MedicalNote)) && e.Message.Contains(command.MedicalNoteId.ToString()));
         
-        return FluentActions
-            .Invoking(act)
-            .Should()
-            .ThrowAsync<NotFoundException>()
-            .WithMessage($"MedicalNote with ID {command.MedicalNoteId} does not exist.");
+        Received.InOrder(() =>
+        {
+            petRepository.ExistsAsync(command.PetId, Arg.Any<CancellationToken>());
+            medicalNoteRepository.DeleteByIdAsync(command.MedicalNoteId, command.PetId, Arg.Any<CancellationToken>());
+        });
     }
     
     [Test]
-    public Task ShouldThrowNotFoundExceptionWhenMedicalNoteDoesNotBelongToPet()
+    public async Task ShouldThrowNotFoundExceptionWhenPetDoesNotExist()
     {
         // GIVEN
-        var petId = 1;
-        var differentPetId = 2;
         var command = new DeleteMedicalNoteCommand
         {
-            PetId = petId,
+            PetId = 999,
             MedicalNoteId = 1
         };
-        var medicalNote = new MedicalNote
-        {
-            Id = command.MedicalNoteId,
-            PetId = differentPetId,
-            Title = "Test Medical Note",
-            Description = "This is a test medical note description"
-        };
-        var repository = Substitute.For<IMedicalNoteRepository>();
-        var handler = new DeleteMedicalNoteCommandHandler(repository);
+        var medicalNoteRepository = Substitute.For<IMedicalNoteRepository>();
+        var petRepository = Substitute.For<IPetRepository>();
+        var handler = new DeleteMedicalNoteCommandHandler(medicalNoteRepository, petRepository);
         
-        repository.GetByIdAsync(command.MedicalNoteId)
-            .Returns(Task.FromResult(medicalNote));
+        petRepository.ExistsAsync(command.PetId, Arg.Any<CancellationToken>())
+            .Returns(false);
         
-        // WHEN/THEN
+        // WHEN
         var act = async () => await handler.Handle(command, CancellationToken.None);
+
+        // THEN
+        await act.Should().ThrowAsync<NotFoundException>()
+            .Where(e => e.Message.Contains(nameof(Pet)) && e.Message.Contains(command.PetId.ToString()));
         
-        return FluentActions
-            .Invoking(act)
-            .Should()
-            .ThrowAsync<NotFoundException>()
-            .WithMessage($"Medical note with ID {command.MedicalNoteId} does not belong to pet with ID {command.PetId}");
+        await petRepository.Received(1).ExistsAsync(command.PetId, Arg.Any<CancellationToken>());
+        await medicalNoteRepository.DidNotReceive().DeleteByIdAsync(default, default);
     }
 }

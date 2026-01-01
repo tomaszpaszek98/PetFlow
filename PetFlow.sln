@@ -20,7 +20,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PetFlow.Application", "Appl
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PetFlow.Infrastructure", "Infrastructure\PetFlow.Infrastructure.csproj", "{1B83E7B9-1024-40D4-AF94-9F89BA37D259}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PetFlow.Persistance", "Persistance\PetFlow.Persistance.csproj", "{2C1C09A5-DEA9-4CE2-BF5B-1645DB1C9A23}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PetFlow.Persistence", "Persistance\PetFlow.Persistence.csproj", "{2C1C09A5-DEA9-4CE2-BF5B-1645DB1C9A23}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PetFlow.Api", "PetFlow\PetFlow.Api.csproj", "{3E09BA0D-1E21-491E-9BFC-65482B645D80}"
 EndProject

@@ -9,5 +9,5 @@ public class UpdateEventCommand : IRequest<UpdateEventResponse>
     public string Description { get; set; }
     public DateTime DateOfEvent { get; set; }
     public bool Reminder { get; set; }
-    public IEnumerable<int> PetToAssignIds { get; set; }
+    public IEnumerable<int> AssignedPetsIds { get; set; }
 }

@@ -34,7 +34,7 @@ public static class RequestsMappingExtensions
             Description = request.Description,
             DateOfEvent = request.DateOfEvent,
             Reminder = request.Reminder,
-            PetToAssignIds = request.PetToAssignIds
+            AssignedPetsIds = request.PetToAssignIds
         };
     }
 

@@ -9,18 +9,19 @@ namespace Application.Events;
 
 public static class MappingExtensions
 {
-    public static Event MapToEvent(this CreateEventCommand request)
+    public static Event MapToEvent(this CreateEventCommand request, ICollection<Pet> pets)
     {
         return new Event
         {
             Title = request.Title,
             Description = request.Description,
             DateOfEvent = request.DateOfEvent,
-            Reminder = request.Reminder
+            Reminder = request.Reminder,
+            Pets = pets
         };
     }
     
-    public static CreateEventResponse MapToResponse(this Event createdEvent, IList<Pet> assignedPets, IList<int> notFoundPetIds)
+    public static CreateEventResponse MapToResponse(this Event createdEvent, IList<Pet> assignedPets)
     {
         return new CreateEventResponse
         {
@@ -29,24 +30,11 @@ public static class MappingExtensions
             Description = createdEvent.Description,
             DateOfEvent = createdEvent.DateOfEvent,
             Reminder = createdEvent.Reminder,
-            AssignedPets = assignedPets.Select(MapToAssignedPetDto),
-            MissingPetIds = notFoundPetIds
-        };
-    }
-    
-    public static CreateEventResponse MapToResponse(this Event createdEvent)
-    {
-        return new CreateEventResponse
-        {
-            Id = createdEvent.Id,
-            Title = createdEvent.Title,
-            Description = createdEvent.Description,
-            DateOfEvent = createdEvent.DateOfEvent,
-            Reminder = createdEvent.Reminder
+            AssignedPets = assignedPets.Select(MapToAssignedPetDto)
         };
     }
 
-    public static EventDetailsResponse MapToResponse(this Event eventDetails, IList<Pet> assignedPets)
+    public static EventDetailsResponse MapToEventDetailsResponse(this Event eventDetails)
     {
         return new EventDetailsResponse
         {
@@ -55,7 +43,7 @@ public static class MappingExtensions
             Description = eventDetails.Description,
             DateOfEvent = eventDetails.DateOfEvent,
             Reminder = eventDetails.Reminder,
-            AssignedPets = assignedPets.Select(MapToAssignedPetDto)
+            AssignedPets = eventDetails.Pets.Select(MapToAssignedPetDto)
         };
     }
 

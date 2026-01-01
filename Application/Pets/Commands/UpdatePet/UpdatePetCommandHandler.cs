@@ -1,8 +1,8 @@
+using Application.Common.Interfaces.Repositories;
 using Application.Pets.Common;
 using Domain.Entities;
 using Domain.Exceptions;
 using MediatR;
-using Persistance.Repositories;
 
 namespace Application.Pets.Commands.UpdatePet;
 
