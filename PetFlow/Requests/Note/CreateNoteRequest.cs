@@ -1,10 +1,10 @@
 ﻿using Domain.Enums;
+using System.Text.Json.Serialization;
 
 namespace PetFlow.Requests.Note;
 
-public class CreateNoteRequest
-{
-    public string Content { get; set; }
-    // Exceptional use of domain's enum here. 
-    public NoteType Type { get; set; }
-}
+public record CreateNoteRequest(
+    [property: JsonPropertyName("content")] string Content,
+    // Exceptional use of domain's enum here.
+    [property: JsonPropertyName("type")] NoteType Type
+);

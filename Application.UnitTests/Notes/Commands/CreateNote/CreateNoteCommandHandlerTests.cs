@@ -2,7 +2,6 @@ using Application.Common.Interfaces.Repositories;
 using Application.Notes.Commands.CreateNote;
 using Domain.Entities;
 using Domain.Exceptions;
-using Persistance.Repositories;
 
 namespace Application.UnitTests.Notes.Commands.CreateNote;
 
@@ -18,11 +17,6 @@ public class CreateNoteCommandHandlerTests
             Content = "Test Note Content",
             Type = Domain.Enums.NoteType.General
         };
-        var pet = new Pet
-        {
-            Id = command.PetId,
-            Name = "Test Pet"
-        };
         var expectedNote = new Note
         {
             Id = 1,
@@ -31,13 +25,13 @@ public class CreateNoteCommandHandlerTests
             Type = command.Type,
             Created = DateTime.UtcNow
         };
-        var repository = Substitute.For<INoteRepository>();
+        var noteRepository = Substitute.For<INoteRepository>();
         var petRepository = Substitute.For<IPetRepository>();
-        var handler = new CreateNoteCommandHandler(repository, petRepository);
+        var handler = new CreateNoteCommandHandler(noteRepository, petRepository);
         
-        petRepository.GetByIdAsync(command.PetId, Arg.Any<CancellationToken>())
-            .Returns(Task.FromResult(pet));
-        repository.CreateAsync(
+        petRepository.ExistsAsync(command.PetId, Arg.Any<CancellationToken>())
+            .Returns(true);
+        noteRepository.CreateAsync(
                 Arg.Is<Note>(n => n.PetId == command.PetId &&
                                  n.Content == command.Content &&
                                  n.Type == command.Type),
@@ -56,8 +50,8 @@ public class CreateNoteCommandHandlerTests
         
         Received.InOrder(() =>
         {
-            petRepository.Received(1).GetByIdAsync(command.PetId, Arg.Any<CancellationToken>());
-            repository.Received(1).CreateAsync(
+            petRepository.ExistsAsync(command.PetId, Arg.Any<CancellationToken>());
+            noteRepository.CreateAsync(
                 Arg.Is<Note>(n => n.PetId == command.PetId &&
                                   n.Content == command.Content &&
                                   n.Type == command.Type),
@@ -75,12 +69,12 @@ public class CreateNoteCommandHandlerTests
             Content = "Test Note Content",
             Type = Domain.Enums.NoteType.General
         };
-        var repository = Substitute.For<INoteRepository>();
+        var noteRepository = Substitute.For<INoteRepository>();
         var petRepository = Substitute.For<IPetRepository>();
-        var handler = new CreateNoteCommandHandler(repository, petRepository);
+        var handler = new CreateNoteCommandHandler(noteRepository, petRepository);
         
-        petRepository.GetByIdAsync(command.PetId, Arg.Any<CancellationToken>())
-            .Returns((Pet)null);
+        petRepository.ExistsAsync(command.PetId, Arg.Any<CancellationToken>())
+            .Returns(false);
         
         // WHEN
         var act = () => handler.Handle(command, CancellationToken.None);
@@ -88,7 +82,8 @@ public class CreateNoteCommandHandlerTests
         // THEN
         await act.Should().ThrowAsync<NotFoundException>()
             .Where(e => e.Message.Contains(nameof(Pet)) && e.Message.Contains(command.PetId.ToString()));
-        await petRepository.Received(1).GetByIdAsync(command.PetId, Arg.Any<CancellationToken>());
-        await repository.DidNotReceive().CreateAsync(default);
+        
+        await petRepository.Received(1).ExistsAsync(command.PetId, Arg.Any<CancellationToken>());
+        await noteRepository.DidNotReceive().CreateAsync(default);
     }
 }

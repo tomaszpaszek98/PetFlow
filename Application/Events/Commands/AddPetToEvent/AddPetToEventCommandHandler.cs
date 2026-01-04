@@ -2,7 +2,6 @@ using Application.Common.Interfaces.Repositories;
 using Domain.Entities;
 using Domain.Exceptions;
 using MediatR;
-using Persistance.Repositories;
 
 namespace Application.Events.Commands.AddPetToEvent;
 
@@ -19,44 +18,44 @@ public class AddPetToEventCommandHandler : IRequestHandler<AddPetToEventCommand,
 
     public async Task<AddPetToEventResponse> Handle(AddPetToEventCommand request, CancellationToken cancellationToken)
     {
-        var eventEntity = await _eventRepository.GetByIdAsync(request.EventId, cancellationToken);
-        if (eventEntity == null)
+        var eventEntity = await _eventRepository.GetByIdWithPetEventsTrackedAsync(request.EventId, cancellationToken);
+        if (eventEntity is null)
         {
             throw new NotFoundException(nameof(Event), request.EventId);
         }
         
-        await ValidateIfPetExistsAsync(request.PetId, cancellationToken);
-        ValidateIfPetIsAssignedToEvent(eventEntity, request.PetId);
-        await AssignPetToEventAsync(request.EventId, request.PetId, cancellationToken);
+        ValidateIfPetIsAssignedToEventOrThrow(eventEntity, request.PetId);
+        
+        var pet = await _petRepository.GetByIdAsync(request.PetId, cancellationToken);
+        if (pet is null)
+        {
+            throw new NotFoundException(nameof(Pet), request.PetId);
+        }
+        
+        await AddPetToEvent(eventEntity, pet, cancellationToken);
         
         return CreateResponse(request.EventId, request.PetId);
     }
     
-    private async Task ValidateIfPetExistsAsync(int petId, CancellationToken cancellationToken)
+    private async Task AddPetToEvent(Event eventEntity, Pet pet, CancellationToken cancellationToken)
     {
-        var pet = await _petRepository.GetByIdAsync(petId, cancellationToken);
-        if (pet == null)
-        {
-            throw new NotFoundException(nameof(Pet), petId);
-        }
+        var petEvent = new PetEvent 
+        { 
+            PetId = pet.Id,
+            EventId = eventEntity.Id,
+            Pet = pet,
+            Event = eventEntity
+        };
+        eventEntity.PetEvents.Add(petEvent);
+        await _eventRepository.UpdateAsync(eventEntity, cancellationToken);
     }
     
-    private void ValidateIfPetIsAssignedToEvent(Event eventEntity, int petId)
+    private void ValidateIfPetIsAssignedToEventOrThrow(Event eventEntity, int petId)
     {
-        if (eventEntity.PetEvents.Any(x => x.PetId == petId))
+        if (eventEntity.PetEvents.Any(pe => pe.PetId == petId))
         {
             throw new ConflictingOperationException($"Pet with ID {petId} is already assigned to event with ID {eventEntity.Id}");
         }
-    }
-    
-    private async Task AssignPetToEventAsync(int eventId, int petId, CancellationToken cancellationToken)
-    {
-        var petEvent = new PetEvent
-        {
-            EventId = eventId,
-            PetId = petId
-        };
-        await _eventRepository.AddPetsToEventAsync(new List<PetEvent> { petEvent }, cancellationToken);
     }
     
     private AddPetToEventResponse CreateResponse(int eventId, int petId)

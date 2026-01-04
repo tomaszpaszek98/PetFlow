@@ -82,12 +82,13 @@ public class EventsController : BaseController
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> AddPet([FromBody] AddPetToEventCommand command,
-        CancellationToken cancellationToken)
+    public async Task<IActionResult> AddPet([FromRoute] int eventId, 
+        [FromBody] AddPetToEventRequest request, CancellationToken cancellationToken)
     {
+        var command = request.MapToCommand(eventId);
         var result = await Mediator.Send(command, cancellationToken);
         
-        return CreatedAtAction(nameof(Get), new { Id = result.EventId });
+        return CreatedAtAction(nameof(Get), new { id = result.EventId }, result);
     }
 
     [HttpDelete(ApiEndpoints.Events.Pets.Delete)]

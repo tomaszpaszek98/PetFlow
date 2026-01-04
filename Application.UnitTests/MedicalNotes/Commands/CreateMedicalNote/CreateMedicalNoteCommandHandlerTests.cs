@@ -2,7 +2,6 @@ using Application.Common.Interfaces.Repositories;
 using Application.MedicalNotes.Commands.CreateMedicalNote;
 using Domain.Entities;
 using Domain.Exceptions;
-using Persistance.Repositories;
 
 namespace Application.UnitTests.MedicalNotes.Commands.CreateMedicalNote;
 
@@ -18,11 +17,6 @@ public class CreateMedicalNoteCommandHandlerTests
             Title = "Test Medical Note",
             Description = "This is a test medical note description"
         };
-        var pet = new Pet
-        {
-            Id = command.PetId,
-            Name = "Test Pet"
-        };
         var createdNote = new MedicalNote
         {
             Id = 1,
@@ -31,13 +25,13 @@ public class CreateMedicalNoteCommandHandlerTests
             Description = command.Description,
             Created = DateTime.UtcNow
         };
-        var repository = Substitute.For<IMedicalNoteRepository>();
+        var medicalNoteRepository = Substitute.For<IMedicalNoteRepository>();
         var petRepository = Substitute.For<IPetRepository>();
-        var handler = new CreateMedicalNoteCommandHandler(repository, petRepository);
+        var handler = new CreateMedicalNoteCommandHandler(medicalNoteRepository, petRepository);
         
-        petRepository.GetByIdAsync(command.PetId, Arg.Any<CancellationToken>())
-            .Returns(Task.FromResult(pet));
-        repository.CreateAsync(
+        petRepository.ExistsAsync(command.PetId, Arg.Any<CancellationToken>())
+            .Returns(true);
+        medicalNoteRepository.CreateAsync(
                 Arg.Is<MedicalNote>(n => n.PetId == command.PetId &&
                                        n.Title == command.Title &&
                                        n.Description == command.Description),
@@ -56,8 +50,8 @@ public class CreateMedicalNoteCommandHandlerTests
         
         Received.InOrder(() =>
         {
-            petRepository.Received(1).GetByIdAsync(command.PetId, Arg.Any<CancellationToken>());
-            repository.Received(1).CreateAsync(
+            petRepository.ExistsAsync(command.PetId, Arg.Any<CancellationToken>());
+            medicalNoteRepository.CreateAsync(
                 Arg.Is<MedicalNote>(n => n.PetId == command.PetId &&
                                          n.Title == command.Title &&
                                          n.Description == command.Description),
@@ -75,12 +69,12 @@ public class CreateMedicalNoteCommandHandlerTests
             Title = "Test Medical Note",
             Description = "This is a test medical note description"
         };
-        var repository = Substitute.For<IMedicalNoteRepository>();
+        var medicalNoteRepository = Substitute.For<IMedicalNoteRepository>();
         var petRepository = Substitute.For<IPetRepository>();
-        var handler = new CreateMedicalNoteCommandHandler(repository, petRepository);
+        var handler = new CreateMedicalNoteCommandHandler(medicalNoteRepository, petRepository);
         
-        petRepository.GetByIdAsync(command.PetId, Arg.Any<CancellationToken>())
-            .Returns((Pet)null);
+        petRepository.ExistsAsync(command.PetId, Arg.Any<CancellationToken>())
+            .Returns(false);
         
         // WHEN
         var act = () => handler.Handle(command, CancellationToken.None);
@@ -88,7 +82,8 @@ public class CreateMedicalNoteCommandHandlerTests
         // THEN
         await act.Should().ThrowAsync<NotFoundException>()
             .Where(e => e.Message.Contains(nameof(Pet)) && e.Message.Contains(command.PetId.ToString()));
-        await petRepository.Received(1).GetByIdAsync(command.PetId, Arg.Any<CancellationToken>());
-        await repository.DidNotReceive().CreateAsync(default);
+        
+        await petRepository.Received(1).ExistsAsync(command.PetId, Arg.Any<CancellationToken>());
+        await medicalNoteRepository.DidNotReceive().CreateAsync(default);
     }
 }

@@ -1,10 +1,11 @@
-﻿namespace PetFlow.Requests.Event;
+﻿using System.Text.Json.Serialization;
 
-public class UpdateEventRequest
-{
-    public string Title { get; set; }
-    public string Description { get; set; }
-    public DateTime DateOfEvent { get; set; }
-    public bool Reminder { get; set; }
-    public IEnumerable<int> PetToAssignIds { get; set; }
-}
+namespace PetFlow.Requests.Event;
+
+public record UpdateEventRequest(
+    [property: JsonPropertyName("title")] string Title,
+    [property: JsonPropertyName("description")] string Description,
+    [property: JsonPropertyName("dateOfEvent")] DateTime DateOfEvent,
+    [property: JsonPropertyName("reminder")] bool Reminder,
+    [property: JsonPropertyName("petToAssignIds")] IEnumerable<int> PetToAssignIds
+);

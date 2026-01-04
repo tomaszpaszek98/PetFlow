@@ -5,3 +5,8 @@ riderModule.iml
 /_ReSharper.Caches/
 PetFlow/Properties/launchSettings.json
 PetFlow.sln.DotSettings.user
+*.DotSettings.user
+*.sqlite
+*copilot*.xml
+dataSources.xml
+launchSettings.json

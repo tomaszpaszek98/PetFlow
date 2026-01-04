@@ -7,26 +7,27 @@ namespace Application.Notes.Commands.DeleteNote;
 
 public class DeleteNoteCommandHandler : IRequestHandler<DeleteNoteCommand>
 {
-    private readonly INoteRepository _repository;
+    private readonly INoteRepository _noteRepository;
+    private readonly IPetRepository _petRepository;
 
-    public DeleteNoteCommandHandler(INoteRepository repository)
+    public DeleteNoteCommandHandler(INoteRepository noteRepository, IPetRepository petRepository)
     {
-        _repository = repository;
+        _noteRepository = noteRepository;
+        _petRepository = petRepository;
     }
 
     public async Task Handle(DeleteNoteCommand command, CancellationToken cancellationToken)
     {
-        var note = await _repository.GetByIdAsync(command.NoteId, cancellationToken);
-        if (note == null)
+        var petExists = await _petRepository.ExistsAsync(command.PetId, cancellationToken);
+        if (!petExists)
+        {
+            throw new NotFoundException(nameof(Pet), command.PetId);
+        }
+
+        var isDeleted = await _noteRepository.DeleteAsync(command.NoteId, command.PetId, cancellationToken);
+        if (!isDeleted)
         {
             throw new NotFoundException(nameof(Note), command.NoteId);
         }
-        
-        if (note.PetId != command.PetId)
-        {
-            throw new NotFoundException($"Note with ID {command.NoteId} does not belong to pet with ID {command.PetId}");
-        }
-        
-        await _repository.DeleteByIdAsync(command.NoteId, cancellationToken);
     }
 }

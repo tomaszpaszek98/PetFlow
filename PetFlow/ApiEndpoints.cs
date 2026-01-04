@@ -24,7 +24,7 @@ public static class ApiEndpoints
 
         public static class Events
         {
-            public const string GetAll = $"{Base}/{{id}}/events";
+            public const string GetAll = $"{Base}/{{petId}}/events";
         }
         
         public static class MedicalNotes
@@ -32,10 +32,10 @@ public static class ApiEndpoints
             private const string MedicalNotesBase = $"{Base}/{{petId}}/medical-notes";
 
             public const string Create = MedicalNotesBase;
-            public const string Get = $"{MedicalNotesBase}/{{id}}";
+            public const string Get = $"{MedicalNotesBase}/{{medicalNoteId}}";
             public const string GetAll = MedicalNotesBase;
-            public const string Update = $"{MedicalNotesBase}/{{id}}";
-            public const string Delete = $"{MedicalNotesBase}/{{id}}";
+            public const string Update = $"{MedicalNotesBase}/{{medicalNoteId}}";
+            public const string Delete = $"{MedicalNotesBase}/{{medicalNoteId}}";
 
             public static class Summary
             {
@@ -49,10 +49,10 @@ public static class ApiEndpoints
             private const string NotesBase = $"{Base}/{{petId}}/notes";
 
             public const string Create = NotesBase;
-            public const string Get = $"{NotesBase}/{{id}}";
+            public const string Get = $"{NotesBase}/{{noteId}}";
             public const string GetAll = NotesBase;
-            public const string Update = $"{NotesBase}/{{id}}";
-            public const string Delete = $"{NotesBase}/{{id}}";
+            public const string Update = $"{NotesBase}/{{noteId}}";
+            public const string Delete = $"{NotesBase}/{{noteId}}";
             
             public static class Summary
             {

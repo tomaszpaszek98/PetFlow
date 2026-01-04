@@ -1,5 +1,6 @@
 using Application.Notes.Commands;
 using Application.Notes.Commands.UpdateNote;
+using Domain.Constants;
 using Domain.Enums;
 using FluentValidation.TestHelper;
 
@@ -165,7 +166,7 @@ public class UpdateNoteCommandValidatorTests
         {
             PetId = 1,
             NoteId = 1,
-            Content = new string('x', NoteValidatorsConstants.MaxContentLength + 1),
+            Content = new string('x', EntityConstants.Note.MaxContentLength + 1),
             Type = NoteType.General
         };
 
@@ -174,7 +175,7 @@ public class UpdateNoteCommandValidatorTests
 
         // THEN
         result.ShouldHaveValidationErrorFor(x => x.Content)
-            .WithErrorMessage($"Content must not exceed {NoteValidatorsConstants.MaxContentLength} characters.");
+            .WithErrorMessage($"Content must not exceed {EntityConstants.Note.MaxContentLength} characters.");
     }
 
     [Test]

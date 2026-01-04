@@ -1,5 +1,6 @@
 using Application.MedicalNotes.Commands;
 using Application.MedicalNotes.Commands.UpdateMedicalNote;
+using Domain.Constants;
 using FluentValidation.TestHelper;
 
 namespace Application.UnitTests.MedicalNotes.Commands.UpdateMedicalNote;
@@ -140,7 +141,7 @@ public class UpdateMedicalNoteCommandValidatorTests
         {
             PetId = 1,
             MedicalNoteId = 2,
-            Title = new string('A', MedicalNoteValidatorsConstants.MaxTitleLength + 1),
+            Title = new string('A', EntityConstants.MedicalNote.MaxTitleLength + 1),
             Description = "Valid Description"
         };
 
@@ -149,7 +150,7 @@ public class UpdateMedicalNoteCommandValidatorTests
 
         // THEN
         result.ShouldHaveValidationErrorFor(x => x.Title)
-            .WithErrorMessage($"Title must not exceed {MedicalNoteValidatorsConstants.MaxTitleLength} characters.");
+            .WithErrorMessage($"Title must not exceed {EntityConstants.MedicalNote.MaxTitleLength} characters.");
     }
 
     [Test]
@@ -183,7 +184,7 @@ public class UpdateMedicalNoteCommandValidatorTests
             PetId = 1,
             MedicalNoteId = 2,
             Title = "Valid Title",
-            Description = new string('A', MedicalNoteValidatorsConstants.MaxDescriptionLength + 1)
+            Description = new string('A', EntityConstants.MedicalNote.MaxDescriptionLength + 1)
         };
 
         // WHEN
@@ -191,6 +192,6 @@ public class UpdateMedicalNoteCommandValidatorTests
 
         // THEN
         result.ShouldHaveValidationErrorFor(x => x.Description)
-            .WithErrorMessage($"Description must not exceed {MedicalNoteValidatorsConstants.MaxDescriptionLength} characters.");
+            .WithErrorMessage($"Description must not exceed {EntityConstants.MedicalNote.MaxDescriptionLength} characters.");
     }
 }

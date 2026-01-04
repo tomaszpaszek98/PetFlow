@@ -4,18 +4,11 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace PetFlow.ExceptionHandlers;
 
-internal sealed class ConflictingOperationExceptionHandler : IExceptionHandler
+internal sealed class ConflictingOperationExceptionHandler(
+    IProblemDetailsService problemDetailsService,
+    ILogger<ConflictingOperationExceptionHandler> logger)
+    : IExceptionHandler
 {
-    private readonly IProblemDetailsService _problemDetailsService;
-    private readonly ILogger<ConflictingOperationExceptionHandler> _logger;
-
-    internal ConflictingOperationExceptionHandler(IProblemDetailsService problemDetailsService,
-        ILogger<ConflictingOperationExceptionHandler> logger)
-    {
-        _problemDetailsService = problemDetailsService;
-        _logger = logger;
-    }
-    
     public async ValueTask<bool> TryHandleAsync(
         HttpContext httpContext,
         Exception exception,
@@ -25,11 +18,11 @@ internal sealed class ConflictingOperationExceptionHandler : IExceptionHandler
         {
             return false;
         }
-        _logger.LogError(conflictException, "Exception occurred: {Message}", conflictException.Message);
+        logger.LogError(conflictException, "Exception occurred: {Message}", conflictException.Message);
 
         httpContext.Response.StatusCode = StatusCodes.Status409Conflict;
         
-        return await _problemDetailsService.TryWriteAsync(new ProblemDetailsContext
+        return await problemDetailsService.TryWriteAsync(new ProblemDetailsContext
         {
             HttpContext = httpContext,
             Exception = exception,
@@ -37,6 +30,7 @@ internal sealed class ConflictingOperationExceptionHandler : IExceptionHandler
             {
                 Title = "Conflicting operation.",
                 Detail = exception.Message,
+                Type = exception.GetType().Name,
                 Status = StatusCodes.Status409Conflict
             }
         });

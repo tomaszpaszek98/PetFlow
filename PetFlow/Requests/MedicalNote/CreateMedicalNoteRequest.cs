@@ -1,7 +1,8 @@
-﻿namespace PetFlow.Requests.MedicalNote;
+﻿using System.Text.Json.Serialization;
 
-public class CreateMedicalNoteRequest
-{
-    public string Title { get; set; }
-    public string Description { get; set; }
-}
+namespace PetFlow.Requests.MedicalNote;
+
+public record CreateMedicalNoteRequest(
+    [property: JsonPropertyName("title")] string Title,
+    [property: JsonPropertyName("description")] string Description
+);

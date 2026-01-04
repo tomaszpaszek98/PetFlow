@@ -7,7 +7,7 @@ namespace Application.UnitTests.Events.Queries.GetEvents;
 public class GetEventsQueryHandlerTests
 {
     [Test]
-    public async Task ShouldReturnEventsResponseWithAllEventsWhenEventsExists()
+    public async Task ShouldReturnEventsResponseWithAllEventsWhenEventsExist()
     {
         // GIVEN
         var events = new List<Event>
@@ -28,11 +28,13 @@ public class GetEventsQueryHandlerTests
         result.Should().NotBeNull();
         result.Items.Should().HaveCount(2);
         result.Items.Select(x => x.Id).Should().BeEquivalentTo(events.Select(x => x.Id));
+        result.Items.Select(x => x.Title).Should().BeEquivalentTo(new[] { "Vet Visit", "Vaccination" });
+        
         await repository.Received(1).GetAllAsync(Arg.Any<CancellationToken>());
     }
 
     [Test]
-    public async Task ShouldReturnEmptyEventsResponseWhenEventsDoesNotExist()
+    public async Task ShouldReturnEmptyEventsResponseWhenEventsDoNotExist()
     {
         // GIVEN
         var query = new GetEventsQuery();
@@ -47,6 +49,8 @@ public class GetEventsQueryHandlerTests
         // THEN
         result.Should().NotBeNull();
         result.Items.Should().BeEmpty();
+        
         await repository.Received(1).GetAllAsync(Arg.Any<CancellationToken>());
     }
 }
+

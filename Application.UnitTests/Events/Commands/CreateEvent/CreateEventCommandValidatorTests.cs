@@ -1,5 +1,6 @@
 using Application.Events.Commands;
 using Application.Events.Commands.CreateEvent;
+using Domain.Constants;
 using FluentValidation.TestHelper;
 
 namespace Application.UnitTests.Events.Commands.CreateEvent;
@@ -53,7 +54,7 @@ public class CreateEventCommandValidatorTests
         var validator = new CreateEventCommandValidator();
         var command = new CreateEventCommand
         {
-            Title = new string('A', EventValidatorsConstants.MaxTitleLength + 1),
+            Title = new string('A', EntityConstants.Event.MaxTitleLength + 1),
             Description = "Valid Description",
             DateOfEvent = DateTime.Today.AddDays(1)
         };
@@ -63,7 +64,7 @@ public class CreateEventCommandValidatorTests
 
         // THEN
         result.ShouldHaveValidationErrorFor(x => x.Title)
-            .WithErrorMessage($"Event title must not exceed {EventValidatorsConstants.MaxTitleLength} characters.");
+            .WithErrorMessage($"Event title must not exceed {EntityConstants.Event.MaxTitleLength} characters.");
     }
 
     [Test]
@@ -94,7 +95,7 @@ public class CreateEventCommandValidatorTests
         var command = new CreateEventCommand
         {
             Title = "Valid Title",
-            Description = new string('A', EventValidatorsConstants.MaxDescriptionLength + 1),
+            Description = new string('A', EntityConstants.Event.MaxDescriptionLength + 1),
             DateOfEvent = DateTime.Today.AddDays(1)
         };
 
@@ -103,7 +104,7 @@ public class CreateEventCommandValidatorTests
 
         // THEN
         result.ShouldHaveValidationErrorFor(x => x.Description)
-            .WithErrorMessage($"Event description must not exceed {EventValidatorsConstants.MaxDescriptionLength} characters.");
+            .WithErrorMessage($"Event description must not exceed {EntityConstants.Event.MaxDescriptionLength} characters.");
     }
 
     [Test]

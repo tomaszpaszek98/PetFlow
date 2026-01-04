@@ -9,18 +9,19 @@ namespace Application.Events;
 
 public static class MappingExtensions
 {
-    public static Event MapToEvent(this CreateEventCommand request)
+    public static Event MapToEvent(this CreateEventCommand request, ICollection<Pet> pets)
     {
         return new Event
         {
             Title = request.Title,
             Description = request.Description,
             DateOfEvent = request.DateOfEvent,
-            Reminder = request.Reminder
+            Reminder = request.Reminder,
+            PetEvents = pets.Select(MapToPetEvent).ToList()
         };
     }
     
-    public static CreateEventResponse MapToResponse(this Event createdEvent, IList<Pet> assignedPets, IList<int> notFoundPetIds)
+    public static CreateEventResponse MapToResponse(this Event createdEvent, IList<Pet> assignedPets)
     {
         return new CreateEventResponse
         {
@@ -29,24 +30,12 @@ public static class MappingExtensions
             Description = createdEvent.Description,
             DateOfEvent = createdEvent.DateOfEvent,
             Reminder = createdEvent.Reminder,
-            AssignedPets = assignedPets.Select(MapToAssignedPetDto),
-            MissingPetIds = notFoundPetIds
-        };
-    }
-    
-    public static CreateEventResponse MapToResponse(this Event createdEvent)
-    {
-        return new CreateEventResponse
-        {
-            Id = createdEvent.Id,
-            Title = createdEvent.Title,
-            Description = createdEvent.Description,
-            DateOfEvent = createdEvent.DateOfEvent,
-            Reminder = createdEvent.Reminder
+            CreatedAt = createdEvent.Created,
+            AssignedPets = assignedPets.Select(MapToAssignedPetDto)
         };
     }
 
-    public static EventDetailsResponse MapToResponse(this Event eventDetails, IList<Pet> assignedPets)
+    public static EventDetailsResponse MapToEventDetailsResponse(this Event eventDetails)
     {
         return new EventDetailsResponse
         {
@@ -55,11 +44,16 @@ public static class MappingExtensions
             Description = eventDetails.Description,
             DateOfEvent = eventDetails.DateOfEvent,
             Reminder = eventDetails.Reminder,
-            AssignedPets = assignedPets.Select(MapToAssignedPetDto)
+            CreatedAt = eventDetails.Created,
+            ModifiedAt = eventDetails.Modified ?? eventDetails.Created,
+            AssignedPets = eventDetails.PetEvents
+                .Where(pe => pe.Pet != null)
+                .Select(pe => pe.Pet.MapToAssignedPetDto())
+                .ToList()
         };
     }
 
-    public static EventResponseDto MapToResponseDto(this Event eventDetails)
+    private static EventResponseDto MapToResponseDto(this Event eventDetails)
     {
         return new EventResponseDto
         {
@@ -95,6 +89,15 @@ public static class MappingExtensions
             Id = pet.Id,
             Name = pet.Name,
             PhotoUrl = pet.PhotoUrl
+        };
+    }
+
+    private static PetEvent MapToPetEvent(this Pet pet)
+    {
+        return new PetEvent
+        {
+            PetId = pet.Id,
+            Pet = pet
         };
     }
 
