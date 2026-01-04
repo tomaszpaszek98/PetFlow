@@ -1,5 +1,6 @@
 ﻿using Application.Common.Interfaces.Repositories;
 using Domain.Entities;
+using Domain.Exceptions;
 using FluentValidation;
 using MediatR;
 
@@ -37,7 +38,7 @@ public class CreateEventCommandHandler : IRequestHandler<CreateEventCommand, Cre
 
         if (missingPetIds.Any())
         {
-            throw new ValidationException($"Pets not found: {string.Join(", ", missingPetIds)}");
+            throw new NotFoundException($"Pets not found. Ids: {string.Join(", ", missingPetIds)}");
         }
     }
 }

@@ -16,7 +16,7 @@ public class GetEventDetailsQueryHandler : IRequestHandler<GetEventDetailsQuery,
 
     public async Task<EventDetailsResponse> Handle(GetEventDetailsQuery request, CancellationToken cancellationToken)
     {
-        var eventDetails = await _eventRepository.GetByIdWithPetsAsync(request.EventId, cancellationToken);
+        var eventDetails = await _eventRepository.GetByIdWithPetEventsAsync(request.EventId, cancellationToken);
 
         if (eventDetails is null)
         {

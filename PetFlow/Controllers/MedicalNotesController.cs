@@ -20,7 +20,7 @@ public class MedicalNotesController : BaseController
         var command = request.MapToCommand(petId);
         var result = await Mediator.Send(command, cancellationToken);
         
-        return CreatedAtAction(nameof(Get), new { id = result.Id }, result);
+        return CreatedAtAction(nameof(Get), new { petId = petId, medicalNoteId = result.Id }, result);
     }
 
     [HttpGet(ApiEndpoints.Pets.MedicalNotes.Get)]

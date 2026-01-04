@@ -18,6 +18,7 @@ public class GetEventDetailsQueryHandlerTests
             new() { Id = 10, Name = "Rex", PhotoUrl = "https://example.com/rex.jpg" },
             new() { Id = 20, Name = "Milo", PhotoUrl = "https://example.com/milo.jpg" }
         };
+        var petEvents = pets.Select(p => new PetEvent { PetId = p.Id, Pet = p, EventId = eventId }).ToList();
         var expectedAssignedPets = new List<AssignedPetDto>
         {
             new() { Id = 10, Name = "Rex", PhotoUrl = "https://example.com/rex.jpg" },
@@ -30,13 +31,13 @@ public class GetEventDetailsQueryHandlerTests
             Description = "Desc",
             DateOfEvent = new DateTime(2025, 8, 3),
             Reminder = true,
-            Pets = pets
+            PetEvents = petEvents
         };
         var query = new GetEventDetailsQuery { EventId = eventId };
         var eventRepository = Substitute.For<IEventRepository>();
         var handler = new GetEventDetailsQueryHandler(eventRepository);
         
-        eventRepository.GetByIdWithPetsAsync(eventId, Arg.Any<CancellationToken>())
+        eventRepository.GetByIdWithPetEventsAsync(eventId, Arg.Any<CancellationToken>())
             .Returns(eventEntity);
         
         // WHEN
@@ -52,7 +53,7 @@ public class GetEventDetailsQueryHandlerTests
         result.AssignedPets.Should().HaveCount(2);
         result.AssignedPets.Should().BeEquivalentTo(expectedAssignedPets);
         
-        await eventRepository.Received(1).GetByIdWithPetsAsync(eventId, Arg.Any<CancellationToken>());
+        await eventRepository.Received(1).GetByIdWithPetEventsAsync(eventId, Arg.Any<CancellationToken>());
     }
 
     [Test]
@@ -67,13 +68,13 @@ public class GetEventDetailsQueryHandlerTests
             Description = "No pets assigned",
             DateOfEvent = new DateTime(2025, 8, 3),
             Reminder = false,
-            Pets = new List<Pet>()
+            PetEvents = new List<PetEvent>()
         };
         var query = new GetEventDetailsQuery { EventId = eventId };
         var eventRepository = Substitute.For<IEventRepository>();
         var handler = new GetEventDetailsQueryHandler(eventRepository);
         
-        eventRepository.GetByIdWithPetsAsync(eventId, Arg.Any<CancellationToken>())
+        eventRepository.GetByIdWithPetEventsAsync(eventId, Arg.Any<CancellationToken>())
             .Returns(eventEntity);
         
         // WHEN
@@ -88,7 +89,7 @@ public class GetEventDetailsQueryHandlerTests
         result.Reminder.Should().Be(eventEntity.Reminder);
         result.AssignedPets.Should().BeEmpty();
         
-        await eventRepository.Received(1).GetByIdWithPetsAsync(eventId, Arg.Any<CancellationToken>());
+        await eventRepository.Received(1).GetByIdWithPetEventsAsync(eventId, Arg.Any<CancellationToken>());
     }
 
     [Test]
@@ -100,7 +101,7 @@ public class GetEventDetailsQueryHandlerTests
         var eventRepository = Substitute.For<IEventRepository>();
         var handler = new GetEventDetailsQueryHandler(eventRepository);
         
-        eventRepository.GetByIdWithPetsAsync(eventId, Arg.Any<CancellationToken>())
+        eventRepository.GetByIdWithPetEventsAsync(eventId, Arg.Any<CancellationToken>())
             .Returns((Event)null);
         
         // WHEN
@@ -109,6 +110,6 @@ public class GetEventDetailsQueryHandlerTests
         // THEN
         await act.Should().ThrowAsync<NotFoundException>()
             .Where(e => e.Message.Contains(nameof(Event)) && e.Message.Contains(eventId.ToString()));
-        await eventRepository.Received(1).GetByIdWithPetsAsync(eventId, Arg.Any<CancellationToken>());
+        await eventRepository.Received(1).GetByIdWithPetEventsAsync(eventId, Arg.Any<CancellationToken>());
     }
 }

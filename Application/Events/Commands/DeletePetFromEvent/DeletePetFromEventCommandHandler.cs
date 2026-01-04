@@ -16,19 +16,19 @@ public class DeletePetFromEventCommandHandler : IRequestHandler<DeletePetFromEve
 
     public async Task Handle(DeletePetFromEventCommand request, CancellationToken cancellationToken)
     {
-        var eventEntity = await _eventRepository.GetByIdWithPetsAsync(request.EventId, cancellationToken);
+        var eventEntity = await _eventRepository.GetByIdWithPetEventsTrackedAsync(request.EventId, cancellationToken);
         if (eventEntity is null)
         {
             throw new NotFoundException(nameof(Event), request.EventId);
         }
         
-        var petToRemove = eventEntity.Pets.FirstOrDefault(p => p.Id == request.PetId);
-        if (petToRemove is null)
+        var petEventToRemove = eventEntity.PetEvents.FirstOrDefault(pe => pe.PetId == request.PetId);
+        if (petEventToRemove is null)
         {
             throw new NotFoundException($"Pet with ID {request.PetId} is not assigned to event with ID {request.EventId}");
         }
         
-        eventEntity.Pets.Remove(petToRemove);
+        eventEntity.PetEvents.Remove(petEventToRemove);
         await _eventRepository.UpdateAsync(eventEntity, cancellationToken);
     }
 }

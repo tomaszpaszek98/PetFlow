@@ -1,4 +1,5 @@
-﻿using Application.Events.Commands.UpdateEvent;
+﻿using Application.Events.Commands.AddPetToEvent;
+using Application.Events.Commands.UpdateEvent;
 using Application.MedicalNotes.Commands.CreateMedicalNote;
 using Application.MedicalNotes.Commands.UpdateMedicalNote;
 using Application.Notes.Commands.CreateNote;
@@ -77,6 +78,15 @@ public static class RequestsMappingExtensions
             NoteId = medicalNoteId,
             Content = request.Content,
             Type = request.Type
+        };
+    }
+
+    public static AddPetToEventCommand MapToCommand(this AddPetToEventRequest request, int eventId)
+    {
+        return new AddPetToEventCommand
+        {
+            PetId = request.PetId,
+            EventId = eventId
         };
     }
 }

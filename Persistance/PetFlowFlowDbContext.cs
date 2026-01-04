@@ -3,6 +3,7 @@ using Application.Common.Interfaces;
 using Domain.Common;
 using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace PetFlow.Persistence;
 
@@ -12,6 +13,7 @@ public class PetFlowFlowDbContext : DbContext, IPetFlowDbContext
     public DbSet<MedicalNote> MedicalNotes { get; set; }
     public DbSet<Note> Notes { get; set; }
     public DbSet<Pet> Pets { get; set; }
+    public DbSet<PetEvent> PetEvents { get; set; }
     
     private readonly IDateTime _dateTime;
     private readonly ICurrentUserService _userService;
@@ -20,7 +22,7 @@ public class PetFlowFlowDbContext : DbContext, IPetFlowDbContext
     {
     }
     
-    public PetFlowFlowDbContext(DbContextOptions<PetFlowFlowDbContext> options, IDateTime dateTime, ICurrentUserService userService ) : base(options)
+    public PetFlowFlowDbContext(DbContextOptions<PetFlowFlowDbContext> options, IDateTime dateTime, ICurrentUserService userService) : base(options)
     {
         _dateTime = dateTime;
         _userService = userService;
@@ -37,6 +39,8 @@ public class PetFlowFlowDbContext : DbContext, IPetFlowDbContext
     {
         foreach (var entry in ChangeTracker.Entries<AuditableEntity>())
         {
+            DetectAndMarkCollectionChanges(entry);
+
             switch(entry.State)
             {
                 case EntityState.Added:
@@ -59,5 +63,14 @@ public class PetFlowFlowDbContext : DbContext, IPetFlowDbContext
             }
         }
         return base.SaveChangesAsync(cancellationToken);
+    }
+
+    private void DetectAndMarkCollectionChanges(EntityEntry<AuditableEntity> entry)
+    {
+        if (entry.State == EntityState.Unchanged && 
+            entry.Collections.Any(c => c.IsModified))
+        {
+            entry.State = EntityState.Modified;
+        }
     }
 }

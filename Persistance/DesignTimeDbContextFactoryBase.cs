@@ -43,7 +43,7 @@ public abstract class DesignTimeDbContextFactoryBase<TContext> :
         Console.WriteLine($"DesignTimeDbContextFactoryBase.Create(string): Connection string: '{connectionString}'.");
 
         var optionsBuilder = new DbContextOptionsBuilder<TContext>();
-        optionsBuilder.UseSqlServer(connectionString);
+        optionsBuilder.UseSqlite(connectionString);
 
         return CreateNewInstance(optionsBuilder.Options);
     }

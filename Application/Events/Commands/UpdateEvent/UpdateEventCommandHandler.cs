@@ -1,7 +1,6 @@
 using Application.Common.Interfaces.Repositories;
 using Domain.Entities;
 using Domain.Exceptions;
-using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
@@ -24,7 +23,7 @@ public class UpdateEventCommandHandler : IRequestHandler<UpdateEventCommand, Upd
 
     public async Task<UpdateEventResponse> Handle(UpdateEventCommand request, CancellationToken cancellationToken)
     {
-        var existingEvent = await _eventRepository.GetByIdWithPetsAsync(request.Id, cancellationToken);
+        var existingEvent = await _eventRepository.GetByIdWithPetEventsTrackedAsync(request.Id, cancellationToken);
         if (existingEvent is null)
         {
             throw new NotFoundException(nameof(Event), request.Id);
@@ -50,7 +49,7 @@ public class UpdateEventCommandHandler : IRequestHandler<UpdateEventCommand, Upd
     {
         if (!request.AssignedPetsIds.Any())
         {
-            eventEntity.Pets.Clear();
+            eventEntity.PetEvents.Clear();
             _logger.LogInformation($"Removed all pet assignments for event {eventEntity.Id}.");
             return [];
         }
@@ -59,14 +58,31 @@ public class UpdateEventCommandHandler : IRequestHandler<UpdateEventCommand, Upd
         var petsToAssign = await _petRepository.GetByIdsAsync(petsToAssignIds, cancellationToken);
         
         ValidateAllPetsExistOrThrow(petsToAssign, petsToAssignIds);
-        
-        eventEntity.Pets.Clear();
-        foreach (var pet in petsToAssign)
-        {
-            eventEntity.Pets.Add(pet);
-        }
+        SynchronizePetEvents(eventEntity, petsToAssign, petsToAssignIds);
 
         return petsToAssign;
+    }
+
+    private static void SynchronizePetEvents(Event eventEntity, IList<Pet> petsToAssign, IList<int> petsToAssignIds)
+    {
+        var currentPetEventIds = eventEntity.PetEvents.Select(pe => pe.PetId).ToList();
+        var petEventsToRemove = eventEntity.PetEvents.Where(pe => !petsToAssignIds.Contains(pe.PetId)).ToList();
+        var petsToAdd = petsToAssign.Where(p => !currentPetEventIds.Contains(p.Id)).ToList();
+        
+        foreach (var petEvent in petEventsToRemove)
+        {
+            eventEntity.PetEvents.Remove(petEvent);
+        }
+        
+        foreach (var pet in petsToAdd)
+        {
+            eventEntity.PetEvents.Add(new PetEvent 
+            { 
+                PetId = pet.Id,
+                EventId = eventEntity.Id,
+                Pet = pet
+            });
+        }
     }
 
     private static void ValidateAllPetsExistOrThrow(IList<Pet> foundPets, IList<int> requestedPetIds)
@@ -76,7 +92,7 @@ public class UpdateEventCommandHandler : IRequestHandler<UpdateEventCommand, Upd
 
         if (missingPetIds.Any())
         {
-            throw new ValidationException($"Pets not found: {string.Join(", ", missingPetIds)}");
+            throw new NotFoundException($"Pets not found. Ids: {string.Join(", ", missingPetIds)}");
         }
     }
 }

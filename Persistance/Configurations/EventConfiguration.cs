@@ -23,5 +23,9 @@ public class EventConfiguration : IEntityTypeConfiguration<Event>
         builder.Property(e => e.Reminder)
             .IsRequired()
             .HasDefaultValue(false);
+
+        builder.HasMany(e => e.PetEvents)
+            .WithOne(pe => pe.Event)
+            .HasForeignKey(pe => pe.EventId);
     }
 }

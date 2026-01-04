@@ -1,28 +1,21 @@
 ﻿using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 
-internal sealed class GlobalExceptionHandler : IExceptionHandler
+internal sealed class GlobalExceptionHandler(
+    IProblemDetailsService problemDetailsService,
+    ILogger<GlobalExceptionHandler> logger)
+    : IExceptionHandler
 {
-    private readonly IProblemDetailsService _problemDetailsService;
-    private readonly ILogger<GlobalExceptionHandler> _logger;
-
-    internal GlobalExceptionHandler(IProblemDetailsService problemDetailsService,
-        ILogger<GlobalExceptionHandler> logger)
-    {
-        _problemDetailsService = problemDetailsService;
-        _logger = logger;
-    }
-    
     public async ValueTask<bool> TryHandleAsync(
         HttpContext httpContext,
         Exception exception,
         CancellationToken cancellationToken)
     {
-        _logger.LogError(exception, "Exception occurred: {Message}", exception.Message);
+        logger.LogError(exception, "Exception occurred: {Message}", exception.Message);
 
         httpContext.Response.StatusCode = StatusCodes.Status500InternalServerError;
         
-        return await _problemDetailsService.TryWriteAsync(new ProblemDetailsContext
+        return await problemDetailsService.TryWriteAsync(new ProblemDetailsContext
         {
             HttpContext = httpContext,
             Exception = exception,
@@ -30,6 +23,7 @@ internal sealed class GlobalExceptionHandler : IExceptionHandler
             {
                 Title = "Internal server error.",
                 Detail = "Unexpected error occurred while processing request.",
+                Type = exception.GetType().Name,
                 Status = StatusCodes.Status500InternalServerError
             }
         });

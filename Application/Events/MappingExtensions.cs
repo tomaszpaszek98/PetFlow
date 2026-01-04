@@ -17,7 +17,7 @@ public static class MappingExtensions
             Description = request.Description,
             DateOfEvent = request.DateOfEvent,
             Reminder = request.Reminder,
-            Pets = pets
+            PetEvents = pets.Select(MapToPetEvent).ToList()
         };
     }
     
@@ -30,6 +30,7 @@ public static class MappingExtensions
             Description = createdEvent.Description,
             DateOfEvent = createdEvent.DateOfEvent,
             Reminder = createdEvent.Reminder,
+            CreatedAt = createdEvent.Created,
             AssignedPets = assignedPets.Select(MapToAssignedPetDto)
         };
     }
@@ -43,11 +44,16 @@ public static class MappingExtensions
             Description = eventDetails.Description,
             DateOfEvent = eventDetails.DateOfEvent,
             Reminder = eventDetails.Reminder,
-            AssignedPets = eventDetails.Pets.Select(MapToAssignedPetDto)
+            CreatedAt = eventDetails.Created,
+            ModifiedAt = eventDetails.Modified ?? eventDetails.Created,
+            AssignedPets = eventDetails.PetEvents
+                .Where(pe => pe.Pet != null)
+                .Select(pe => pe.Pet.MapToAssignedPetDto())
+                .ToList()
         };
     }
 
-    public static EventResponseDto MapToResponseDto(this Event eventDetails)
+    private static EventResponseDto MapToResponseDto(this Event eventDetails)
     {
         return new EventResponseDto
         {
@@ -83,6 +89,15 @@ public static class MappingExtensions
             Id = pet.Id,
             Name = pet.Name,
             PhotoUrl = pet.PhotoUrl
+        };
+    }
+
+    private static PetEvent MapToPetEvent(this Pet pet)
+    {
+        return new PetEvent
+        {
+            PetId = pet.Id,
+            Pet = pet
         };
     }
 

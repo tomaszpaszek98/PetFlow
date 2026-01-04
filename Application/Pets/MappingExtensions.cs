@@ -29,7 +29,9 @@ public static class MappingExtensions
             Species = pet.Species,
             Breed = pet.Breed,
             DateOfBirth = pet.DateOfBirth,
-            PhotoUrl = pet.PhotoUrl
+            PhotoUrl = pet.PhotoUrl,
+            CreatedAt = pet.Created,
+            ModifiedAt = pet.Modified ?? pet.Created
         };
     }
 
@@ -44,7 +46,7 @@ public static class MappingExtensions
             DateOfBirth = pet.DateOfBirth,
             PhotoUrl = pet.PhotoUrl,
             CreatedAt = pet.Created,
-            ModifiedAt = pet.Modified,
+            ModifiedAt = pet.Modified ?? pet.Created,
             UpcomingEvent = MapUpcomingEvent(pet.Events.FirstOrDefault())
         };
     }
@@ -66,7 +68,7 @@ public static class MappingExtensions
             DateOfEvent = petEvent.DateOfEvent,
             Reminder = petEvent.Reminder,
             CreatedAt = petEvent.Created,
-            ModifiedAt = petEvent.Modified
+            ModifiedAt = petEvent.Modified ?? petEvent.Created
         };
     }
 

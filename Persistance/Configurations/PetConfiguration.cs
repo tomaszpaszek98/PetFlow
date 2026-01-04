@@ -39,20 +39,17 @@ public class PetConfiguration : IEntityTypeConfiguration<Pet>
             .WithOne(p => p.Pet)
             .HasForeignKey(n => n.PetId);
 
-        builder.HasMany(e => e.Events)
-            .WithMany(p => p.Pets)
+        builder.HasMany(p => p.Events)
+            .WithMany()
             .UsingEntity<PetEvent>(
-                p => p.HasOne(pe => pe.Event)
-                    .WithMany()
+                j => j
+                    .HasOne(pe => pe.Event)
+                    .WithMany(e => e.PetEvents)
                     .HasForeignKey(pe => pe.EventId),
-
-                p => p.HasOne(pe => pe.Pet)
+                j => j
+                    .HasOne(pe => pe.Pet)
                     .WithMany()
-                    .HasForeignKey(pe => pe.PetId),
-
-                pe =>
-                {
-                    pe.HasKey(x => new { x.EventId, x.PetId });
-                });
+                    .HasForeignKey(pe => pe.PetId)
+            );
     }
 }

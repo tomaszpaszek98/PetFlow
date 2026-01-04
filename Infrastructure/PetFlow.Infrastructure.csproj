@@ -13,7 +13,6 @@
     <ItemGroup>
       <Folder Include="ExternalAPI\" />
       <Folder Include="Identity\" />
-      <Folder Include="Services\" />
     </ItemGroup>
 
 </Project>

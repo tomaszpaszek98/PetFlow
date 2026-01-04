@@ -1,6 +1,6 @@
 ﻿namespace PetFlow.ExceptionHandlers;
 
-public static class ServiceRegistryExtensions
+internal static class ServiceRegistryExtensions
 {
     public static IServiceCollection AddExceptionHandlers(this IServiceCollection services)
     {
@@ -10,7 +10,6 @@ public static class ServiceRegistryExtensions
         
         // GlobalExceptionHandler must be at the end of the chain!
         services.AddExceptionHandler<GlobalExceptionHandler>();
-        services.AddProblemDetails();
         
         return services;
     }

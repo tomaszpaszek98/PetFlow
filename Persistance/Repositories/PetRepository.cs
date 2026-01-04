@@ -65,34 +65,30 @@ public class PetRepository : IPetRepository
             return [];
         
         return await _dbContext.Pets
-            .AsNoTracking()
             .Where(x => idList.Contains(x.Id))
             .ToListAsync(cancellationToken);
     }
 
-    // TODO it should be better to use dapper for this kind of queries
     public async Task<Pet?> GetByIdWithUpcomingEventAsync(int id, CancellationToken cancellationToken = default)
     {
-        return await _dbContext.Pets
+        var pet = await _dbContext.Pets
             .AsNoTracking()
-            .Where(p => p.Id == id)
-            .Select(p => new Pet
-            {
-                Id = p.Id,
-                Name = p.Name,
-                Species = p.Species,
-                Breed = p.Breed,
-                DateOfBirth = p.DateOfBirth,
-                PhotoUrl = p.PhotoUrl,
-                Created = p.Created,
-                Modified = p.Modified,
-                Events = p.Events
-                    .Where(e => e.DateOfEvent >= DateTime.UtcNow)
-                    .OrderBy(e => e.DateOfEvent)
-                    .Take(1)
-                    .ToList()
-            })
-            .FirstOrDefaultAsync(cancellationToken);
+            .Include(p => p.Events)
+            .FirstOrDefaultAsync(p => p.Id == id, cancellationToken);
+
+        if (pet == null)
+            return null;
+        
+        // We add filtering and ordering logic here to only return the next upcoming event
+        // With SQL Server it should be possible to do it in query (with Include)
+        // but with SQLite it is not supported, so we do it in memory
+        pet.Events = pet.Events
+            .Where(e => e.DateOfEvent >= DateTime.UtcNow)
+            .OrderBy(e => e.DateOfEvent)
+            .Take(1)
+            .ToList();
+
+        return pet;
     }
 
     public async Task<Pet?> GetByIdWithEventsAsync(int id, CancellationToken cancellationToken = default)

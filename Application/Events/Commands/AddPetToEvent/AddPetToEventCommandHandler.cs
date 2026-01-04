@@ -18,7 +18,7 @@ public class AddPetToEventCommandHandler : IRequestHandler<AddPetToEventCommand,
 
     public async Task<AddPetToEventResponse> Handle(AddPetToEventCommand request, CancellationToken cancellationToken)
     {
-        var eventEntity = await _eventRepository.GetByIdWithPetsAsync(request.EventId, cancellationToken);
+        var eventEntity = await _eventRepository.GetByIdWithPetEventsTrackedAsync(request.EventId, cancellationToken);
         if (eventEntity is null)
         {
             throw new NotFoundException(nameof(Event), request.EventId);
@@ -39,13 +39,20 @@ public class AddPetToEventCommandHandler : IRequestHandler<AddPetToEventCommand,
     
     private async Task AddPetToEvent(Event eventEntity, Pet pet, CancellationToken cancellationToken)
     {
-        eventEntity.Pets.Add(pet);
+        var petEvent = new PetEvent 
+        { 
+            PetId = pet.Id,
+            EventId = eventEntity.Id,
+            Pet = pet,
+            Event = eventEntity
+        };
+        eventEntity.PetEvents.Add(petEvent);
         await _eventRepository.UpdateAsync(eventEntity, cancellationToken);
     }
     
     private void ValidateIfPetIsAssignedToEventOrThrow(Event eventEntity, int petId)
     {
-        if (eventEntity.Pets.Any(x => x.Id == petId))
+        if (eventEntity.PetEvents.Any(pe => pe.PetId == petId))
         {
             throw new ConflictingOperationException($"Pet with ID {petId} is already assigned to event with ID {eventEntity.Id}");
         }

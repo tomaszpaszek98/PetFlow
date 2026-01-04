@@ -19,12 +19,12 @@ public class DeletePetFromEventCommandHandlerTests
         { 
             Id = eventId, 
             Title = "Test Event",
-            Pets = new List<Pet> { pet }
+            PetEvents = new List<PetEvent> { new PetEvent { PetId = petId, EventId = eventId, Pet = pet } }
         };
         var eventRepository = Substitute.For<IEventRepository>();
         var handler = new DeletePetFromEventCommandHandler(eventRepository);
         
-        eventRepository.GetByIdWithPetsAsync(eventId, Arg.Any<CancellationToken>())
+        eventRepository.GetByIdWithPetEventsTrackedAsync(eventId, Arg.Any<CancellationToken>())
             .Returns(eventEntity);
         eventRepository.UpdateAsync(eventEntity, Arg.Any<CancellationToken>())
             .Returns(Task.CompletedTask);
@@ -36,7 +36,7 @@ public class DeletePetFromEventCommandHandlerTests
         await act.Should().NotThrowAsync();
         Received.InOrder(() =>
         {
-            eventRepository.GetByIdWithPetsAsync(eventId, Arg.Any<CancellationToken>());
+            eventRepository.GetByIdWithPetEventsTrackedAsync(eventId, Arg.Any<CancellationToken>());
             eventRepository.UpdateAsync(eventEntity, Arg.Any<CancellationToken>());
         });
     }
@@ -51,7 +51,7 @@ public class DeletePetFromEventCommandHandlerTests
         var eventRepository = Substitute.For<IEventRepository>();
         var handler = new DeletePetFromEventCommandHandler(eventRepository);
         
-        eventRepository.GetByIdWithPetsAsync(eventId, Arg.Any<CancellationToken>())
+        eventRepository.GetByIdWithPetEventsTrackedAsync(eventId, Arg.Any<CancellationToken>())
             .Returns((Event)null);
         
         // WHEN
@@ -60,7 +60,7 @@ public class DeletePetFromEventCommandHandlerTests
         // THEN
         await act.Should().ThrowAsync<NotFoundException>()
             .Where(e => e.Message.Contains(nameof(Event)) && e.Message.Contains(eventId.ToString()));
-        await eventRepository.Received(1).GetByIdWithPetsAsync(eventId, Arg.Any<CancellationToken>());
+        await eventRepository.Received(1).GetByIdWithPetEventsTrackedAsync(eventId, Arg.Any<CancellationToken>());
         await eventRepository.DidNotReceive().UpdateAsync(Arg.Any<Event>(), Arg.Any<CancellationToken>());
     }
     
@@ -75,12 +75,12 @@ public class DeletePetFromEventCommandHandlerTests
         { 
             Id = eventId, 
             Title = "Test Event",
-            Pets = new List<Pet>()
+            PetEvents = new List<PetEvent>()
         };
         var eventRepository = Substitute.For<IEventRepository>();
         var handler = new DeletePetFromEventCommandHandler(eventRepository);
         
-        eventRepository.GetByIdWithPetsAsync(eventId, Arg.Any<CancellationToken>())
+        eventRepository.GetByIdWithPetEventsTrackedAsync(eventId, Arg.Any<CancellationToken>())
             .Returns(eventEntity);
         
         // WHEN
@@ -91,7 +91,7 @@ public class DeletePetFromEventCommandHandlerTests
             .Where(e => e.Message.Contains(petId.ToString()) && e.Message.Contains(eventId.ToString()));
         Received.InOrder(() =>
         {
-            eventRepository.GetByIdWithPetsAsync(eventId, Arg.Any<CancellationToken>());
+            eventRepository.GetByIdWithPetEventsTrackedAsync(eventId, Arg.Any<CancellationToken>());
         });
         await eventRepository.DidNotReceive().UpdateAsync(Arg.Any<Event>(), Arg.Any<CancellationToken>());
     }

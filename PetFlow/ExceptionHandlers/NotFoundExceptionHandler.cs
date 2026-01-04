@@ -7,7 +7,7 @@ internal sealed class NotFoundExceptionHandler : IExceptionHandler
     private readonly IProblemDetailsService _problemDetailsService;
     private readonly ILogger<NotFoundExceptionHandler> _logger;
 
-    internal NotFoundExceptionHandler(IProblemDetailsService problemDetailsService,
+    public NotFoundExceptionHandler(IProblemDetailsService problemDetailsService,
         ILogger<NotFoundExceptionHandler> logger)
     {
         _problemDetailsService = problemDetailsService;
@@ -23,18 +23,20 @@ internal sealed class NotFoundExceptionHandler : IExceptionHandler
         {
             return false;
         }
+        
         _logger.LogError(notFoundException, "Exception occurred: {Message}", notFoundException.Message);
-
+        
         httpContext.Response.StatusCode = StatusCodes.Status404NotFound;
         
         return await _problemDetailsService.TryWriteAsync(new ProblemDetailsContext
         {
-            HttpContext = httpContext,
             Exception = exception,
+            HttpContext = httpContext,
             ProblemDetails = new ProblemDetails
             {
                 Title = "Entity not found.",
                 Detail = exception.Message,
+                Type = exception.GetType().Name,
                 Status = StatusCodes.Status404NotFound
             }
         });

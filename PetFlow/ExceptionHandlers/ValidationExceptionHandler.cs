@@ -2,12 +2,14 @@
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 
+namespace PetFlow.ExceptionHandlers;
+
 internal sealed class ValidationExceptionHandler : IExceptionHandler
 {
     private readonly IProblemDetailsService _problemDetailsService;
     private readonly ILogger<ValidationExceptionHandler> _logger;
 
-    internal ValidationExceptionHandler(IProblemDetailsService problemDetailsService,
+    public ValidationExceptionHandler(IProblemDetailsService problemDetailsService,
         ILogger<ValidationExceptionHandler> logger)
     {
         _problemDetailsService = problemDetailsService;
@@ -34,6 +36,7 @@ internal sealed class ValidationExceptionHandler : IExceptionHandler
             {
                 Title = "Validation error.",
                 Detail = "One or more validation errors occurred",
+                Type = exception.GetType().Name,
                 Status = StatusCodes.Status400BadRequest
             }
         };
@@ -45,7 +48,7 @@ internal sealed class ValidationExceptionHandler : IExceptionHandler
                 g => g.Select(e => e.ErrorMessage).ToArray()
             );
         context.ProblemDetails.Extensions.Add("errors", errors);
-
+        
         return await _problemDetailsService.TryWriteAsync(context);
     }
 }

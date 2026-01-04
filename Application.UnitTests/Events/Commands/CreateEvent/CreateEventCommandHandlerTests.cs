@@ -1,6 +1,7 @@
 using Application.Common.Interfaces.Repositories;
 using Application.Events.Commands.CreateEvent;
 using Domain.Entities;
+using Domain.Exceptions;
 using FluentValidation;
 
 namespace Application.UnitTests.Events.Commands.CreateEvent;
@@ -26,6 +27,7 @@ public class CreateEventCommandHandlerTests
             new() { Id = 1, Name = "Rex", PhotoUrl = "https://example.com/rex.jpg" },
             new() { Id = 2, Name = "Milo", PhotoUrl = "https://example.com/milo.jpg" }
         };
+        var petEvents = pets.Select(p => new PetEvent { PetId = p.Id, Pet = p }).ToList();
         var createdEvent = new Event
         {
             Id = eventId,
@@ -33,7 +35,7 @@ public class CreateEventCommandHandlerTests
             Description = command.Description,
             DateOfEvent = command.DateOfEvent,
             Reminder = command.Reminder,
-            Pets = pets
+            PetEvents = petEvents
         };
         
         var petRepository = Substitute.For<IPetRepository>();
@@ -48,7 +50,7 @@ public class CreateEventCommandHandlerTests
                     e.Description == command.Description && 
                     e.DateOfEvent == command.DateOfEvent &&
                     e.Reminder == command.Reminder &&
-                    e.Pets.Count == 2), 
+                    e.PetEvents.Count == 2), 
                 Arg.Any<CancellationToken>())
             .Returns(createdEvent);
         
@@ -70,7 +72,7 @@ public class CreateEventCommandHandlerTests
                 e.Description == command.Description && 
                 e.DateOfEvent == command.DateOfEvent &&
                 e.Reminder == command.Reminder &&
-                e.Pets.Count == 2), Arg.Any<CancellationToken>());
+                e.PetEvents.Count == 2), Arg.Any<CancellationToken>());
         });
     }
 
@@ -95,7 +97,7 @@ public class CreateEventCommandHandlerTests
             Description = command.Description,
             DateOfEvent = command.DateOfEvent,
             Reminder = command.Reminder,
-            Pets = new List<Pet>()
+            PetEvents = new List<PetEvent>()
         };
         
         var petRepository = Substitute.For<IPetRepository>();
@@ -108,7 +110,7 @@ public class CreateEventCommandHandlerTests
                     e.Description == command.Description && 
                     e.DateOfEvent == command.DateOfEvent &&
                     e.Reminder == command.Reminder &&
-                    e.Pets.Count == 0),
+                    e.PetEvents.Count == 0),
                 Arg.Any<CancellationToken>())
             .Returns(createdEvent);
         
@@ -130,7 +132,7 @@ public class CreateEventCommandHandlerTests
                 e.Description == command.Description && 
                 e.DateOfEvent == command.DateOfEvent &&
                 e.Reminder == command.Reminder &&
-                e.Pets.Count == 0),
+                e.PetEvents.Count == 0),
             Arg.Any<CancellationToken>());
     }
 
@@ -154,7 +156,7 @@ public class CreateEventCommandHandlerTests
             Description = command.Description,
             DateOfEvent = command.DateOfEvent,
             Reminder = command.Reminder,
-            Pets = new List<Pet>()
+            PetEvents = new List<PetEvent>()
         };
         
         var petRepository = Substitute.For<IPetRepository>();
@@ -167,7 +169,7 @@ public class CreateEventCommandHandlerTests
                     e.Description == command.Description && 
                     e.DateOfEvent == command.DateOfEvent &&
                     e.Reminder == command.Reminder &&
-                    e.Pets.Count == 0),
+                    e.PetEvents.Count == 0),
                 Arg.Any<CancellationToken>())
             .Returns(createdEvent);
         
@@ -189,12 +191,12 @@ public class CreateEventCommandHandlerTests
                 e.Description == command.Description && 
                 e.DateOfEvent == command.DateOfEvent &&
                 e.Reminder == command.Reminder &&
-                e.Pets.Count == 0),
+                e.PetEvents.Count == 0),
             Arg.Any<CancellationToken>());
     }
 
     [Test]
-    public async Task ShouldThrowValidationExceptionWhenSomePetsDoNotExist()
+    public async Task ShouldThrowNotFoundExceptionWhenSomePetsDoNotExist()
     {
         // GIVEN
         var requestedPetIds = new List<int> { 1, 2, 999 };
@@ -223,7 +225,7 @@ public class CreateEventCommandHandlerTests
         var act = () => handler.Handle(command, CancellationToken.None);
         
         // THEN
-        await act.Should().ThrowAsync<ValidationException>()
+        await act.Should().ThrowAsync<NotFoundException>()
             .Where(e => e.Message.Contains("999"));
         
         await petRepository.Received(1).GetByIdsAsync(Arg.Is<IEnumerable<int>>(ids => ids.SequenceEqual(requestedPetIds)), Arg.Any<CancellationToken>());
@@ -231,7 +233,7 @@ public class CreateEventCommandHandlerTests
     }
 
     [Test]
-    public async Task ShouldThrowValidationExceptionWhenAllPetsDoNotExist()
+    public async Task ShouldThrowNotFoundExceptionWhenAllPetsDoNotExist()
     {
         // GIVEN
         var requestedPetIds = new List<int> { 999, 998, 997 };
@@ -256,7 +258,7 @@ public class CreateEventCommandHandlerTests
         var act = () => handler.Handle(command, CancellationToken.None);
         
         // THEN
-        await act.Should().ThrowAsync<ValidationException>()
+        await act.Should().ThrowAsync<NotFoundException>()
             .Where(e => e.Message.Contains("Pets not found"));
         
         await petRepository.Received(1).GetByIdsAsync(Arg.Is<IEnumerable<int>>(ids => ids.SequenceEqual(requestedPetIds)), Arg.Any<CancellationToken>());
@@ -284,6 +286,7 @@ public class CreateEventCommandHandlerTests
             new() { Id = 2, Name = "Pet2", PhotoUrl = "url2" },
             new() { Id = 3, Name = "Pet3", PhotoUrl = "url3" }
         };
+        var petEvents = pets.Select(p => new PetEvent { PetId = p.Id, Pet = p }).ToList();
         var createdEvent = new Event
         {
             Id = eventId,
@@ -291,7 +294,7 @@ public class CreateEventCommandHandlerTests
             Description = command.Description,
             DateOfEvent = command.DateOfEvent,
             Reminder = command.Reminder,
-            Pets = pets
+            PetEvents = petEvents
         };
         
         var petRepository = Substitute.For<IPetRepository>();
@@ -306,7 +309,7 @@ public class CreateEventCommandHandlerTests
                     e.Description == command.Description && 
                     e.DateOfEvent == command.DateOfEvent &&
                     e.Reminder == command.Reminder &&
-                    e.Pets.Count == 3),
+                    e.PetEvents.Count == 3),
                 Arg.Any<CancellationToken>())
             .Returns(createdEvent);
         

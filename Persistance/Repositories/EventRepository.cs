@@ -21,15 +21,25 @@ public class EventRepository : IEventRepository
         return petEvent;
     }
     
-    public async Task<Event?> GetByIdWithPetsAsync(int id, CancellationToken cancellationToken = default)
+    public async Task<Event?> GetByIdWithPetEventsAsync(int id, CancellationToken cancellationToken = default)
     {
         return await _dbContext.Events
             .AsNoTracking()
-            .Include(e => e.Pets)
+            .Include(e => e.PetEvents)
+            .ThenInclude(pe => pe.Pet)
             .Where(e => e.Id == id)
             .FirstOrDefaultAsync(cancellationToken);
     }
 
+    public async Task<Event?> GetByIdWithPetEventsTrackedAsync(int id, CancellationToken cancellationToken = default)
+    {
+        return await _dbContext.Events
+            .Include(e => e.PetEvents)
+            .ThenInclude(pe => pe.Pet)
+            .Where(e => e.Id == id)
+            .FirstOrDefaultAsync(cancellationToken);
+    }
+    
     public async Task<IEnumerable<Event>> GetAllAsync(CancellationToken cancellationToken = default)
     {
         return await _dbContext.Events
