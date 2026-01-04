@@ -102,7 +102,7 @@ public class UpdateEventCommandHandlerTests
             .Where(e => e.Message.Contains(nameof(Event)) && e.Message.Contains(eventId.ToString()));
         await eventRepository.Received(1).GetByIdWithPetEventsTrackedAsync(eventId, Arg.Any<CancellationToken>());
         await petRepository.DidNotReceive().GetByIdsAsync(default);
-        await eventRepository.DidNotReceive().UpdateAsync(Arg.Any<Event>(), Arg.Any<CancellationToken>());
+        await eventRepository.DidNotReceive().UpdateAsync(default);
     }
     
     [Test]
@@ -206,7 +206,7 @@ public class UpdateEventCommandHandlerTests
             eventRepository.GetByIdWithPetEventsTrackedAsync(eventId, Arg.Any<CancellationToken>());
             petRepository.GetByIdsAsync(Arg.Is<IEnumerable<int>>(ids => ids.SequenceEqual(requestedPetIds)), Arg.Any<CancellationToken>());
         });
-        await eventRepository.DidNotReceive().UpdateAsync(Arg.Any<Event>(), Arg.Any<CancellationToken>());
+        await eventRepository.DidNotReceive().UpdateAsync(default);
     }
     
     [Test]

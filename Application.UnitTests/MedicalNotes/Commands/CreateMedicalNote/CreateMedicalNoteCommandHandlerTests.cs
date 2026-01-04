@@ -84,6 +84,6 @@ public class CreateMedicalNoteCommandHandlerTests
             .Where(e => e.Message.Contains(nameof(Pet)) && e.Message.Contains(command.PetId.ToString()));
         
         await petRepository.Received(1).ExistsAsync(command.PetId, Arg.Any<CancellationToken>());
-        await medicalNoteRepository.DidNotReceive().CreateAsync(Arg.Any<MedicalNote>(), Arg.Any<CancellationToken>());
+        await medicalNoteRepository.DidNotReceive().CreateAsync(default);
     }
 }
