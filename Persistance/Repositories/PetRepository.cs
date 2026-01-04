@@ -1,3 +1,4 @@
+using Application.Common.Interfaces;
 using Application.Common.Interfaces.Repositories;
 using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
@@ -6,9 +7,9 @@ namespace PetFlow.Persistence.Repositories;
 
 public class PetRepository : IPetRepository
 {
-    private readonly PetFlowFlowDbContext _dbContext;
+    private readonly IPetFlowDbContext _dbContext;
 
-    public PetRepository(PetFlowFlowDbContext dbContext)
+    public PetRepository(IPetFlowDbContext dbContext)
     {
         _dbContext = dbContext;
     }

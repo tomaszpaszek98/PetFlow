@@ -61,7 +61,7 @@ public class DeletePetFromEventCommandHandlerTests
         await act.Should().ThrowAsync<NotFoundException>()
             .Where(e => e.Message.Contains(nameof(Event)) && e.Message.Contains(eventId.ToString()));
         await eventRepository.Received(1).GetByIdWithPetEventsTrackedAsync(eventId, Arg.Any<CancellationToken>());
-        await eventRepository.DidNotReceive().UpdateAsync(Arg.Any<Event>(), Arg.Any<CancellationToken>());
+        await eventRepository.DidNotReceive().UpdateAsync(default);
     }
     
     [Test]
@@ -93,6 +93,6 @@ public class DeletePetFromEventCommandHandlerTests
         {
             eventRepository.GetByIdWithPetEventsTrackedAsync(eventId, Arg.Any<CancellationToken>());
         });
-        await eventRepository.DidNotReceive().UpdateAsync(Arg.Any<Event>(), Arg.Any<CancellationToken>());
+        await eventRepository.DidNotReceive().UpdateAsync(default);
     }
 }

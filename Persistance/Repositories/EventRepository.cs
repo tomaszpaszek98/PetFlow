@@ -1,4 +1,5 @@
-﻿using Application.Common.Interfaces.Repositories;
+﻿using Application.Common.Interfaces;
+using Application.Common.Interfaces.Repositories;
 using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -6,9 +7,9 @@ namespace PetFlow.Persistence.Repositories;
 
 public class EventRepository : IEventRepository
 {
-    private readonly PetFlowFlowDbContext _dbContext;
+    private readonly IPetFlowDbContext _dbContext;
 
-    public EventRepository(PetFlowFlowDbContext dbContext)
+    public EventRepository(IPetFlowDbContext dbContext)
     {
         _dbContext = dbContext;
     }
