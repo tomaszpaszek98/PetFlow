@@ -9,7 +9,7 @@ namespace Application.UnitTests.Notes.Commands.UpdateNote;
 public class UpdateNoteCommandHandlerTests
 {
     [Test]
-    public async Task ShouldReturnUpdatedNoteResponseWhenNoteIsUpdatedSuccessfully()
+    public async Task ShouldUpdateNoteAndReturnUpdatedNoteResponseWhenNoteExists()
     {
         // GIVEN
         var request = new UpdateNoteCommand

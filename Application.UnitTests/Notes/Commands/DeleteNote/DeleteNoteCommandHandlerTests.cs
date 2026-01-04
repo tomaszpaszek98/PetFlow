@@ -9,7 +9,7 @@ namespace Application.UnitTests.Notes.Commands.DeleteNote;
 public class DeleteNoteCommandHandlerTests
 {
     [Test]
-    public async Task ShouldDeleteNoteSuccessfullyWhenNoteExistsAndBelongsToSpecificPet()
+    public async Task ShouldDeleteNoteWhenNoteExistsAndBelongsToPet()
     {
         // GIVEN
         var command = new DeleteNoteCommand

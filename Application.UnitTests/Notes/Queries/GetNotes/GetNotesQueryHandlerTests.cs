@@ -8,7 +8,7 @@ namespace Application.UnitTests.Notes.Queries.GetNotes;
 public class GetNotesQueryHandlerTests
 {
     [Test]
-    public async Task ShouldReturnNotesResponseWhenPetExists()
+    public async Task ShouldReturnNotesResponseWithAllNotesWhenPetExists()
     {
         // GIVEN
         var query = new GetNotesQuery { PetId = 1 };

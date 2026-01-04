@@ -7,7 +7,7 @@ namespace Application.UnitTests.Pets.Queries.GetPets;
 public class GetPetsQueryHandlerTests
 {
     [Test]
-    public async Task ShouldReturnPetsResponseWithAllPets()
+    public async Task ShouldReturnPetsResponseWithAllPetsWhenPetsExist()
     {
         // GIVEN
         var pets = new List<Pet>

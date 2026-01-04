@@ -9,7 +9,7 @@ namespace Application.UnitTests.Pets.Commands.UpdatePet;
 public class UpdatePetCommandHandlerTests
 {
     [Test]
-    public async Task ShouldReturnPetResponseWhenPetIsUpdatedSuccessfully()
+    public async Task ShouldUpdatePetAndReturnPetResponseWhenPetExists()
     {
         // GIVEN
         var command = new UpdatePetCommand
@@ -66,7 +66,7 @@ public class UpdatePetCommandHandlerTests
     }
 
     [Test]
-    public async Task ShouldThrowEntityNotFoundExceptionWhenPetDoesNotExist()
+    public async Task ShouldThrowNotFoundExceptionWhenPetDoesNotExist()
     {
         // GIVEN
         var command = new UpdatePetCommand
@@ -92,7 +92,7 @@ public class UpdatePetCommandHandlerTests
     }
 
     [Test]
-    public async Task ShouldUpdateOnlyNameWhenOnlyNameIsChanged()
+    public async Task ShouldUpdatePetNameWhenOnlyNameIsChanged()
     {
         // GIVEN
         var command = new UpdatePetCommand
@@ -139,7 +139,7 @@ public class UpdatePetCommandHandlerTests
     }
 
     [Test]
-    public async Task ShouldUpdateDateOfBirthWhenChanged()
+    public async Task ShouldUpdatePetDateOfBirthWhenDateOfBirthIsChanged()
     {
         // GIVEN
         var newDateOfBirth = new DateTime(2018, 3, 3);

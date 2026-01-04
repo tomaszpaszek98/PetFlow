@@ -89,7 +89,7 @@ public class GetNoteDetailsQueryHandlerTests
     }
     
     [Test]
-    public async Task ShouldThrowNotFoundExceptionWhenNoteDoesNotBelongToPet()
+    public async Task ShouldThrowNotFoundExceptionWhenNoteDoesNotBelongToTheSpecifiedPet()
     {
         // GIVEN
         var query = new GetNoteDetailsQuery
