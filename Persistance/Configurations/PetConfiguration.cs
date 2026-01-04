@@ -42,11 +42,11 @@ public class PetConfiguration : IEntityTypeConfiguration<Pet>
         builder.HasMany(p => p.Events)
             .WithMany()
             .UsingEntity<PetEvent>(
-                j => j
+                x => x
                     .HasOne(pe => pe.Event)
                     .WithMany(e => e.PetEvents)
                     .HasForeignKey(pe => pe.EventId),
-                j => j
+                x => x
                     .HasOne(pe => pe.Pet)
                     .WithMany()
                     .HasForeignKey(pe => pe.PetId)
