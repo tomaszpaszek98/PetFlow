@@ -1,9 +1,10 @@
-﻿namespace PetFlow.Requests.Pet;
+﻿using System.Text.Json.Serialization;
 
-public class UpdatePetRequest
-{
-    public string Name { get; set; }
-    public string Species { get; set; }
-    public string Breed { get; set; }
-    public DateTime DateOfBirth { get; set; }
-}
+namespace PetFlow.Requests.Pet;
+
+public record UpdatePetRequest(
+    [property: JsonPropertyName("name")] string Name,
+    [property: JsonPropertyName("species")] string Species,
+    [property: JsonPropertyName("breed")] string Breed,
+    [property: JsonPropertyName("dateOfBirth")] DateTime DateOfBirth
+);

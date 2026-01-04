@@ -1,4 +1,4 @@
-﻿namespace PetFlow.ExceptionHandlers;
+﻿﻿namespace PetFlow.ExceptionHandlers;
 
 internal static class ServiceRegistryExtensions
 {
@@ -7,6 +7,7 @@ internal static class ServiceRegistryExtensions
         services.AddExceptionHandler<ValidationExceptionHandler>();
         services.AddExceptionHandler<NotFoundExceptionHandler>();
         services.AddExceptionHandler<ConflictingOperationExceptionHandler>();
+        services.AddExceptionHandler<InvalidAcceptHeaderExceptionHandler>();
         
         // GlobalExceptionHandler must be at the end of the chain!
         services.AddExceptionHandler<GlobalExceptionHandler>();

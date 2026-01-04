@@ -1,8 +1,10 @@
 using Application;
 using Microsoft.AspNetCore.Mvc;
 using PetFlow.ExceptionHandlers;
+using PetFlow.Filters;
 using PetFlow.Infrastructure;
 using PetFlow.Persistence;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,11 +15,20 @@ builder.Services.AddApplication();
 builder.Services.AddInfrastructure();
 builder.Services.AddPersistence(builder.Configuration);
 builder.Services.AddExceptionHandlers();
+builder.Services.AddInvalidJsonFieldsValidation();
 builder.Services.AddProblemDetails();
 builder.Services.AddControllers(options =>
 {
     options.Filters.Add(new ConsumesAttribute("application/json"));
     options.Filters.Add(new ProducesAttribute("application/json"));
+    options.Filters.Add(new AcceptHeaderValidationFilter());
+})
+.AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
+    options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+    // Will be replaced with records decorated with [JsonPropertyName] for better control and clarity
+    options.JsonSerializerOptions.UnmappedMemberHandling = JsonUnmappedMemberHandling.Disallow;
 });
 builder.Services.AddCors(options =>
 {

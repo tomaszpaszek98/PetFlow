@@ -1,6 +1,7 @@
-﻿namespace PetFlow.Requests.Event;
+﻿using System.Text.Json.Serialization;
 
-public class AddPetToEventRequest
-{
-    public int PetId { get; set; }
-}
+namespace PetFlow.Requests.Event;
+
+public record AddPetToEventRequest(
+    [property: JsonPropertyName("petId")] int PetId
+);
