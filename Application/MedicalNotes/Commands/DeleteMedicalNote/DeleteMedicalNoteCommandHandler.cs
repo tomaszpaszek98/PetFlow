@@ -24,7 +24,7 @@ public class DeleteMedicalNoteCommandHandler : IRequestHandler<DeleteMedicalNote
             throw new NotFoundException(nameof(Pet), command.PetId);
         }
 
-        var isDeleted = await _medicalNoteRepository.DeleteByIdAsync(command.MedicalNoteId, command.PetId, cancellationToken);
+        var isDeleted = await _medicalNoteRepository.DeleteAsync(command.MedicalNoteId, command.PetId, cancellationToken);
         if (!isDeleted)
         {
             throw new NotFoundException(nameof(MedicalNote), command.MedicalNoteId);

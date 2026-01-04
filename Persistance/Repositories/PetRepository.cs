@@ -42,7 +42,7 @@ public class PetRepository : IPetRepository
         await _dbContext.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task<bool> DeleteByIdAsync(int id, CancellationToken cancellationToken = default)
+    public async Task<bool> DeleteAsync(int id, CancellationToken cancellationToken = default)
     {
         var removed = await _dbContext.Pets
             .Where(p => p.Id == id)

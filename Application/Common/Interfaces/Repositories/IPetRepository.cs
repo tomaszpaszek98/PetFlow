@@ -11,6 +11,6 @@ public interface IPetRepository
     Task<Pet?> GetByIdWithEventsAsync(int id, CancellationToken cancellationToken = default);
     Task<IList<Pet>> GetAllAsync(CancellationToken cancellationToken = default);
     Task UpdateAsync(Pet pet, CancellationToken cancellationToken = default);
-    Task<bool> DeleteByIdAsync(int id, CancellationToken cancellationToken = default);
+    Task<bool> DeleteAsync(int id, CancellationToken cancellationToken = default);
     Task<IList<Pet>> GetByIdsAsync(IEnumerable<int> ids, CancellationToken cancellationToken = default);
 }

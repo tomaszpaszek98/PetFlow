@@ -14,14 +14,14 @@ public class DeletePetCommandHandlerTests
         var repository = Substitute.For<IPetRepository>();
         var handler = new DeletePetCommandHandler(repository);
         
-        repository.DeleteByIdAsync(command.PetId, Arg.Any<CancellationToken>()).Returns(true);
+        repository.DeleteAsync(command.PetId, Arg.Any<CancellationToken>()).Returns(true);
         
         // WHEN
         var act = async () => await handler.Handle(command, CancellationToken.None);
 
         // THEN
         await act.Should().NotThrowAsync();
-        await repository.Received(1).DeleteByIdAsync(command.PetId, Arg.Any<CancellationToken>());
+        await repository.Received(1).DeleteAsync(command.PetId, Arg.Any<CancellationToken>());
     }
 
     [Test]
@@ -32,13 +32,13 @@ public class DeletePetCommandHandlerTests
         var repository = Substitute.For<IPetRepository>();
         var handler = new DeletePetCommandHandler(repository);
 
-        repository.DeleteByIdAsync(command.PetId, Arg.Any<CancellationToken>()).Returns(false);
+        repository.DeleteAsync(command.PetId, Arg.Any<CancellationToken>()).Returns(false);
         
         // WHEN
         var act = () => handler.Handle(command, CancellationToken.None);
 
         // THEN
         await act.Should().ThrowAsync<NotFoundException>();
-        await repository.Received(1).DeleteByIdAsync(command.PetId, Arg.Any<CancellationToken>());
+        await repository.Received(1).DeleteAsync(command.PetId, Arg.Any<CancellationToken>());
     }
 }

@@ -24,7 +24,7 @@ public class DeleteNoteCommandHandler : IRequestHandler<DeleteNoteCommand>
             throw new NotFoundException(nameof(Pet), command.PetId);
         }
 
-        var isDeleted = await _noteRepository.DeleteByIdAsync(command.NoteId, command.PetId, cancellationToken);
+        var isDeleted = await _noteRepository.DeleteAsync(command.NoteId, command.PetId, cancellationToken);
         if (!isDeleted)
         {
             throw new NotFoundException(nameof(Note), command.NoteId);

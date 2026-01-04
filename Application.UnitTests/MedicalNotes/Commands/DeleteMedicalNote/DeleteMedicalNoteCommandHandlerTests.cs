@@ -22,7 +22,7 @@ public class DeleteMedicalNoteCommandHandlerTests
         
         petRepository.ExistsAsync(command.PetId, Arg.Any<CancellationToken>())
             .Returns(true);
-        medicalNoteRepository.DeleteByIdAsync(command.MedicalNoteId, command.PetId, Arg.Any<CancellationToken>())
+        medicalNoteRepository.DeleteAsync(command.MedicalNoteId, command.PetId, Arg.Any<CancellationToken>())
             .Returns(true);
         
         // WHEN
@@ -32,7 +32,7 @@ public class DeleteMedicalNoteCommandHandlerTests
         Received.InOrder(() =>
         {
             petRepository.ExistsAsync(command.PetId, Arg.Any<CancellationToken>());
-            medicalNoteRepository.DeleteByIdAsync(command.MedicalNoteId, command.PetId, Arg.Any<CancellationToken>());
+            medicalNoteRepository.DeleteAsync(command.MedicalNoteId, command.PetId, Arg.Any<CancellationToken>());
         });
     }
     
@@ -51,7 +51,7 @@ public class DeleteMedicalNoteCommandHandlerTests
         
         petRepository.ExistsAsync(command.PetId, Arg.Any<CancellationToken>())
             .Returns(true);
-        medicalNoteRepository.DeleteByIdAsync(command.MedicalNoteId, command.PetId, Arg.Any<CancellationToken>())
+        medicalNoteRepository.DeleteAsync(command.MedicalNoteId, command.PetId, Arg.Any<CancellationToken>())
             .Returns(false);
         
         // WHEN
@@ -64,7 +64,7 @@ public class DeleteMedicalNoteCommandHandlerTests
         Received.InOrder(() =>
         {
             petRepository.ExistsAsync(command.PetId, Arg.Any<CancellationToken>());
-            medicalNoteRepository.DeleteByIdAsync(command.MedicalNoteId, command.PetId, Arg.Any<CancellationToken>());
+            medicalNoteRepository.DeleteAsync(command.MedicalNoteId, command.PetId, Arg.Any<CancellationToken>());
         });
     }
     
@@ -92,6 +92,6 @@ public class DeleteMedicalNoteCommandHandlerTests
             .Where(e => e.Message.Contains(nameof(Pet)) && e.Message.Contains(command.PetId.ToString()));
         
         await petRepository.Received(1).ExistsAsync(command.PetId, Arg.Any<CancellationToken>());
-        await medicalNoteRepository.DidNotReceive().DeleteByIdAsync(default, default);
+        await medicalNoteRepository.DidNotReceive().DeleteAsync(default, default);
     }
 }

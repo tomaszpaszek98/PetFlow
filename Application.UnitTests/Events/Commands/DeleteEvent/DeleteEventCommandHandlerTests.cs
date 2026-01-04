@@ -16,14 +16,14 @@ public class DeleteEventCommandHandlerTests
         var repository = Substitute.For<IEventRepository>();
         var handler = new DeleteEventCommandHandler(repository);
         
-        repository.DeleteByIdAsync(eventId, Arg.Any<CancellationToken>()).Returns(true);
+        repository.DeleteAsync(eventId, Arg.Any<CancellationToken>()).Returns(true);
         
         // WHEN
         var act = async () => await handler.Handle(command, CancellationToken.None);
 
         // THEN
         await act.Should().NotThrowAsync();
-        await repository.Received(1).DeleteByIdAsync(eventId, Arg.Any<CancellationToken>());
+        await repository.Received(1).DeleteAsync(eventId, Arg.Any<CancellationToken>());
     }
 
     [Test]
@@ -35,7 +35,7 @@ public class DeleteEventCommandHandlerTests
         var repository = Substitute.For<IEventRepository>();
         var handler = new DeleteEventCommandHandler(repository);
 
-        repository.DeleteByIdAsync(eventId, Arg.Any<CancellationToken>()).Returns(false);
+        repository.DeleteAsync(eventId, Arg.Any<CancellationToken>()).Returns(false);
         
         // WHEN
         var act = () => handler.Handle(command, CancellationToken.None);
@@ -43,6 +43,6 @@ public class DeleteEventCommandHandlerTests
         // THEN
         await act.Should().ThrowAsync<NotFoundException>()
             .Where(e => e.Message.Contains(nameof(Event)) && e.Message.Contains(eventId.ToString()));
-        await repository.Received(1).DeleteByIdAsync(eventId, Arg.Any<CancellationToken>());
+        await repository.Received(1).DeleteAsync(eventId, Arg.Any<CancellationToken>());
     }
 }

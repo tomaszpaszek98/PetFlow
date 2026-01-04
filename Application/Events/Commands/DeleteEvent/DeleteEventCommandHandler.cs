@@ -16,7 +16,7 @@ public class DeleteEventCommandHandler : IRequestHandler<DeleteEventCommand>
 
     public async Task Handle(DeleteEventCommand request, CancellationToken cancellationToken = default)
     {
-        var isDeleted = await _repository.DeleteByIdAsync(request.EventId, cancellationToken);
+        var isDeleted = await _repository.DeleteAsync(request.EventId, cancellationToken);
         
         if (isDeleted is false)
         {

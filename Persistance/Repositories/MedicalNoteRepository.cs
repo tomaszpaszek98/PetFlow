@@ -36,7 +36,7 @@ public class MedicalNoteRepository : IMedicalNoteRepository
         await _dbContext.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task<bool> DeleteByIdAsync(int medicalNoteId, int petId, CancellationToken cancellationToken = default)
+    public async Task<bool> DeleteAsync(int medicalNoteId, int petId, CancellationToken cancellationToken = default)
     {
         var removed = await _dbContext.MedicalNotes
             .Where(m => m.Id == medicalNoteId && m.PetId == petId)

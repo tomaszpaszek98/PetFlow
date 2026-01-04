@@ -16,7 +16,7 @@ public class DeletePetCommandHandler : IRequestHandler<DeletePetCommand>
 
     public async Task Handle(DeletePetCommand request, CancellationToken cancellationToken = default)
     {
-        var isDeleted = await _repository.DeleteByIdAsync(request.PetId, cancellationToken);
+        var isDeleted = await _repository.DeleteAsync(request.PetId, cancellationToken);
         
         if (isDeleted is false)
         {

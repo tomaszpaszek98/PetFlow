@@ -43,7 +43,7 @@ public class NoteRepository : INoteRepository
         await _dbContext.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task<bool> DeleteByIdAsync(int id, int petId, CancellationToken cancellationToken = default)
+    public async Task<bool> DeleteAsync(int id, int petId, CancellationToken cancellationToken = default)
     {
         var removed = await _dbContext.Notes
             .Where(n => n.Id == id && n.PetId == petId)

@@ -23,7 +23,7 @@ public class DeleteNoteCommandHandlerTests
         
         petRepository.ExistsAsync(command.PetId, Arg.Any<CancellationToken>())
             .Returns(true);
-        noteRepository.DeleteByIdAsync(command.NoteId, command.PetId, Arg.Any<CancellationToken>())
+        noteRepository.DeleteAsync(command.NoteId, command.PetId, Arg.Any<CancellationToken>())
             .Returns(true);
         
         // WHEN
@@ -33,7 +33,7 @@ public class DeleteNoteCommandHandlerTests
         Received.InOrder(() =>
         {
             petRepository.ExistsAsync(command.PetId, Arg.Any<CancellationToken>());
-            noteRepository.DeleteByIdAsync(command.NoteId, command.PetId, Arg.Any<CancellationToken>());
+            noteRepository.DeleteAsync(command.NoteId, command.PetId, Arg.Any<CancellationToken>());
         });
     }
     
@@ -52,7 +52,7 @@ public class DeleteNoteCommandHandlerTests
         
         petRepository.ExistsAsync(command.PetId, Arg.Any<CancellationToken>())
             .Returns(true);
-        noteRepository.DeleteByIdAsync(command.NoteId, command.PetId, Arg.Any<CancellationToken>())
+        noteRepository.DeleteAsync(command.NoteId, command.PetId, Arg.Any<CancellationToken>())
             .Returns(false);
         
         // WHEN
@@ -65,7 +65,7 @@ public class DeleteNoteCommandHandlerTests
         Received.InOrder(() =>
         {
             petRepository.ExistsAsync(command.PetId, Arg.Any<CancellationToken>());
-            noteRepository.DeleteByIdAsync(command.NoteId, command.PetId, Arg.Any<CancellationToken>());
+            noteRepository.DeleteAsync(command.NoteId, command.PetId, Arg.Any<CancellationToken>());
         });
     }
     
@@ -93,6 +93,6 @@ public class DeleteNoteCommandHandlerTests
             .Where(e => e.Message.Contains(nameof(Pet)) && e.Message.Contains(command.PetId.ToString()));
         
         await petRepository.Received(1).ExistsAsync(command.PetId, Arg.Any<CancellationToken>());
-        await noteRepository.DidNotReceive().DeleteByIdAsync(default, default);
+        await noteRepository.DidNotReceive().DeleteAsync(default, default);
     }
 }
