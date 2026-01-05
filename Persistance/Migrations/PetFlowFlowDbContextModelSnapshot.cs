@@ -9,7 +9,7 @@ using PetFlow.Persistence;
 
 namespace PetFlow.Persistence.Migrations
 {
-    [DbContext(typeof(PetFlowFlowDbContext))]
+    [DbContext(typeof(PetFlowDbContext))]
     partial class PetFlowFlowDbContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)

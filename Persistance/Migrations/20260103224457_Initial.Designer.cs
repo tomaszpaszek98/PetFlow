@@ -10,7 +10,7 @@ using PetFlow.Persistence;
 
 namespace PetFlow.Persistence.Migrations
 {
-    [DbContext(typeof(PetFlowFlowDbContext))]
+    [DbContext(typeof(PetFlowDbContext))]
     [Migration("20260103224457_Initial")]
     partial class Initial
     {

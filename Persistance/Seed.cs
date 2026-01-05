@@ -16,7 +16,7 @@ namespace PetFlow.Persistence
 
         private static void SeedPets(ModelBuilder modelBuilder)
         {
-            var now = DateTime.UtcNow;
+            var seedDate = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc);
             modelBuilder.Entity<Pet>().HasData(
                 new Pet
                 {
@@ -28,8 +28,8 @@ namespace PetFlow.Persistence
                     DateOfBirth = new DateTime(2020, 3, 15),
                     PhotoUrl = "https://example.com/max.jpg",
                     StatusId = 1,
-                    Created = now,
-                    CreatedBy = now.ToString()
+                    Created = seedDate,
+                    CreatedBy = "system"
                 },
                 new Pet
                 {
@@ -41,8 +41,8 @@ namespace PetFlow.Persistence
                     DateOfBirth = new DateTime(2019, 7, 22),
                     PhotoUrl = "https://example.com/whiskers.jpg",
                     StatusId = 1,
-                    Created = now,
-                    CreatedBy = now.ToString()
+                    Created = seedDate,
+                    CreatedBy = "system"
                 },
                 new Pet
                 {
@@ -54,55 +54,55 @@ namespace PetFlow.Persistence
                     DateOfBirth = new DateTime(2021, 1, 10),
                     PhotoUrl = null,
                     StatusId = 1,
-                    Created = now,
-                    CreatedBy = now.ToString()
+                    Created = seedDate,
+                    CreatedBy = "system"
                 }
             );
         }
 
         private static void SeedEvents(ModelBuilder modelBuilder)
         {
-            var now = DateTime.UtcNow;
+            var seedDate = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc);
             modelBuilder.Entity<Event>().HasData(
                 new Event
                 {
                     Id = 1,
                     Title = "Vet Appointment",
                     Description = "Annual checkup for Max",
-                    DateOfEvent = DateTime.UtcNow.AddDays(7),
+                    DateOfEvent = new DateTime(2024, 1, 8, 0, 0, 0, DateTimeKind.Utc),
                     Reminder = true,
                     StatusId = 1,
-                    Created = now,
-                    CreatedBy = now.ToString()
+                    Created = seedDate,
+                    CreatedBy = "system"
                 },
                 new Event
                 {
                     Id = 2,
                     Title = "Grooming Session",
                     Description = "Bath and nail trimming for Whiskers",
-                    DateOfEvent = DateTime.UtcNow.AddDays(3),
+                    DateOfEvent = new DateTime(2024, 1, 4, 0, 0, 0, DateTimeKind.Utc),
                     Reminder = false,
                     StatusId = 1,
-                    Created = now,
-                    CreatedBy = now.ToString()
+                    Created = seedDate,
+                    CreatedBy = "system"
                 },
                 new Event
                 {
                     Id = 3,
                     Title = "Vaccination",
                     Description = "Rabies vaccination for Buddy",
-                    DateOfEvent = DateTime.UtcNow.AddDays(14),
+                    DateOfEvent = new DateTime(2024, 1, 15, 0, 0, 0, DateTimeKind.Utc),
                     Reminder = true,
                     StatusId = 1,
-                    Created = now,
-                    CreatedBy = now.ToString()
+                    Created = seedDate,
+                    CreatedBy = "system"
                 }
             );
         }
 
         private static void SeedNotes(ModelBuilder modelBuilder)
         {
-            var now = DateTime.UtcNow;
+            var seedDate = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc);
             modelBuilder.Entity<Note>().HasData(
                 new Note
                 {
@@ -111,8 +111,8 @@ namespace PetFlow.Persistence
                     Type = NoteType.Mood,
                     PetId = 1,
                     StatusId = 1,
-                    Created = now,
-                    CreatedBy = now.ToString()
+                    Created = seedDate,
+                    CreatedBy = "system"
                 },
                 new Note
                 {
@@ -121,8 +121,8 @@ namespace PetFlow.Persistence
                     Type = NoteType.Behaviour,
                     PetId = 2,
                     StatusId = 1,
-                    Created = now,
-                    CreatedBy = now.ToString()
+                    Created = seedDate,
+                    CreatedBy = "system"
                 },
                 new Note
                 {
@@ -131,15 +131,15 @@ namespace PetFlow.Persistence
                     Type = NoteType.General,
                     PetId = 3,
                     StatusId = 1,
-                    Created = now,
-                    CreatedBy = now.ToString()
+                    Created = seedDate,
+                    CreatedBy = "system"
                 }
             );
         }
 
         private static void SeedMedicalNotes(ModelBuilder modelBuilder)
         {
-            var now = DateTime.UtcNow;
+            var seedDate = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc);
             modelBuilder.Entity<MedicalNote>().HasData(
                 new MedicalNote
                 {
@@ -148,8 +148,8 @@ namespace PetFlow.Persistence
                     Description = "Started antibiotic treatment for Max's ear infection",
                     PetId = 1,
                     StatusId = 1,
-                    Created = now,
-                    CreatedBy = now.ToString()
+                    Created = seedDate,
+                    CreatedBy = "system"
                 },
                 new MedicalNote
                 {
@@ -158,8 +158,8 @@ namespace PetFlow.Persistence
                     Description = "Professional dental cleaning performed for Whiskers",
                     PetId = 2,
                     StatusId = 1,
-                    Created = now,
-                    CreatedBy = now.ToString()
+                    Created = seedDate,
+                    CreatedBy = "system"
                 },
                 new MedicalNote
                 {
@@ -168,8 +168,8 @@ namespace PetFlow.Persistence
                     Description = "Buddy needs to reduce weight by 2kg - started new diet plan",
                     PetId = 3,
                     StatusId = 1,
-                    Created = now,
-                    CreatedBy = now.ToString()
+                    Created = seedDate,
+                    CreatedBy = "system"
                 }
             );
         }
