@@ -11,7 +11,7 @@ public static class ServiceRegistryExtensions
 {
     public static IServiceCollection AddPersistence(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddDbContext<PetFlowDbContext>(options => options.UseSqlite(configuration.GetConnectionString("PetDatabase")));
+        services.AddDbContext<PetFlowDbContext>(options => options.UseNpgsql(configuration.GetConnectionString("PetDatabase")));
         
         services.AddScoped<IPetFlowDbContext, PetFlowDbContext>();
         services.AddScoped<IPetRepository, PetRepository>();

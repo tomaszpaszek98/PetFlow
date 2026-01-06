@@ -5,33 +5,35 @@ using PetFlow.Persistence;
 
 namespace WebApi.IntegrationTests.Common;
 
+[Parallelizable(ParallelScope.Fixtures)]
+[TestFixture]
 public abstract class BaseIntegrationTest
 {
-    private readonly IntegrationTestWebAppFactory _factory = new();
+    private IntegrationTestWebAppFactory? _factory;
     private IServiceScope? _scope;
     protected ISender Sender { get; private set; } = null!;
 
     [SetUp]
-    public void SetUp()
+    public async Task SetUpAsync()
     {
+        _factory = new IntegrationTestWebAppFactory();
+        await _factory.InitializeAsync();
         _scope = _factory.Services.CreateScope();
         
-        // Migrate database - in-memory SQLite creates fresh db per scope
         var dbContext = _scope.ServiceProvider.GetRequiredService<PetFlowDbContext>();
-        dbContext.Database.Migrate();
+        await dbContext.Database.MigrateAsync();
         
         Sender = _scope.ServiceProvider.GetRequiredService<ISender>();
     }
 
     [TearDown]
-    public void TearDown()
+    public async Task TearDownAsync()
     {
         _scope?.Dispose();
-    }
-
-    [OneTimeTearDown]
-    public void OneTimeTearDown()
-    {
-        _factory.Dispose();
+        
+        if (_factory != null)
+        {
+            await _factory.DisposeAsync();
+        }
     }
 }

@@ -2,9 +2,8 @@
 using FluentValidation;
 using WebApi.IntegrationTests.Common;
 
-namespace WebApi.IntegrationTests.Controllers.Pets;
+namespace WebApi.IntegrationTests.Pets;
 
-[Parallelizable(ParallelScope.Fixtures)]
 public class CreatePetTests : BaseIntegrationTest
 {
     [Test]

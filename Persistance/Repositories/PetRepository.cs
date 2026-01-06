@@ -72,24 +72,32 @@ public class PetRepository : IPetRepository
 
     public async Task<Pet?> GetByIdWithUpcomingEventAsync(int id, CancellationToken cancellationToken = default)
     {
-        var pet = await _dbContext.Pets
+        return await _dbContext.Pets
             .AsNoTracking()
-            .Include(p => p.Events)
-            .FirstOrDefaultAsync(p => p.Id == id, cancellationToken);
-
-        if (pet == null)
-            return null;
-        
-        // We add filtering and ordering logic here to only return the next upcoming event
-        // With SQL Server it should be possible to do it in query (with Include)
-        // but with SQLite it is not supported, so we do it in memory
-        pet.Events = pet.Events
-            .Where(e => e.DateOfEvent >= DateTime.UtcNow)
-            .OrderBy(e => e.DateOfEvent)
-            .Take(1)
-            .ToList();
-
-        return pet;
+            .Where(p => p.Id == id)
+            .Select(p => new Pet
+            {
+                Id = p.Id,
+                UserId = p.UserId,
+                Name = p.Name,
+                Species = p.Species,
+                Breed = p.Breed,
+                DateOfBirth = p.DateOfBirth,
+                PhotoUrl = p.PhotoUrl,
+                Created = p.Created,
+                CreatedBy = p.CreatedBy,
+                Modified = p.Modified,
+                ModifiedBy = p.ModifiedBy,
+                StatusId = p.StatusId,
+                Inactivated = p.Inactivated,
+                InactivatedBy = p.InactivatedBy,
+                Events = p.Events
+                    .Where(e => e.DateOfEvent >= DateTime.UtcNow)
+                    .OrderBy(e => e.DateOfEvent)
+                    .Take(1)
+                    .ToList()
+            })
+            .FirstOrDefaultAsync(cancellationToken);
     }
 
     public async Task<Pet?> GetByIdWithEventsAsync(int id, CancellationToken cancellationToken = default)

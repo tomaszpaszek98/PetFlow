@@ -10,6 +10,7 @@ namespace PetFlow.Persistence
         {
             SeedPets(modelBuilder);
             SeedEvents(modelBuilder);
+            SeedPetEvents(modelBuilder);
             SeedNotes(modelBuilder);
             SeedMedicalNotes(modelBuilder);
         }
@@ -25,7 +26,7 @@ namespace PetFlow.Persistence
                     Name = "Max",
                     Species = "Dog",
                     Breed = "Golden Retriever",
-                    DateOfBirth = new DateTime(2020, 3, 15),
+                    DateOfBirth = new DateTime(2020, 3, 15, 0, 0, 0, DateTimeKind.Utc),
                     PhotoUrl = "https://example.com/max.jpg",
                     StatusId = 1,
                     Created = seedDate,
@@ -38,7 +39,7 @@ namespace PetFlow.Persistence
                     Name = "Whiskers",
                     Species = "Cat",
                     Breed = "British Shorthair",
-                    DateOfBirth = new DateTime(2019, 7, 22),
+                    DateOfBirth = new DateTime(2019, 7, 22, 0, 0, 0, DateTimeKind.Utc),
                     PhotoUrl = "https://example.com/whiskers.jpg",
                     StatusId = 1,
                     Created = seedDate,
@@ -51,7 +52,7 @@ namespace PetFlow.Persistence
                     Name = "Buddy",
                     Species = "Dog",
                     Breed = "Labrador Retriever",
-                    DateOfBirth = new DateTime(2021, 1, 10),
+                    DateOfBirth = new DateTime(2021, 1, 10, 0, 0, 0, DateTimeKind.Utc),
                     PhotoUrl = null,
                     StatusId = 1,
                     Created = seedDate,
@@ -63,13 +64,15 @@ namespace PetFlow.Persistence
         private static void SeedEvents(ModelBuilder modelBuilder)
         {
             var seedDate = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+            var upcomingDate = new DateTime(2026, 2, 1, 0, 0, 0, DateTimeKind.Utc);
+            
             modelBuilder.Entity<Event>().HasData(
                 new Event
                 {
                     Id = 1,
                     Title = "Vet Appointment",
                     Description = "Annual checkup for Max",
-                    DateOfEvent = new DateTime(2024, 1, 8, 0, 0, 0, DateTimeKind.Utc),
+                    DateOfEvent = upcomingDate.AddDays(7),
                     Reminder = true,
                     StatusId = 1,
                     Created = seedDate,
@@ -80,7 +83,7 @@ namespace PetFlow.Persistence
                     Id = 2,
                     Title = "Grooming Session",
                     Description = "Bath and nail trimming for Whiskers",
-                    DateOfEvent = new DateTime(2024, 1, 4, 0, 0, 0, DateTimeKind.Utc),
+                    DateOfEvent = upcomingDate.AddDays(3),
                     Reminder = false,
                     StatusId = 1,
                     Created = seedDate,
@@ -91,8 +94,43 @@ namespace PetFlow.Persistence
                     Id = 3,
                     Title = "Vaccination",
                     Description = "Rabies vaccination for Buddy",
-                    DateOfEvent = new DateTime(2024, 1, 15, 0, 0, 0, DateTimeKind.Utc),
+                    DateOfEvent = upcomingDate.AddDays(14),
                     Reminder = true,
+                    StatusId = 1,
+                    Created = seedDate,
+                    CreatedBy = "system"
+                }
+            );
+        }
+
+        private static void SeedPetEvents(ModelBuilder modelBuilder)
+        {
+            var seedDate = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+            
+            modelBuilder.Entity<PetEvent>().HasData(
+                new PetEvent
+                {
+                    Id = 1,
+                    PetId = 1, // Max
+                    EventId = 1, // Vet Appointment
+                    StatusId = 1,
+                    Created = seedDate,
+                    CreatedBy = "system"
+                },
+                new PetEvent
+                {
+                    Id = 2,
+                    PetId = 2, // Whiskers
+                    EventId = 2, // Grooming Session
+                    StatusId = 1,
+                    Created = seedDate,
+                    CreatedBy = "system"
+                },
+                new PetEvent
+                {
+                    Id = 3,
+                    PetId = 3, // Buddy
+                    EventId = 3, // Vaccination
                     StatusId = 1,
                     Created = seedDate,
                     CreatedBy = "system"

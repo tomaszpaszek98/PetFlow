@@ -4,13 +4,28 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using PetFlow.Persistence;
-using NSubstitute;
-using Application.Common.Interfaces;
+using Testcontainers.PostgreSql;
 
 namespace WebApi.IntegrationTests.Common;
 
 public class IntegrationTestWebAppFactory : WebApplicationFactory<Program>
 {
+    private PostgreSqlContainer? _dbContainer;
+    private string? _connectionString;
+    
+    public async Task InitializeAsync()
+    {
+        _dbContainer = new PostgreSqlBuilder()
+            .WithImage("postgres:latest")
+            .WithDatabase("petflow_test_db")
+            .WithUsername("postgres")
+            .WithPassword("postgres")
+            .Build();
+
+        await _dbContainer.StartAsync();
+        _connectionString = _dbContainer.GetConnectionString();
+    }
+    
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         builder.ConfigureTestServices(services =>
@@ -25,21 +40,17 @@ public class IntegrationTestWebAppFactory : WebApplicationFactory<Program>
 
             services.AddDbContext<PetFlowDbContext>(options =>
             {
-                options.UseSqlite("Data Source=:memory:");
-                // Suppress PendingModelChangesWarning - seed data are static, but runtime changes use dynamic values
-                options.ConfigureWarnings(w => 
-                    w.Ignore(Microsoft.EntityFrameworkCore.Diagnostics.RelationalEventId.PendingModelChangesWarning));
+                options.UseNpgsql(_connectionString);
             });
-
-            // Mock IDateTime and ICurrentUserService for database initialization
-            var dateTimeMock = Substitute.For<IDateTime>();
-            dateTimeMock.Now.Returns(DateTime.UtcNow);
-            
-            var userServiceMock = Substitute.For<ICurrentUserService>();
-            userServiceMock.Email.Returns("test@example.com");
-            
-            services.AddSingleton(dateTimeMock);
-            services.AddSingleton(userServiceMock);
         });
+    }
+
+    public new async Task DisposeAsync()
+    {
+        if (_dbContainer is not null)
+        {
+            await _dbContainer.StopAsync();
+            await _dbContainer.DisposeAsync();
+        }
     }
 }
