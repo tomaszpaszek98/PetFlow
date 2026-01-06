@@ -1,15 +1,15 @@
-﻿using Application.Pets.Queries.GetPets;
+﻿using Application.Events.Queries.GetEvents;
 using WebApi.IntegrationTests.Common;
 
-namespace WebApi.IntegrationTests.Pets;
+namespace WebApi.IntegrationTests.Events;
 
-public class GetPetsTests : BaseIntegrationTest
+public class GetEventsTests : BaseIntegrationTest
 {
     [Test]
-    public async Task ShouldReturnAllPetsWhenPetsExistInDatabase()
+    public async Task ShouldReturnAllEventsWhenEventsExistInDatabase()
     {
-        // GIVEN - 3 pets from seed data
-        var query = new GetPetsQuery();
+        // GIVEN - 3 events from seed data
+        var query = new GetEventsQuery();
 
         // WHEN
         var response = await Sender.Send(query);
@@ -21,10 +21,10 @@ public class GetPetsTests : BaseIntegrationTest
     }
 
     [Test]
-    public async Task ShouldReturnEmptyListWhenNoPetsExist()
+    public async Task ShouldReturnEmptyListWhenNoEventsExist()
     {
         // GIVEN
-        var query = new GetPetsQuery();
+        var query = new GetEventsQuery();
 
         // WHEN
         var response = await Sender.Send(query);
