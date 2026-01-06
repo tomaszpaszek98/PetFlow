@@ -13,12 +13,14 @@ public class UpdatePetTests : BaseIntegrationTest
     {
         // GIVEN
         var petId = 1;
+        var updatedName = "UpdatedName";
+        var updatedBreed = "Updated Breed";
         var updateCommand = new UpdatePetCommand
         {
             Id = petId,
-            Name = "UpdatedName",
+            Name = updatedName,
             Species = "Dog",
-            Breed = "Updated Breed",
+            Breed = updatedBreed,
             DateOfBirth = DateTime.UtcNow.Date.AddYears(-3)
         };
 
@@ -28,8 +30,8 @@ public class UpdatePetTests : BaseIntegrationTest
         // THEN
         result.Should().NotBeNull();
         result.Id.Should().Be(petId);
-        result.Name.Should().Be("UpdatedName");
-        result.Breed.Should().Be("Updated Breed");
+        result.Name.Should().Be(updatedName);
+        result.Breed.Should().Be(updatedBreed);
     }
 
     [Test]
