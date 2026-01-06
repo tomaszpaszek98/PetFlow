@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using PetFlow.Persistence;
@@ -11,9 +12,11 @@ using PetFlow.Persistence;
 namespace PetFlow.Persistence.Migrations
 {
     [DbContext(typeof(PetFlowDbContext))]
-    partial class PetFlowDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260106134157_RemovedPetFromThirdEventInSeedingData")]
+    partial class RemovedPetFromThirdEventInSeedingData
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

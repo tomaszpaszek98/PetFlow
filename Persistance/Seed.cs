@@ -125,15 +125,6 @@ namespace PetFlow.Persistence
                     StatusId = 1,
                     Created = seedDate,
                     CreatedBy = "system"
-                },
-                new PetEvent
-                {
-                    Id = 3,
-                    PetId = 3, // Buddy
-                    EventId = 3, // Vaccination
-                    StatusId = 1,
-                    Created = seedDate,
-                    CreatedBy = "system"
                 }
             );
         }
