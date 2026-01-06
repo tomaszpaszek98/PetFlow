@@ -1,8 +1,10 @@
+using System.Text.Json.Serialization;
 using Application.Events.Common;
 
 namespace Application.Events.Queries.GetEvents;
 
-public class EventResponseDto : EventResponse
+public record EventResponseDto : EventResponse
 {
-    public DateTime ModifiedAt { get; set; }
+    [JsonPropertyName("modifiedAt")]
+    public DateTime ModifiedAt { get; init; }
 }

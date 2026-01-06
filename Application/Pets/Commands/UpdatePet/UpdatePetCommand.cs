@@ -1,15 +1,21 @@
 using Application.Pets.Common;
 using MediatR;
 using System;
+using System.Text.Json.Serialization;
 
 namespace Application.Pets.Commands.UpdatePet;
 
-public class UpdatePetCommand : IRequest<PetResponse>
+public record UpdatePetCommand : IRequest<PetResponse>
 {
-    public int Id { get; set; }
-    public string Name { get; set; }
-    public string Species { get; set; }
-    public string Breed { get; set; }
-    public DateTime DateOfBirth { get; set; }
+    [JsonPropertyName("id")]
+    public int Id { get; init; }
+    [JsonPropertyName("name")]
+    public string Name { get; init; }
+    [JsonPropertyName("species")]
+    public string Species { get; init; }
+    [JsonPropertyName("breed")]
+    public string Breed { get; init; }
+    [JsonPropertyName("dateOfBirth")]
+    public DateTime DateOfBirth { get; init; }
 }
 

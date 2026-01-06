@@ -4,7 +4,6 @@ using Application.Pets.Queries.GetPetDetails;
 using Application.Pets.Queries.GetPetEvents;
 using Application.Pets.Queries.GetPets;
 using Microsoft.AspNetCore.Mvc;
-using PetFlow.Requests;
 using PetFlow.Requests.Pet;
 
 namespace PetFlow.Controllers;
@@ -15,9 +14,9 @@ public class PetsController : BaseController
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> Create([FromBody] CreatePetCommand request, CancellationToken cancellationToken)
+    public async Task<IActionResult> Create([FromBody] CreatePetCommand command, CancellationToken cancellationToken)
     {
-        var result = await Mediator.Send(request, cancellationToken);
+        var result = await Mediator.Send(command, cancellationToken);
         
         return CreatedAtAction(nameof(Get), new { id = result.Id }, result);
     }

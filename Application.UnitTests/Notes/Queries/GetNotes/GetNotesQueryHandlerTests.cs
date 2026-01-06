@@ -31,8 +31,8 @@ public class GetNotesQueryHandlerTests
         
         // THEN
         result.Should().NotBeNull();
-        result.Notes.Should().NotBeNull();
-        result.Notes.Should().HaveCount(2);
+        result.Items.Should().NotBeNull();
+        result.Items.Should().HaveCount(2);
         
         Received.InOrder(() =>
         {
@@ -84,8 +84,8 @@ public class GetNotesQueryHandlerTests
         
         // THEN
         result.Should().NotBeNull();
-        result.Notes.Should().NotBeNull();
-        result.Notes.Should().BeEmpty();
+        result.Items.Should().NotBeNull();
+        result.Items.Should().BeEmpty();
         
         Received.InOrder(() =>
         {

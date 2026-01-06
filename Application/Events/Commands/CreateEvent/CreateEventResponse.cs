@@ -1,8 +1,10 @@
+using System.Text.Json.Serialization;
 using Application.Events.Common;
 
 namespace Application.Events.Commands.CreateEvent;
 
-public class CreateEventResponse : EventResponse
+public record CreateEventResponse : EventResponse
 {
-    public IEnumerable<AssignedPetDto>? AssignedPets { get; set; }
+    [JsonPropertyName("assignedPets")]
+    public IEnumerable<AssignedPetDto>? AssignedPets { get; init; }
 }

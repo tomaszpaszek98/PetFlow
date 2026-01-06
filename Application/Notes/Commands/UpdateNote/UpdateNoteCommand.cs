@@ -3,10 +3,10 @@ using MediatR;
 
 namespace Application.Notes.Commands.UpdateNote;
 
-public class UpdateNoteCommand : IRequest<UpdateNoteResponse>
+public record UpdateNoteCommand : IRequest<UpdateNoteResponse>
 {
-    public int PetId { get; set; }
-    public int NoteId { get; set; }
-    public string Content { get; set; }
-    public NoteType Type { get; set; }
+    public int PetId { get; init; }
+    public int NoteId { get; init; }
+    public string Content { get; init; }
+    public NoteType Type { get; init; }
 }

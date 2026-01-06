@@ -2,7 +2,7 @@
 
 namespace Application.MedicalNotes.Queries.GetMedicalNotes;
 
-public class GetMedicalNotesQuery : IRequest<MedicalNotesResponse>
+public record GetMedicalNotesQuery : IRequest<MedicalNotesResponse>
 {
-    public int PetId { get; set; }
+    public int PetId { get; init; }
 }

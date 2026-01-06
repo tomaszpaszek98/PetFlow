@@ -2,7 +2,4 @@ using MediatR;
 
 namespace Application.Pets.Queries.GetPets;
 
-public class GetPetsQuery : IRequest<PetsResponse>
-{
-}
-
+public record GetPetsQuery : IRequest<PetsResponse>;

@@ -1,6 +1,9 @@
-﻿namespace Application.MedicalNotes.Queries.GetMedicalNotes;
+﻿using System.Text.Json.Serialization;
 
-public class MedicalNotesResponse
+namespace Application.MedicalNotes.Queries.GetMedicalNotes;
+
+public record MedicalNotesResponse
 {
-    public IEnumerable<MedicalNoteResponseDto> MedicalNotes { get; set; }
+    [JsonPropertyName("items")]
+    public IEnumerable<MedicalNoteResponseDto> Items { get; init; } = [];
 }

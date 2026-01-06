@@ -1,6 +1,9 @@
-﻿namespace Application.Notes.Queries.GetNotes;
+﻿using System.Text.Json.Serialization;
 
-public class NotesResponse
+namespace Application.Notes.Queries.GetNotes;
+
+public record NotesResponse
 {
-    public IEnumerable<NoteResponseDto> Notes { get; set; }
+    [JsonPropertyName("items")] 
+    public IEnumerable<NoteResponseDto> Items { get; init; } = [];
 }

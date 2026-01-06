@@ -1,8 +1,10 @@
-﻿using Application.MedicalNotes.Common;
+﻿using System.Text.Json.Serialization;
+using Application.MedicalNotes.Common;
 
 namespace Application.MedicalNotes.Commands.CreateMedicalNote;
 
-public class CreateMedicalNoteResponse : MedicalNoteResponse
+public record CreateMedicalNoteResponse : MedicalNoteResponse
 {
-    public string Description { get; set; }
+    [JsonPropertyName("description")]
+    public string Description { get; init; }
 }

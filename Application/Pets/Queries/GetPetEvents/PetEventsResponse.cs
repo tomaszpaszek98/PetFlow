@@ -1,16 +1,25 @@
-﻿namespace Application.Pets.Queries.GetPetEvents;
+﻿using System.Text.Json.Serialization;
 
-public class PetEventsResponse
+namespace Application.Pets.Queries.GetPetEvents;
+
+public record PetEventsResponse
 {
-    public IEnumerable<PetEventResponse> Items { get; set; } = new List<PetEventResponse>();
+    [JsonPropertyName("items")]
+    public IEnumerable<PetEventResponse> Items { get; init; } = [];
 }
 
-public class PetEventResponse
+public record PetEventResponse
 {
-    public int Id { get; set; }
-    public string Title { get; set; }
-    public DateTime DateOfEvent { get; set; }
-    public bool Reminder { get; set; }
-    public DateTime CreatedAt { get; set; }
-    public DateTime? ModifiedAt { get; set; }
+    [JsonPropertyName("id")]
+    public int Id { get; init; }
+    [JsonPropertyName("title")]
+    public string Title { get; init; }
+    [JsonPropertyName("dateOfEvent")]
+    public DateTime DateOfEvent { get; init; }
+    [JsonPropertyName("reminder")]
+    public bool Reminder { get; init; }
+    [JsonPropertyName("createdAt")]
+    public DateTime CreatedAt { get; init; }
+    [JsonPropertyName("modifiedAt")]
+    public DateTime? ModifiedAt { get; init; }
 }

@@ -1,9 +1,11 @@
+using System.Text.Json.Serialization;
 using Application.Pets.Common;
 
 namespace Application.Pets.Queries.GetPets;
 
-public class PetsResponse
+public record PetsResponse
 {
-    public IEnumerable<PetResponse> Items { get; set; } = new List<PetResponse>();
+    [JsonPropertyName("items")]
+    public IEnumerable<PetResponse> Items { get; init; } = [];
 }
 

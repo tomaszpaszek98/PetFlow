@@ -17,8 +17,8 @@ public class GetMedicalNotesTests : BaseIntegrationTest
 
         // THEN
         response.Should().NotBeNull();
-        response.MedicalNotes.Should().NotBeNull();
-        response.MedicalNotes.Should().HaveCountGreaterThanOrEqualTo(1);
+        response.Items.Should().NotBeNull();
+        response.Items.Should().HaveCountGreaterThanOrEqualTo(1);
     }
 
     [Test]
@@ -33,7 +33,7 @@ public class GetMedicalNotesTests : BaseIntegrationTest
 
         // THEN
         response.Should().NotBeNull();
-        response.MedicalNotes.Should().NotBeNull();
+        response.Items.Should().NotBeNull();
     }
 }
 

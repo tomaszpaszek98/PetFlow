@@ -1,8 +1,13 @@
-﻿namespace Application.Events.Commands.AddPetToEvent;
+﻿using System.Text.Json.Serialization;
 
-public class AddPetToEventResponse
+namespace Application.Events.Commands.AddPetToEvent;
+
+public record AddPetToEventResponse
 {
-    public int EventId { get; set; }
-    public int PetId { get; set; }
-    public DateTime AssociatedAt { get; set; }
+    [JsonPropertyName("eventId")]
+    public int EventId { get; init; }
+    [JsonPropertyName("petId")]
+    public int PetId { get; init; }
+    [JsonPropertyName("associatedAt")]
+    public DateTime AssociatedAt { get; init; }
 }

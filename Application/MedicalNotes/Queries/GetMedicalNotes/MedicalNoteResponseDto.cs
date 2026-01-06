@@ -1,9 +1,15 @@
-﻿namespace Application.MedicalNotes.Queries.GetMedicalNotes;
+﻿using System.Text.Json.Serialization;
 
-public class MedicalNoteResponseDto
+namespace Application.MedicalNotes.Queries.GetMedicalNotes;
+
+public record MedicalNoteResponseDto
 {
-    public int Id { get; set; }
-    public string Title { get; set; }
-    public DateTime CreatedAt { get; set; }
-    public DateTime ModifiedAt { get; set; }
+    [JsonPropertyName("id")]
+    public int Id { get; init; }
+    [JsonPropertyName("title")]
+    public string Title { get; init; }
+    [JsonPropertyName("createdAt")]
+    public DateTime CreatedAt { get; init; }
+    [JsonPropertyName("modifiedAt")]
+    public DateTime ModifiedAt { get; init; }
 }

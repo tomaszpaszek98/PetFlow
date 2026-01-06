@@ -1,6 +1,18 @@
-﻿namespace PetFlow.Requests.Pet;
+﻿using Application.Pets.Commands.UpdatePet;
 
-public class RequestsMappingExtensions
+namespace PetFlow.Requests.Pet;
+
+public static class RequestsMappingExtensions
 {
-    
+    public static UpdatePetCommand MapToCommand(this UpdatePetRequest request, int id)
+    {
+        return new UpdatePetCommand
+        {
+            Id = id,
+            Name = request.Name,
+            Species = request.Species,
+            Breed = request.Breed,
+            DateOfBirth = request.DateOfBirth
+        };
+    }
 }

@@ -2,7 +2,7 @@
 
 namespace Application.Events.Queries.GetEventDetails;
 
-public class GetEventDetailsQuery : IRequest<EventDetailsResponse>
+public record GetEventDetailsQuery : IRequest<EventDetailsResponse>
 {
-    public int EventId { get; set; }
+    public int EventId { get; init; }
 }

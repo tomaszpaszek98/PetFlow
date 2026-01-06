@@ -32,8 +32,8 @@ public class GetMedicalNotesQueryHandlerTests
         
         // THEN
         result.Should().NotBeNull();
-        result.MedicalNotes.Should().NotBeNull();
-        result.MedicalNotes.Should().HaveCount(2);
+        result.Items.Should().NotBeNull();
+        result.Items.Should().HaveCount(2);
         
         Received.InOrder(() =>
         {
@@ -85,8 +85,8 @@ public class GetMedicalNotesQueryHandlerTests
         
         // THEN
         result.Should().NotBeNull();
-        result.MedicalNotes.Should().NotBeNull();
-        result.MedicalNotes.Should().BeEmpty();
+        result.Items.Should().NotBeNull();
+        result.Items.Should().BeEmpty();
         
         Received.InOrder(() =>
         {

@@ -1,12 +1,17 @@
-﻿using Application.Pets.Common;
+﻿using System.Text.Json.Serialization;
+using Application.Pets.Common;
 using MediatR;
 
 namespace Application.Pets.Commands.CreatePet;
 
-public class CreatePetCommand : IRequest<PetResponse>
+public record CreatePetCommand : IRequest<PetResponse>
 {
-    public string Name { get; set; }
-    public string Species { get; set; }
-    public string Breed { get; set; }
-    public DateTime DateOfBirth { get; set; }
+    [JsonPropertyName("name")]
+    public string Name { get; init; }
+    [JsonPropertyName("species")]
+    public string Species { get; init; }
+    [JsonPropertyName("breed")]
+    public string Breed { get; init; }
+    [JsonPropertyName("dateOfBirth")]
+    public DateTime DateOfBirth { get; init; }
 }

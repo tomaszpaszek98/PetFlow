@@ -1,8 +1,13 @@
-﻿namespace Application.Events.Common;
+﻿using System.Text.Json.Serialization;
 
-public class AssignedPetDto
+namespace Application.Events.Common;
+
+public record AssignedPetDto
 {
-    public int Id { get; set; }
-    public string Name { get; set; }
-    public string? PhotoUrl { get; set; }
+    [JsonPropertyName("id")]
+    public int Id { get; init; }
+    [JsonPropertyName("name")]
+    public string Name { get; init; }
+    [JsonPropertyName("photoUrl")]
+    public string? PhotoUrl { get; init; }
 }

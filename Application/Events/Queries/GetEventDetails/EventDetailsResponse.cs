@@ -1,9 +1,12 @@
-﻿using Application.Events.Common;
+﻿using System.Text.Json.Serialization;
+using Application.Events.Common;
 
 namespace Application.Events.Queries.GetEventDetails;
 
-public class EventDetailsResponse : EventResponse
+public record EventDetailsResponse : EventResponse
 {
-    public DateTime ModifiedAt { get; set; }
-    public IEnumerable<AssignedPetDto> AssignedPets { get; set; } = [];
+    [JsonPropertyName("modifiedAt")]
+    public DateTime ModifiedAt { get; init; }
+    [JsonPropertyName("assignedPets")]
+    public IEnumerable<AssignedPetDto> AssignedPets { get; init; } = [];
 }

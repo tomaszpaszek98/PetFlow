@@ -1,8 +1,10 @@
-﻿using Application.Notes.Common;
+﻿using System.Text.Json.Serialization;
+using Application.Notes.Common;
 
 namespace Application.Notes.Commands.CreateNote;
 
-public class CreateNoteResponse : NoteResponse
+public record CreateNoteResponse : NoteResponse
 {
-    public string Content { get; set; }
+    [JsonPropertyName("content")]
+    public string Content { get; init; }
 }
