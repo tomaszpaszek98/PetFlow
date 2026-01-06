@@ -2,66 +2,76 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using PetFlow.Persistence;
 
 #nullable disable
 
 namespace PetFlow.Persistence.Migrations
 {
-    [DbContext(typeof(PetFlowFlowDbContext))]
-    partial class PetFlowFlowDbContextModelSnapshot : ModelSnapshot
+    [DbContext(typeof(PetFlowDbContext))]
+    [Migration("20260106134157_RemovedPetFromThirdEventInSeedingData")]
+    partial class RemovedPetFromThirdEventInSeedingData
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "9.0.6");
+            modelBuilder
+                .HasAnnotation("ProductVersion", "9.0.6")
+                .HasAnnotation("Relational:MaxIdentifierLength", 63);
+
+            NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
             modelBuilder.Entity("Domain.Entities.Event", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("Created")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<DateTime>("DateOfEvent")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasMaxLength(500)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("character varying(500)");
 
                     b.Property<DateTime?>("Inactivated")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("InactivatedBy")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<DateTime?>("Modified")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("ModifiedBy")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<bool>("Reminder")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("boolean")
                         .HasDefaultValue(false);
 
                     b.Property<int>("StatusId")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
 
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("character varying(50)");
 
                     b.HasKey("Id");
 
@@ -71,9 +81,9 @@ namespace PetFlow.Persistence.Migrations
                         new
                         {
                             Id = 1,
-                            Created = new DateTime(2026, 1, 3, 22, 44, 57, 25, DateTimeKind.Utc).AddTicks(4953),
-                            CreatedBy = "3.01.2026 22:44:57",
-                            DateOfEvent = new DateTime(2026, 1, 10, 22, 44, 57, 25, DateTimeKind.Utc).AddTicks(5747),
+                            Created = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "system",
+                            DateOfEvent = new DateTime(2026, 2, 8, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Annual checkup for Max",
                             Reminder = true,
                             StatusId = 1,
@@ -82,9 +92,9 @@ namespace PetFlow.Persistence.Migrations
                         new
                         {
                             Id = 2,
-                            Created = new DateTime(2026, 1, 3, 22, 44, 57, 25, DateTimeKind.Utc).AddTicks(4953),
-                            CreatedBy = "3.01.2026 22:44:57",
-                            DateOfEvent = new DateTime(2026, 1, 6, 22, 44, 57, 25, DateTimeKind.Utc).AddTicks(6078),
+                            Created = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "system",
+                            DateOfEvent = new DateTime(2026, 2, 4, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Bath and nail trimming for Whiskers",
                             Reminder = false,
                             StatusId = 1,
@@ -93,9 +103,9 @@ namespace PetFlow.Persistence.Migrations
                         new
                         {
                             Id = 3,
-                            Created = new DateTime(2026, 1, 3, 22, 44, 57, 25, DateTimeKind.Utc).AddTicks(4953),
-                            CreatedBy = "3.01.2026 22:44:57",
-                            DateOfEvent = new DateTime(2026, 1, 17, 22, 44, 57, 25, DateTimeKind.Utc).AddTicks(6096),
+                            Created = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "system",
+                            DateOfEvent = new DateTime(2026, 2, 15, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Rabies vaccination for Buddy",
                             Reminder = true,
                             StatusId = 1,
@@ -107,42 +117,44 @@ namespace PetFlow.Persistence.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("Created")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasMaxLength(2000)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("character varying(2000)");
 
                     b.Property<DateTime?>("Inactivated")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("InactivatedBy")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<DateTime?>("Modified")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("ModifiedBy")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<int>("PetId")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
 
                     b.Property<int>("StatusId")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
 
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("character varying(100)");
 
                     b.HasKey("Id");
 
@@ -154,8 +166,8 @@ namespace PetFlow.Persistence.Migrations
                         new
                         {
                             Id = 1,
-                            Created = new DateTime(2026, 1, 3, 22, 44, 57, 25, DateTimeKind.Utc).AddTicks(8684),
-                            CreatedBy = "3.01.2026 22:44:57",
+                            Created = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "system",
                             Description = "Started antibiotic treatment for Max's ear infection",
                             PetId = 1,
                             StatusId = 1,
@@ -164,8 +176,8 @@ namespace PetFlow.Persistence.Migrations
                         new
                         {
                             Id = 2,
-                            Created = new DateTime(2026, 1, 3, 22, 44, 57, 25, DateTimeKind.Utc).AddTicks(8684),
-                            CreatedBy = "3.01.2026 22:44:57",
+                            Created = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "system",
                             Description = "Professional dental cleaning performed for Whiskers",
                             PetId = 2,
                             StatusId = 1,
@@ -174,8 +186,8 @@ namespace PetFlow.Persistence.Migrations
                         new
                         {
                             Id = 3,
-                            Created = new DateTime(2026, 1, 3, 22, 44, 57, 25, DateTimeKind.Utc).AddTicks(8684),
-                            CreatedBy = "3.01.2026 22:44:57",
+                            Created = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "system",
                             Description = "Buddy needs to reduce weight by 2kg - started new diet plan",
                             PetId = 3,
                             StatusId = 1,
@@ -187,41 +199,43 @@ namespace PetFlow.Persistence.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Content")
                         .IsRequired()
                         .HasMaxLength(2000)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("character varying(2000)");
 
                     b.Property<DateTime>("Created")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<DateTime?>("Inactivated")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("InactivatedBy")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<DateTime?>("Modified")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("ModifiedBy")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<int>("PetId")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
 
                     b.Property<int>("StatusId")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
 
                     b.Property<int>("Type")
                         .HasMaxLength(50)
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -234,8 +248,8 @@ namespace PetFlow.Persistence.Migrations
                         {
                             Id = 1,
                             Content = "Max seems to have good energy today",
-                            Created = new DateTime(2026, 1, 3, 22, 44, 57, 25, DateTimeKind.Utc).AddTicks(7245),
-                            CreatedBy = "3.01.2026 22:44:57",
+                            Created = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "system",
                             PetId = 1,
                             StatusId = 1,
                             Type = 1
@@ -244,8 +258,8 @@ namespace PetFlow.Persistence.Migrations
                         {
                             Id = 2,
                             Content = "Whiskers was very playful during the afternoon",
-                            Created = new DateTime(2026, 1, 3, 22, 44, 57, 25, DateTimeKind.Utc).AddTicks(7245),
-                            CreatedBy = "3.01.2026 22:44:57",
+                            Created = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "system",
                             PetId = 2,
                             StatusId = 1,
                             Type = 0
@@ -254,8 +268,8 @@ namespace PetFlow.Persistence.Migrations
                         {
                             Id = 3,
                             Content = "Buddy ate all his meals today",
-                            Created = new DateTime(2026, 1, 3, 22, 44, 57, 25, DateTimeKind.Utc).AddTicks(7245),
-                            CreatedBy = "3.01.2026 22:44:57",
+                            Created = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "system",
                             PetId = 3,
                             StatusId = 1,
                             Type = 3
@@ -266,55 +280,57 @@ namespace PetFlow.Persistence.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Breed")
                         .IsRequired()
                         .HasMaxLength(30)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("character varying(30)");
 
                     b.Property<DateTime>("Created")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<DateTime>("DateOfBirth")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<DateTime?>("Inactivated")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("InactivatedBy")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<DateTime?>("Modified")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("ModifiedBy")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("character varying(50)");
 
                     b.Property<string>("PhotoUrl")
                         .HasMaxLength(200)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("character varying(200)");
 
                     b.Property<string>("Species")
                         .IsRequired()
                         .HasMaxLength(30)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("character varying(30)");
 
                     b.Property<int>("StatusId")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
 
                     b.Property<int>("UserId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("integer")
                         .HasDefaultValue(1);
 
                     b.HasKey("Id");
@@ -326,9 +342,9 @@ namespace PetFlow.Persistence.Migrations
                         {
                             Id = 1,
                             Breed = "Golden Retriever",
-                            Created = new DateTime(2026, 1, 3, 22, 44, 57, 20, DateTimeKind.Utc).AddTicks(4271),
-                            CreatedBy = "3.01.2026 22:44:57",
-                            DateOfBirth = new DateTime(2020, 3, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Created = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "system",
+                            DateOfBirth = new DateTime(2020, 3, 15, 0, 0, 0, 0, DateTimeKind.Utc),
                             Name = "Max",
                             PhotoUrl = "https://example.com/max.jpg",
                             Species = "Dog",
@@ -339,9 +355,9 @@ namespace PetFlow.Persistence.Migrations
                         {
                             Id = 2,
                             Breed = "British Shorthair",
-                            Created = new DateTime(2026, 1, 3, 22, 44, 57, 20, DateTimeKind.Utc).AddTicks(4271),
-                            CreatedBy = "3.01.2026 22:44:57",
-                            DateOfBirth = new DateTime(2019, 7, 22, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Created = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "system",
+                            DateOfBirth = new DateTime(2019, 7, 22, 0, 0, 0, 0, DateTimeKind.Utc),
                             Name = "Whiskers",
                             PhotoUrl = "https://example.com/whiskers.jpg",
                             Species = "Cat",
@@ -352,9 +368,9 @@ namespace PetFlow.Persistence.Migrations
                         {
                             Id = 3,
                             Breed = "Labrador Retriever",
-                            Created = new DateTime(2026, 1, 3, 22, 44, 57, 20, DateTimeKind.Utc).AddTicks(4271),
-                            CreatedBy = "3.01.2026 22:44:57",
-                            DateOfBirth = new DateTime(2021, 1, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Created = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "system",
+                            DateOfBirth = new DateTime(2021, 1, 10, 0, 0, 0, 0, DateTimeKind.Utc),
                             Name = "Buddy",
                             Species = "Dog",
                             StatusId = 1,
@@ -366,35 +382,37 @@ namespace PetFlow.Persistence.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("Created")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<int>("EventId")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
 
                     b.Property<DateTime?>("Inactivated")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("InactivatedBy")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<DateTime?>("Modified")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("ModifiedBy")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<int>("PetId")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
 
                     b.Property<int>("StatusId")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -403,6 +421,26 @@ namespace PetFlow.Persistence.Migrations
                     b.HasIndex("PetId");
 
                     b.ToTable("PetEvents");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Created = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "system",
+                            EventId = 1,
+                            PetId = 1,
+                            StatusId = 1
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Created = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "system",
+                            EventId = 2,
+                            PetId = 2,
+                            StatusId = 1
+                        });
                 });
 
             modelBuilder.Entity("Domain.Entities.MedicalNote", b =>

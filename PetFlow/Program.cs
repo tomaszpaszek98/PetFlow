@@ -1,5 +1,6 @@
 using Application;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using PetFlow.ExceptionHandlers;
 using PetFlow.Filters;
 using PetFlow.Infrastructure;
@@ -39,6 +40,7 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -53,3 +55,5 @@ app.UseExceptionHandler();
 app.MapControllers();
 
 app.Run();
+
+public partial class Program { }

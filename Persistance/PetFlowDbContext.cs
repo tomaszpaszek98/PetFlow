@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace PetFlow.Persistence;
 
-public class PetFlowFlowDbContext : DbContext, IPetFlowDbContext
+public class PetFlowDbContext : DbContext, IPetFlowDbContext
 {
     public DbSet<Event> Events { get; set; }
     public DbSet<MedicalNote> MedicalNotes { get; set; }
@@ -18,11 +18,11 @@ public class PetFlowFlowDbContext : DbContext, IPetFlowDbContext
     private readonly IDateTime _dateTime;
     private readonly ICurrentUserService _userService;
     
-    public PetFlowFlowDbContext(DbContextOptions<PetFlowFlowDbContext> options) : base(options)
+    public PetFlowDbContext(DbContextOptions<PetFlowDbContext> options) : base(options)
     {
     }
     
-    public PetFlowFlowDbContext(DbContextOptions<PetFlowFlowDbContext> options, IDateTime dateTime, ICurrentUserService userService) : base(options)
+    public PetFlowDbContext(DbContextOptions<PetFlowDbContext> options, IDateTime dateTime, ICurrentUserService userService) : base(options)
     {
         _dateTime = dateTime;
         _userService = userService;

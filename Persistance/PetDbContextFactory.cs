@@ -2,10 +2,10 @@
 
 namespace PetFlow.Persistence;
 
-public class PetDbContextFactory : DesignTimeDbContextFactoryBase<PetFlowFlowDbContext>
+public class PetDbContextFactory : DesignTimeDbContextFactoryBase<PetFlowDbContext>
 {
-    protected override PetFlowFlowDbContext CreateNewInstance(DbContextOptions<PetFlowFlowDbContext> options)
+    protected override PetFlowDbContext CreateNewInstance(DbContextOptions<PetFlowDbContext> options)
     {
-        return new PetFlowFlowDbContext(options);
+        return new PetFlowDbContext(options);
     }
 }
