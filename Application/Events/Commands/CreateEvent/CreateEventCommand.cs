@@ -1,12 +1,18 @@
-﻿using MediatR;
+﻿using System.Text.Json.Serialization;
+using MediatR;
 
 namespace Application.Events.Commands.CreateEvent;
 
-public class CreateEventCommand : IRequest<CreateEventResponse>
+public record CreateEventCommand : IRequest<CreateEventResponse>
 {
-    public string Title { get; set; }
-    public string Description { get; set; }
-    public DateTime DateOfEvent { get; set; }
-    public bool Reminder { get; set; }
-    public IEnumerable<int>? PetToAssignIds { get; set; }
+    [JsonPropertyName("title")]
+    public string Title { get; init; }
+    [JsonPropertyName("description")]
+    public string Description { get; init; }
+    [JsonPropertyName("dateOfEvent")]
+    public DateTime DateOfEvent { get; init; }
+    [JsonPropertyName("reminder")]
+    public bool Reminder { get; init; }
+    [JsonPropertyName("petToAssignIds")]
+    public IEnumerable<int>? PetToAssignIds { get; init; }
 }

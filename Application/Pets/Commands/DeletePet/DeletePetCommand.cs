@@ -2,7 +2,7 @@ using MediatR;
 
 namespace Application.Pets.Commands.DeletePet;
 
-public class DeletePetCommand : IRequest
+public record DeletePetCommand : IRequest
 {
-    public int PetId { get; set; }
+    public int PetId { get; init; }
 }

@@ -1,6 +1,5 @@
 using Application;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using PetFlow.ExceptionHandlers;
 using PetFlow.Filters;
 using PetFlow.Infrastructure;
@@ -16,7 +15,6 @@ builder.Services.AddApplication();
 builder.Services.AddInfrastructure();
 builder.Services.AddPersistence(builder.Configuration);
 builder.Services.AddExceptionHandlers();
-builder.Services.AddInvalidJsonFieldsValidation();
 builder.Services.AddProblemDetails();
 builder.Services.AddControllers(options =>
 {
@@ -28,9 +26,10 @@ builder.Services.AddControllers(options =>
 {
     options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
     options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
-    // Will be replaced with records decorated with [JsonPropertyName] for better control and clarity
     options.JsonSerializerOptions.UnmappedMemberHandling = JsonUnmappedMemberHandling.Disallow;
 });
+builder.Services.AddInvalidJsonFieldsValidation();
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", policy => policy.AllowAnyOrigin()); //TODO to change!

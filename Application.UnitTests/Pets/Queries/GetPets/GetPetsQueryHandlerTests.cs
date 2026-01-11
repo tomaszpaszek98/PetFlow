@@ -1,6 +1,7 @@
 using Application.Common.Interfaces.Repositories;
 using Application.Pets.Queries.GetPets;
 using Domain.Entities;
+using Microsoft.Extensions.Logging;
 
 namespace Application.UnitTests.Pets.Queries.GetPets;
 
@@ -16,7 +17,7 @@ public class GetPetsQueryHandlerTests
             new() { Id = 2, Name = "Milo", Species = "Cat", Breed = "Siamese", DateOfBirth = new DateTime(2019, 5, 5) }
         };
         var repository = Substitute.For<IPetRepository>();
-        var handler = new GetPetsQueryHandler(repository);
+        var handler = new GetPetsQueryHandler(repository, Any.Instance<ILogger<GetPetsQueryHandler>>());
         var query = new GetPetsQuery();
         
         repository.GetAllAsync(Arg.Any<CancellationToken>()).Returns(pets);
@@ -37,7 +38,7 @@ public class GetPetsQueryHandlerTests
         // GIVEN
         var query = new GetPetsQuery();
         var repository = Substitute.For<IPetRepository>();
-        var handler = new GetPetsQueryHandler(repository);
+        var handler = new GetPetsQueryHandler(repository, Any.Instance<ILogger<GetPetsQueryHandler>>());
         
         repository.GetAllAsync(Arg.Any<CancellationToken>()).Returns(new List<Pet>());
 

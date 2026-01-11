@@ -2,10 +2,10 @@
 
 namespace Application.MedicalNotes.Commands.UpdateMedicalNote;
 
-public class UpdateMedicalNoteCommand : IRequest<UpdateMedicalNoteResponse>
+public record UpdateMedicalNoteCommand : IRequest<UpdateMedicalNoteResponse>
 {
-    public int PetId { get; set; }
-    public int MedicalNoteId { get; set; }
-    public string Title { get; set; }
-    public string Description { get; set; }
+    public int PetId { get; init; }
+    public int MedicalNoteId { get; init; }
+    public string Title { get; init; }
+    public string Description { get; init; }
 }

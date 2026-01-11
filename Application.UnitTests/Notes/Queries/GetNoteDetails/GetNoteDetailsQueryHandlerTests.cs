@@ -2,6 +2,7 @@ using Application.Common.Interfaces.Repositories;
 using Application.Notes.Queries.GetNoteDetails;
 using Domain.Entities;
 using Domain.Exceptions;
+using Microsoft.Extensions.Logging;
 
 namespace Application.UnitTests.Notes.Queries.GetNoteDetails;
 
@@ -32,7 +33,7 @@ public class GetNoteDetailsQueryHandlerTests
         };
         var noteRepository = Substitute.For<INoteRepository>();
         var petRepository = Substitute.For<IPetRepository>();
-        var handler = new GetNoteDetailsQueryHandler(noteRepository, petRepository);
+        var handler = new GetNoteDetailsQueryHandler(noteRepository, petRepository, Any.Instance<ILogger<GetNoteDetailsQueryHandler>>());
         
         petRepository.ExistsAsync(query.PetId, Arg.Any<CancellationToken>())
             .Returns(true);
@@ -67,7 +68,7 @@ public class GetNoteDetailsQueryHandlerTests
         };
         var noteRepository = Substitute.For<INoteRepository>();
         var petRepository = Substitute.For<IPetRepository>();
-        var handler = new GetNoteDetailsQueryHandler(noteRepository, petRepository);
+        var handler = new GetNoteDetailsQueryHandler(noteRepository, petRepository, Any.Instance<ILogger<GetNoteDetailsQueryHandler>>());
         
         petRepository.ExistsAsync(query.PetId, Arg.Any<CancellationToken>())
             .Returns(true);
@@ -99,7 +100,7 @@ public class GetNoteDetailsQueryHandlerTests
         };
         var noteRepository = Substitute.For<INoteRepository>();
         var petRepository = Substitute.For<IPetRepository>();
-        var handler = new GetNoteDetailsQueryHandler(noteRepository, petRepository);
+        var handler = new GetNoteDetailsQueryHandler(noteRepository, petRepository, Any.Instance<ILogger<GetNoteDetailsQueryHandler>>());
         
         petRepository.ExistsAsync(query.PetId, Arg.Any<CancellationToken>())
             .Returns(true);
@@ -130,7 +131,7 @@ public class GetNoteDetailsQueryHandlerTests
         };
         var noteRepository = Substitute.For<INoteRepository>();
         var petRepository = Substitute.For<IPetRepository>();
-        var handler = new GetNoteDetailsQueryHandler(noteRepository, petRepository);
+        var handler = new GetNoteDetailsQueryHandler(noteRepository, petRepository, Any.Instance<ILogger<GetNoteDetailsQueryHandler>>());
         
         petRepository.ExistsAsync(query.PetId, Arg.Any<CancellationToken>())
             .Returns(false);

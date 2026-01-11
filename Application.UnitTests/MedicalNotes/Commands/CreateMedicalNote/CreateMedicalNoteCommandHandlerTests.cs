@@ -2,6 +2,7 @@ using Application.Common.Interfaces.Repositories;
 using Application.MedicalNotes.Commands.CreateMedicalNote;
 using Domain.Entities;
 using Domain.Exceptions;
+using Microsoft.Extensions.Logging;
 
 namespace Application.UnitTests.MedicalNotes.Commands.CreateMedicalNote;
 
@@ -27,7 +28,7 @@ public class CreateMedicalNoteCommandHandlerTests
         };
         var medicalNoteRepository = Substitute.For<IMedicalNoteRepository>();
         var petRepository = Substitute.For<IPetRepository>();
-        var handler = new CreateMedicalNoteCommandHandler(medicalNoteRepository, petRepository);
+        var handler = new CreateMedicalNoteCommandHandler(medicalNoteRepository, petRepository, Any.Instance<ILogger<CreateMedicalNoteCommandHandler>>());
         
         petRepository.ExistsAsync(command.PetId, Arg.Any<CancellationToken>())
             .Returns(true);
@@ -71,7 +72,7 @@ public class CreateMedicalNoteCommandHandlerTests
         };
         var medicalNoteRepository = Substitute.For<IMedicalNoteRepository>();
         var petRepository = Substitute.For<IPetRepository>();
-        var handler = new CreateMedicalNoteCommandHandler(medicalNoteRepository, petRepository);
+        var handler = new CreateMedicalNoteCommandHandler(medicalNoteRepository, petRepository, Any.Instance<ILogger<CreateMedicalNoteCommandHandler>>());
         
         petRepository.ExistsAsync(command.PetId, Arg.Any<CancellationToken>())
             .Returns(false);
@@ -85,5 +86,93 @@ public class CreateMedicalNoteCommandHandlerTests
         
         await petRepository.Received(1).ExistsAsync(command.PetId, Arg.Any<CancellationToken>());
         await medicalNoteRepository.DidNotReceive().CreateAsync(default);
+    }
+    
+    [Test]
+    public async Task ShouldLogSensitiveDetailsAtDebugLevelWhenHandlingCreateMedicalNoteCommand()
+    {
+        // GIVEN
+        var petId = 1;
+        var title = "Sensitive Medical Title";
+        var description = "Sensitive Medical Description With Private Info";
+        var medicalNoteId = 10;
+        var command = new CreateMedicalNoteCommand
+        {
+            PetId = petId,
+            Title = title,
+            Description = description
+        };
+        var createdNote = new MedicalNote
+        {
+            Id = medicalNoteId,
+            PetId = petId,
+            Title = title,
+            Description = description,
+            Created = DateTime.UtcNow
+        };
+        var medicalNoteRepository = Substitute.For<IMedicalNoteRepository>();
+        var petRepository = Substitute.For<IPetRepository>();
+        var logger = Substitute.For<ILogger<CreateMedicalNoteCommandHandler>>();
+        var handler = new CreateMedicalNoteCommandHandler(medicalNoteRepository, petRepository, logger);
+        
+        petRepository.ExistsAsync(petId, Arg.Any<CancellationToken>())
+            .Returns(true);
+        medicalNoteRepository.CreateAsync(Arg.Any<MedicalNote>(), Arg.Any<CancellationToken>())
+            .Returns(createdNote);
+        
+        // WHEN
+        await handler.Handle(command, CancellationToken.None);
+        
+        // THEN
+        logger.Received(1).Log(
+            LogLevel.Debug,
+            Arg.Any<EventId>(),
+            Arg.Is<object>(o => o.ToString()!.Contains(description)),
+            Arg.Any<Exception>(),
+            Arg.Any<Func<object, Exception?, string>>());
+    }
+    
+    [Test]
+    public async Task ShouldNotLogSensitiveDetailsAtInformationLevelWhenHandlingCreateMedicalNoteCommand()
+    {
+        // GIVEN
+        var petId = 1;
+        var title = "Sensitive Medical Title";
+        var description = "Sensitive Medical Description With Private Info";
+        var medicalNoteId = 10;
+        var command = new CreateMedicalNoteCommand
+        {
+            PetId = petId,
+            Title = title,
+            Description = description
+        };
+        var createdNote = new MedicalNote
+        {
+            Id = medicalNoteId,
+            PetId = petId,
+            Title = title,
+            Description = description,
+            Created = DateTime.UtcNow
+        };
+        var medicalNoteRepository = Substitute.For<IMedicalNoteRepository>();
+        var petRepository = Substitute.For<IPetRepository>();
+        var logger = Substitute.For<ILogger<CreateMedicalNoteCommandHandler>>();
+        var handler = new CreateMedicalNoteCommandHandler(medicalNoteRepository, petRepository, logger);
+        
+        petRepository.ExistsAsync(petId, Arg.Any<CancellationToken>())
+            .Returns(true);
+        medicalNoteRepository.CreateAsync(Arg.Any<MedicalNote>(), Arg.Any<CancellationToken>())
+            .Returns(createdNote);
+        
+        // WHEN
+        await handler.Handle(command, CancellationToken.None);
+        
+        // THEN
+        logger.DidNotReceive().Log(
+            LogLevel.Information,
+            Arg.Any<EventId>(),
+            Arg.Is<object>(o => o.ToString()!.Contains(description)),
+            Arg.Any<Exception>(),
+            Arg.Any<Func<object, Exception?, string>>());
     }
 }

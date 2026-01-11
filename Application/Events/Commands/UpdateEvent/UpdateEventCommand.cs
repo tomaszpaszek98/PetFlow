@@ -1,13 +1,20 @@
-﻿using MediatR;
+﻿using System.Text.Json.Serialization;
+using MediatR;
 
 namespace Application.Events.Commands.UpdateEvent;
 
-public class UpdateEventCommand : IRequest<UpdateEventResponse>
+public record UpdateEventCommand : IRequest<UpdateEventResponse>
 {
-    public int Id { get; set; }
-    public string Title { get; set; }
-    public string Description { get; set; }
-    public DateTime DateOfEvent { get; set; }
-    public bool Reminder { get; set; }
-    public IEnumerable<int> AssignedPetsIds { get; set; }
+    [JsonPropertyName("id")]
+    public int Id { get; init; }
+    [JsonPropertyName("title")]
+    public string Title { get; init; }
+    [JsonPropertyName("description")]
+    public string Description { get; init; }
+    [JsonPropertyName("dateOfEvent")]
+    public DateTime DateOfEvent { get; init; }
+    [JsonPropertyName("reminder")]
+    public bool Reminder { get; init; }
+    [JsonPropertyName("assignedPetsIds")]
+    public IEnumerable<int> AssignedPetsIds { get; init; }
 }

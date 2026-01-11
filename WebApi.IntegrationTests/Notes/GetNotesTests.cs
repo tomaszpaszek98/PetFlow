@@ -17,8 +17,8 @@ public class GetNotesTests : BaseIntegrationTest
 
         // THEN
         response.Should().NotBeNull();
-        response.Notes.Should().NotBeNull();
-        response.Notes.Should().HaveCount(1);
+        response.Items.Should().NotBeNull();
+        response.Items.Should().HaveCount(1);
     }
 
     [Test]
@@ -33,7 +33,6 @@ public class GetNotesTests : BaseIntegrationTest
 
         // THEN
         response.Should().NotBeNull();
-        response.Notes.Should().NotBeNull();
+        response.Items.Should().NotBeNull();
     }
 }
-

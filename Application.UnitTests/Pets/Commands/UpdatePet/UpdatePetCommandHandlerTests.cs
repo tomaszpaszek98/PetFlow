@@ -3,6 +3,7 @@ using Application.Pets.Commands.UpdatePet;
 using Application.Pets.Common;
 using Domain.Entities;
 using Domain.Exceptions;
+using Microsoft.Extensions.Logging;
 
 namespace Application.UnitTests.Pets.Commands.UpdatePet;
 
@@ -29,7 +30,7 @@ public class UpdatePetCommandHandlerTests
             DateOfBirth = new DateTime(2018, 1, 1)
         };
         var repository = Substitute.For<IPetRepository>();
-        var handler = new UpdatePetCommandHandler(repository);
+        var handler = new UpdatePetCommandHandler(repository, Any.Instance<ILogger<UpdatePetCommandHandler>>());
 
         repository.GetByIdAsync(command.Id, Arg.Any<CancellationToken>())
             .Returns(pet);
@@ -78,7 +79,7 @@ public class UpdatePetCommandHandlerTests
             DateOfBirth = new DateTime(2019, 5, 5)
         };
         var repository = Substitute.For<IPetRepository>();
-        var handler = new UpdatePetCommandHandler(repository);
+        var handler = new UpdatePetCommandHandler(repository, Any.Instance<ILogger<UpdatePetCommandHandler>>());
         repository.GetByIdAsync(command.Id, Arg.Any<CancellationToken>())
             .Returns((Pet)null);
         
@@ -112,7 +113,7 @@ public class UpdatePetCommandHandlerTests
             DateOfBirth = new DateTime(2019, 5, 5)
         };
         var repository = Substitute.For<IPetRepository>();
-        var handler = new UpdatePetCommandHandler(repository);
+        var handler = new UpdatePetCommandHandler(repository, Any.Instance<ILogger<UpdatePetCommandHandler>>());
 
         repository.GetByIdAsync(command.Id, Arg.Any<CancellationToken>())
             .Returns(existingPet);
@@ -160,7 +161,7 @@ public class UpdatePetCommandHandlerTests
             DateOfBirth = new DateTime(2020, 1, 1)
         };
         var repository = Substitute.For<IPetRepository>();
-        var handler = new UpdatePetCommandHandler(repository);
+        var handler = new UpdatePetCommandHandler(repository, Any.Instance<ILogger<UpdatePetCommandHandler>>());
 
         repository.GetByIdAsync(command.Id, Arg.Any<CancellationToken>())
             .Returns(existingPet);
@@ -181,5 +182,97 @@ public class UpdatePetCommandHandlerTests
             repository.GetByIdAsync(command.Id, Arg.Any<CancellationToken>());
             repository.UpdateAsync(Arg.Is<Pet>(p => p.DateOfBirth == newDateOfBirth), Arg.Any<CancellationToken>());
         });
+    }
+    
+    [Test]
+    public async Task ShouldLogSensitiveDetailsAtDebugLevelWhenHandlingUpdatePetCommand()
+    {
+        // GIVEN
+        var petId = 1;
+        var name = "Rex";
+        var species = "Dog";
+        var breed = "Sensitive Breed Info";
+        var dateOfBirth = new DateTime(2020, 1, 1);
+        var command = new UpdatePetCommand
+        {
+            Id = petId,
+            Name = name,
+            Species = species,
+            Breed = breed,
+            DateOfBirth = dateOfBirth
+        };
+        var existingPet = new Pet
+        {
+            Id = petId,
+            Name = "Old Name",
+            Species = "Old Species",
+            Breed = "Old Breed",
+            DateOfBirth = new DateTime(2019, 1, 1)
+        };
+        var repository = Substitute.For<IPetRepository>();
+        var logger = Substitute.For<ILogger<UpdatePetCommandHandler>>();
+        var handler = new UpdatePetCommandHandler(repository, logger);
+        
+        repository.GetByIdAsync(petId, Arg.Any<CancellationToken>())
+            .Returns(existingPet);
+        repository.UpdateAsync(Arg.Any<Pet>(), Arg.Any<CancellationToken>())
+            .Returns(Task.CompletedTask);
+        
+        // WHEN
+        await handler.Handle(command, CancellationToken.None);
+        
+        // THEN
+        logger.Received(1).Log(
+            LogLevel.Debug,
+            Arg.Any<EventId>(),
+            Arg.Is<object>(o => o.ToString()!.Contains(breed)),
+            Arg.Any<Exception>(),
+            Arg.Any<Func<object, Exception?, string>>());
+    }
+    
+    [Test]
+    public async Task ShouldNotLogSensitiveDetailsAtInformationLevelWhenHandlingUpdatePetCommand()
+    {
+        // GIVEN
+        var petId = 1;
+        var name = "Rex";
+        var species = "Dog";
+        var breed = "Sensitive Breed Info";
+        var dateOfBirth = new DateTime(2020, 1, 1);
+        var command = new UpdatePetCommand
+        {
+            Id = petId,
+            Name = name,
+            Species = species,
+            Breed = breed,
+            DateOfBirth = dateOfBirth
+        };
+        var existingPet = new Pet
+        {
+            Id = petId,
+            Name = "Old Name",
+            Species = "Old Species",
+            Breed = "Old Breed",
+            DateOfBirth = new DateTime(2019, 1, 1)
+        };
+        var repository = Substitute.For<IPetRepository>();
+        var logger = Substitute.For<ILogger<UpdatePetCommandHandler>>();
+        var handler = new UpdatePetCommandHandler(repository, logger);
+        
+        repository.GetByIdAsync(petId, Arg.Any<CancellationToken>())
+            .Returns(existingPet);
+        repository.UpdateAsync(Arg.Any<Pet>(), Arg.Any<CancellationToken>())
+            .Returns(Task.CompletedTask);
+        
+        // WHEN
+        await handler.Handle(command, CancellationToken.None);
+        
+        // THEN
+        logger.DidNotReceive().Log(
+            LogLevel.Information,
+            Arg.Any<EventId>(),
+            Arg.Is<object>(o => o.ToString()!.Contains(breed)),
+            Arg.Any<Exception>(),
+            Arg.Any<Func<object, Exception?, string>>());
     }
 }

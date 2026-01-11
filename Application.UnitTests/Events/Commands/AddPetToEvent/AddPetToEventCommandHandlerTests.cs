@@ -2,6 +2,7 @@ using Application.Common.Interfaces.Repositories;
 using Application.Events.Commands.AddPetToEvent;
 using Domain.Entities;
 using Domain.Exceptions;
+using Microsoft.Extensions.Logging;
 
 namespace Application.UnitTests.Events.Commands.AddPetToEvent;
 
@@ -27,7 +28,7 @@ public class AddPetToEventCommandHandlerTests
         var pet = new Pet { Id = petId, Name = "Test Pet" };
         var eventRepository = Substitute.For<IEventRepository>();
         var petRepository = Substitute.For<IPetRepository>();
-        var handler = new AddPetToEventCommandHandler(eventRepository, petRepository);
+        var handler = new AddPetToEventCommandHandler(eventRepository, petRepository, Any.Instance<ILogger<AddPetToEventCommandHandler>>());
         
         eventRepository.GetByIdWithPetEventsTrackedAsync(eventId, Arg.Any<CancellationToken>())
             .Returns(eventEntity);
@@ -65,7 +66,7 @@ public class AddPetToEventCommandHandlerTests
         };
         var eventRepository = Substitute.For<IEventRepository>();
         var petRepository = Substitute.For<IPetRepository>();
-        var handler = new AddPetToEventCommandHandler(eventRepository, petRepository);
+        var handler = new AddPetToEventCommandHandler(eventRepository, petRepository, Any.Instance<ILogger<AddPetToEventCommandHandler>>());
         
         eventRepository.GetByIdWithPetEventsTrackedAsync(eventId, Arg.Any<CancellationToken>())
             .Returns((Event)null);
@@ -101,7 +102,7 @@ public class AddPetToEventCommandHandlerTests
         };
         var eventRepository = Substitute.For<IEventRepository>();
         var petRepository = Substitute.For<IPetRepository>();
-        var handler = new AddPetToEventCommandHandler(eventRepository, petRepository);
+        var handler = new AddPetToEventCommandHandler(eventRepository, petRepository, Any.Instance<ILogger<AddPetToEventCommandHandler>>());
         
         eventRepository.GetByIdWithPetEventsTrackedAsync(eventId, Arg.Any<CancellationToken>())
             .Returns(eventEntity);
@@ -143,7 +144,7 @@ public class AddPetToEventCommandHandlerTests
         };
         var eventRepository = Substitute.For<IEventRepository>();
         var petRepository = Substitute.For<IPetRepository>();
-        var handler = new AddPetToEventCommandHandler(eventRepository, petRepository);
+        var handler = new AddPetToEventCommandHandler(eventRepository, petRepository, Any.Instance<ILogger<AddPetToEventCommandHandler>>());
         
         eventRepository.GetByIdWithPetEventsTrackedAsync(eventId, Arg.Any<CancellationToken>())
             .Returns(eventEntity);

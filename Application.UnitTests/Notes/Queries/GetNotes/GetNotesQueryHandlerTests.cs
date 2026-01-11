@@ -2,6 +2,7 @@ using Application.Common.Interfaces.Repositories;
 using Application.Notes.Queries.GetNotes;
 using Domain.Entities;
 using Domain.Exceptions;
+using Microsoft.Extensions.Logging;
 
 namespace Application.UnitTests.Notes.Queries.GetNotes;
 
@@ -19,7 +20,7 @@ public class GetNotesQueryHandlerTests
         };
         var noteRepository = Substitute.For<INoteRepository>();
         var petRepository = Substitute.For<IPetRepository>();
-        var handler = new GetNotesQueryHandler(noteRepository, petRepository);
+        var handler = new GetNotesQueryHandler(noteRepository, petRepository, Any.Instance<ILogger<GetNotesQueryHandler>>());
         
         petRepository.ExistsAsync(query.PetId, Arg.Any<CancellationToken>())
             .Returns(true);
@@ -31,8 +32,8 @@ public class GetNotesQueryHandlerTests
         
         // THEN
         result.Should().NotBeNull();
-        result.Notes.Should().NotBeNull();
-        result.Notes.Should().HaveCount(2);
+        result.Items.Should().NotBeNull();
+        result.Items.Should().HaveCount(2);
         
         Received.InOrder(() =>
         {
@@ -48,7 +49,7 @@ public class GetNotesQueryHandlerTests
         var query = new GetNotesQuery { PetId = 99 };
         var noteRepository = Substitute.For<INoteRepository>();
         var petRepository = Substitute.For<IPetRepository>();
-        var handler = new GetNotesQueryHandler(noteRepository, petRepository);
+        var handler = new GetNotesQueryHandler(noteRepository, petRepository, Any.Instance<ILogger<GetNotesQueryHandler>>());
         
         petRepository.ExistsAsync(query.PetId, Arg.Any<CancellationToken>())
             .Returns(false);
@@ -72,7 +73,7 @@ public class GetNotesQueryHandlerTests
         var emptyNotes = new List<Note>();
         var noteRepository = Substitute.For<INoteRepository>();
         var petRepository = Substitute.For<IPetRepository>();
-        var handler = new GetNotesQueryHandler(noteRepository, petRepository);
+        var handler = new GetNotesQueryHandler(noteRepository, petRepository, Any.Instance<ILogger<GetNotesQueryHandler>>());
         
         petRepository.ExistsAsync(query.PetId, Arg.Any<CancellationToken>())
             .Returns(true);
@@ -84,8 +85,8 @@ public class GetNotesQueryHandlerTests
         
         // THEN
         result.Should().NotBeNull();
-        result.Notes.Should().NotBeNull();
-        result.Notes.Should().BeEmpty();
+        result.Items.Should().NotBeNull();
+        result.Items.Should().BeEmpty();
         
         Received.InOrder(() =>
         {

@@ -2,8 +2,8 @@
 
 namespace Application.Events.Commands.AddPetToEvent;
 
-public class AddPetToEventCommand : IRequest<AddPetToEventResponse>
+public record AddPetToEventCommand : IRequest<AddPetToEventResponse>
 {
-    public int EventId { get; set; }
-    public int PetId { get; set; }
+    public int EventId { get; init; }
+    public int PetId { get; init; }
 }

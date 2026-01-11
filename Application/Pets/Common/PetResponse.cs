@@ -1,13 +1,23 @@
-﻿namespace Application.Pets.Common;
+﻿using System.Text.Json.Serialization;
 
-public class PetResponse
+namespace Application.Pets.Common;
+
+public record PetResponse
 {
-    public int Id { get; set; }
-    public string Name { get; set; }
-    public string Species { get; set; }
-    public string Breed { get; set; }
-    public DateTime DateOfBirth { get; set; }
-    public string? PhotoUrl { get; set; }
-    public DateTime CreatedAt { get; set; }
-    public DateTime? ModifiedAt { get; set; }
+    [JsonPropertyName("id")]
+    public int Id { get; init; }
+    [JsonPropertyName("name")]
+    public string Name { get; init; }
+    [JsonPropertyName("species")]
+    public string Species { get; init; }
+    [JsonPropertyName("breed")]
+    public string Breed { get; init; }
+    [JsonPropertyName("dateOfBirth")]
+    public DateTime DateOfBirth { get; init; }
+    [JsonPropertyName("photoUrl")]
+    public string? PhotoUrl { get; init; }
+    [JsonPropertyName("createdAt")]
+    public DateTime CreatedAt { get; init; }
+    [JsonPropertyName("modifiedAt")]
+    public DateTime? ModifiedAt { get; init; }
 }

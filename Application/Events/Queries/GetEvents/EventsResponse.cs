@@ -1,6 +1,9 @@
+using System.Text.Json.Serialization;
+
 namespace Application.Events.Queries.GetEvents;
 
-public class EventsResponse
+public record EventsResponse
 {
-    public IEnumerable<EventResponseDto> Items { get; set; } = new List<EventResponseDto>();
+    [JsonPropertyName("items")]
+    public IEnumerable<EventResponseDto> Items { get; init; } = [];
 }

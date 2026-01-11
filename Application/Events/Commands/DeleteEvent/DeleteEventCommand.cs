@@ -2,7 +2,7 @@
 
 namespace Application.Events.Commands.DeleteEvent;
 
-public class DeleteEventCommand : IRequest
+public record DeleteEventCommand : IRequest
 {
-    public int EventId { get; set; }
+    public int EventId { get; init; }
 }

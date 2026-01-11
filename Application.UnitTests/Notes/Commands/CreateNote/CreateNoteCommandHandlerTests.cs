@@ -1,7 +1,9 @@
 using Application.Common.Interfaces.Repositories;
 using Application.Notes.Commands.CreateNote;
 using Domain.Entities;
+using Domain.Enums;
 using Domain.Exceptions;
+using Microsoft.Extensions.Logging;
 
 namespace Application.UnitTests.Notes.Commands.CreateNote;
 
@@ -27,7 +29,7 @@ public class CreateNoteCommandHandlerTests
         };
         var noteRepository = Substitute.For<INoteRepository>();
         var petRepository = Substitute.For<IPetRepository>();
-        var handler = new CreateNoteCommandHandler(noteRepository, petRepository);
+        var handler = new CreateNoteCommandHandler(noteRepository, petRepository, Any.Instance<ILogger<CreateNoteCommandHandler>>());
         
         petRepository.ExistsAsync(command.PetId, Arg.Any<CancellationToken>())
             .Returns(true);
@@ -71,7 +73,7 @@ public class CreateNoteCommandHandlerTests
         };
         var noteRepository = Substitute.For<INoteRepository>();
         var petRepository = Substitute.For<IPetRepository>();
-        var handler = new CreateNoteCommandHandler(noteRepository, petRepository);
+        var handler = new CreateNoteCommandHandler(noteRepository, petRepository, Any.Instance<ILogger<CreateNoteCommandHandler>>());
         
         petRepository.ExistsAsync(command.PetId, Arg.Any<CancellationToken>())
             .Returns(false);
@@ -85,5 +87,93 @@ public class CreateNoteCommandHandlerTests
         
         await petRepository.Received(1).ExistsAsync(command.PetId, Arg.Any<CancellationToken>());
         await noteRepository.DidNotReceive().CreateAsync(default);
+    }
+    
+    [Test]
+    public async Task ShouldLogSensitiveDetailsAtDebugLevelWhenHandlingCreateNoteCommand()
+    {
+        // GIVEN
+        var petId = 1;
+        var noteContent = "Sensitive Note Content With Private Info";
+        var noteType = NoteType.General;
+        var noteId = 10;
+        var command = new CreateNoteCommand
+        {
+            PetId = petId,
+            Content = noteContent,
+            Type = noteType
+        };
+        var createdNote = new Note
+        {
+            Id = noteId,
+            PetId = petId,
+            Content = noteContent,
+            Type = noteType,
+            Created = DateTime.UtcNow
+        };
+        var noteRepository = Substitute.For<INoteRepository>();
+        var petRepository = Substitute.For<IPetRepository>();
+        var logger = Substitute.For<ILogger<CreateNoteCommandHandler>>();
+        var handler = new CreateNoteCommandHandler(noteRepository, petRepository, logger);
+        
+        petRepository.ExistsAsync(petId, Arg.Any<CancellationToken>())
+            .Returns(true);
+        noteRepository.CreateAsync(Arg.Any<Note>(), Arg.Any<CancellationToken>())
+            .Returns(createdNote);
+        
+        // WHEN
+        await handler.Handle(command, CancellationToken.None);
+        
+        // THEN
+        logger.Received(1).Log(
+            LogLevel.Debug,
+            Arg.Any<EventId>(),
+            Arg.Is<object>(o => o.ToString()!.Contains(noteContent)),
+            Arg.Any<Exception>(),
+            Arg.Any<Func<object, Exception?, string>>());
+    }
+    
+    [Test]
+    public async Task ShouldNotLogSensitiveDetailsAtInformationLevelWhenHandlingCreateNoteCommand()
+    {
+        // GIVEN
+        var petId = 1;
+        var noteContent = "Sensitive Note Content With Private Info";
+        var noteType = NoteType.General;
+        var noteId = 10;
+        var command = new CreateNoteCommand
+        {
+            PetId = petId,
+            Content = noteContent,
+            Type = noteType
+        };
+        var createdNote = new Note
+        {
+            Id = noteId,
+            PetId = petId,
+            Content = noteContent,
+            Type = noteType,
+            Created = DateTime.UtcNow
+        };
+        var noteRepository = Substitute.For<INoteRepository>();
+        var petRepository = Substitute.For<IPetRepository>();
+        var logger = Substitute.For<ILogger<CreateNoteCommandHandler>>();
+        var handler = new CreateNoteCommandHandler(noteRepository, petRepository, logger);
+        
+        petRepository.ExistsAsync(petId, Arg.Any<CancellationToken>())
+            .Returns(true);
+        noteRepository.CreateAsync(Arg.Any<Note>(), Arg.Any<CancellationToken>())
+            .Returns(createdNote);
+        
+        // WHEN
+        await handler.Handle(command, CancellationToken.None);
+        
+        // THEN
+        logger.DidNotReceive().Log(
+            LogLevel.Information,
+            Arg.Any<EventId>(),
+            Arg.Is<object>(o => o.ToString()!.Contains(noteContent)),
+            Arg.Any<Exception>(),
+            Arg.Any<Func<object, Exception?, string>>());
     }
 }

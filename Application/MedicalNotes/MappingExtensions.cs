@@ -45,7 +45,7 @@ public static class MappingExtensions
     {
         return new MedicalNotesResponse
         {
-            MedicalNotes = medicalNotes.Select(MapToMedicalNoteDto)
+            Items = medicalNotes.Select(MapToMedicalNoteDto)
         };
     }
 

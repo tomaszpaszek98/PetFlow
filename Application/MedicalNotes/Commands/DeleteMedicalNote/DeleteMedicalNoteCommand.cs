@@ -2,8 +2,8 @@ using MediatR;
 
 namespace Application.MedicalNotes.Commands.DeleteMedicalNote;
 
-public class DeleteMedicalNoteCommand : IRequest
+public record DeleteMedicalNoteCommand : IRequest
 {
-    public int PetId { get; set; }
-    public int MedicalNoteId { get; set; }
+    public int PetId { get; init; }
+    public int MedicalNoteId { get; init; }
 }

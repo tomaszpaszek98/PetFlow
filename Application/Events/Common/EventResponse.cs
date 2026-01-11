@@ -1,11 +1,19 @@
-﻿namespace Application.Events.Common;
+﻿using System.Text.Json.Serialization;
 
-public class EventResponse
+namespace Application.Events.Common;
+
+public record EventResponse
 {
-    public int Id { get; set; }
-    public string Title { get; set; }
-    public string Description { get; set; }
-    public DateTime DateOfEvent { get; set; }
-    public bool Reminder { get; set; }
-    public DateTime CreatedAt { get; set; }
+    [JsonPropertyName("id")]
+    public int Id { get; init; }
+    [JsonPropertyName("title")]
+    public string Title { get; init; }
+    [JsonPropertyName("description")]
+    public string Description { get; init; }
+    [JsonPropertyName("dateOfEvent")]
+    public DateTime DateOfEvent { get; init; }
+    [JsonPropertyName("reminder")]
+    public bool Reminder { get; init; }
+    [JsonPropertyName("createdAt")]
+    public DateTime CreatedAt { get; init; }
 }

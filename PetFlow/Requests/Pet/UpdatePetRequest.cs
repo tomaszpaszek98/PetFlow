@@ -1,4 +1,5 @@
 ﻿using System.Text.Json.Serialization;
+using Application.Pets.Commands.UpdatePet;
 
 namespace PetFlow.Requests.Pet;
 

@@ -2,6 +2,7 @@ using Application.Common.Interfaces.Repositories;
 using Application.Events.Commands.DeleteEvent;
 using Domain.Entities;
 using Domain.Exceptions;
+using Microsoft.Extensions.Logging;
 
 namespace Application.UnitTests.Events.Commands.DeleteEvent;
 
@@ -14,7 +15,7 @@ public class DeleteEventCommandHandlerTests
         var eventId = 1;
         var command = new DeleteEventCommand { EventId = eventId };
         var repository = Substitute.For<IEventRepository>();
-        var handler = new DeleteEventCommandHandler(repository);
+        var handler = new DeleteEventCommandHandler(repository, Any.Instance<ILogger<DeleteEventCommandHandler>>());
         
         repository.DeleteAsync(eventId, Arg.Any<CancellationToken>()).Returns(true);
         
@@ -33,7 +34,7 @@ public class DeleteEventCommandHandlerTests
         var eventId = 99;
         var command = new DeleteEventCommand { EventId = eventId };
         var repository = Substitute.For<IEventRepository>();
-        var handler = new DeleteEventCommandHandler(repository);
+        var handler = new DeleteEventCommandHandler(repository, Any.Instance<ILogger<DeleteEventCommandHandler>>());
 
         repository.DeleteAsync(eventId, Arg.Any<CancellationToken>()).Returns(false);
         

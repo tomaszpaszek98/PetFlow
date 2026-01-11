@@ -1,8 +1,13 @@
-﻿namespace Application.MedicalNotes.Common;
+﻿using System.Text.Json.Serialization;
 
-public class MedicalNoteResponse
+namespace Application.MedicalNotes.Common;
+
+public record MedicalNoteResponse
 {
-    public int Id { get; set; }
-    public string Title { get; set; }
-    public DateTime CreatedAt { get; set; }
+    [JsonPropertyName("id")]
+    public int Id { get; init; }
+    [JsonPropertyName("title")]
+    public string Title { get; init; }
+    [JsonPropertyName("createdAt")]
+    public DateTime CreatedAt { get; init; }
 }

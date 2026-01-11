@@ -3,9 +3,9 @@ using MediatR;
 
 namespace Application.Notes.Commands.CreateNote;
 
-public class CreateNoteCommand : IRequest<CreateNoteResponse>
+public record CreateNoteCommand : IRequest<CreateNoteResponse>
 {
-    public int PetId { get; set; }
-    public string Content { get; set; } 
-    public NoteType Type { get; set; }
+    public int PetId { get; init; }
+    public string Content { get; init; } 
+    public NoteType Type { get; init; }
 }

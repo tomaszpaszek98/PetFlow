@@ -321,5 +321,110 @@ public class UpdateEventCommandHandlerTests
             Arg.Is<IEnumerable<int>>(ids => ids.SequenceEqual(uniquePetIds)),
             Arg.Any<CancellationToken>());
     }
+    
+    [Test]
+    public async Task ShouldLogSensitiveDetailsAtDebugLevelWhenHandlingUpdateEventCommand()
+    {
+        // GIVEN
+        var eventId = 1;
+        var title = "Updated Title";
+        var description = "Sensitive Updated Description";
+        var dateOfEvent = DateTime.Today.AddDays(20);
+        var command = new UpdateEventCommand
+        {
+            Id = eventId,
+            Title = title,
+            Description = description,
+            DateOfEvent = dateOfEvent,
+            Reminder = false,
+            AssignedPetsIds = new[] { 1, 2 }
+        };
+        var existingEvent = new Event
+        {
+            Id = eventId,
+            Title = "Old Title",
+            Description = "Old Description",
+            PetEvents = new List<PetEvent>()
+        };
+        var pets = new List<Pet>
+        {
+            new() { Id = 1, Name = "Rex" },
+            new() { Id = 2, Name = "Milo" }
+        };
+        var petRepository = Substitute.For<IPetRepository>();
+        var eventRepository = Substitute.For<IEventRepository>();
+        var logger = Substitute.For<ILogger<UpdateEventCommandHandler>>();
+        var handler = new UpdateEventCommandHandler(petRepository, eventRepository, logger);
+        
+        eventRepository.GetByIdWithPetEventsTrackedAsync(eventId, Arg.Any<CancellationToken>())
+            .Returns(existingEvent);
+        petRepository.GetByIdsAsync(Arg.Any<IEnumerable<int>>(), Arg.Any<CancellationToken>())
+            .Returns(pets);
+        eventRepository.UpdateAsync(Arg.Any<Event>(), Arg.Any<CancellationToken>())
+            .Returns(Task.CompletedTask);
+        
+        // WHEN
+        await handler.Handle(command, CancellationToken.None);
+        
+        // THEN
+        logger.Received(1).Log(
+            LogLevel.Debug,
+            Arg.Any<EventId>(),
+            Arg.Is<object>(o => o.ToString()!.Contains(description)),
+            Arg.Any<Exception>(),
+            Arg.Any<Func<object, Exception?, string>>());
+    }
+    
+    [Test]
+    public async Task ShouldNotLogSensitiveDetailsAtInformationLevelWhenHandlingUpdateEventCommand()
+    {
+        // GIVEN
+        var eventId = 1;
+        var title = "Updated Title";
+        var description = "Sensitive Updated Description";
+        var dateOfEvent = DateTime.Today.AddDays(20);
+        var command = new UpdateEventCommand
+        {
+            Id = eventId,
+            Title = title,
+            Description = description,
+            DateOfEvent = dateOfEvent,
+            Reminder = false,
+            AssignedPetsIds = new[] { 1, 2 }
+        };
+        var existingEvent = new Event
+        {
+            Id = eventId,
+            Title = "Old Title",
+            Description = "Old Description",
+            PetEvents = new List<PetEvent>()
+        };
+        var pets = new List<Pet>
+        {
+            new() { Id = 1, Name = "Rex" },
+            new() { Id = 2, Name = "Milo" }
+        };
+        var petRepository = Substitute.For<IPetRepository>();
+        var eventRepository = Substitute.For<IEventRepository>();
+        var logger = Substitute.For<ILogger<UpdateEventCommandHandler>>();
+        var handler = new UpdateEventCommandHandler(petRepository, eventRepository, logger);
+        
+        eventRepository.GetByIdWithPetEventsTrackedAsync(eventId, Arg.Any<CancellationToken>())
+            .Returns(existingEvent);
+        petRepository.GetByIdsAsync(Arg.Any<IEnumerable<int>>(), Arg.Any<CancellationToken>())
+            .Returns(pets);
+        eventRepository.UpdateAsync(Arg.Any<Event>(), Arg.Any<CancellationToken>())
+            .Returns(Task.CompletedTask);
+        
+        // WHEN
+        await handler.Handle(command, CancellationToken.None);
+        
+        // THEN
+        logger.DidNotReceive().Log(
+            LogLevel.Information,
+            Arg.Any<EventId>(),
+            Arg.Is<object>(o => o.ToString()!.Contains(description)),
+            Arg.Any<Exception>(),
+            Arg.Any<Func<object, Exception?, string>>());
+    }
 }
-

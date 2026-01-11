@@ -1,9 +1,12 @@
-﻿using Application.MedicalNotes.Common;
+﻿using System.Text.Json.Serialization;
+using Application.MedicalNotes.Common;
 
 namespace Application.MedicalNotes.Commands.UpdateMedicalNote;
 
-public class UpdateMedicalNoteResponse : MedicalNoteResponse
+public record UpdateMedicalNoteResponse : MedicalNoteResponse
 {
-    public string Description { get; set; }
-    public DateTime ModifiedAt { get; set; }
+    [JsonPropertyName("description")]
+    public string Description { get; init; }
+    [JsonPropertyName("modifiedAt")]
+    public DateTime ModifiedAt { get; init; }
 }

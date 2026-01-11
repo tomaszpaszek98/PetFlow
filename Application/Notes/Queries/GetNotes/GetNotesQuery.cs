@@ -2,7 +2,7 @@
 
 namespace Application.Notes.Queries.GetNotes;
 
-public class GetNotesQuery : IRequest<NotesResponse>
+public record GetNotesQuery : IRequest<NotesResponse>
 {
-    public int PetId { get; set; }
+    public int PetId { get; init; }
 }

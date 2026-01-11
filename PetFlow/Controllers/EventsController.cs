@@ -5,9 +5,11 @@ using Application.Events.Commands.DeletePetFromEvent;
 using Application.Events.Commands.UpdateEvent;
 using Application.Events.Queries.GetEventDetails;
 using Application.Events.Queries.GetEvents;
+using Application.Pets.Commands.CreatePet;
 using Microsoft.AspNetCore.Mvc;
 using PetFlow.Requests;
 using PetFlow.Requests.Event;
+using PetFlow.Requests.Pet;
 
 namespace PetFlow.Controllers;
 

@@ -1,9 +1,12 @@
+using System.Text.Json.Serialization;
 using Application.Notes.Common;
 
 namespace Application.Notes.Queries.GetNoteDetails;
 
-public class NoteDetailsResponse : NoteResponse
+public record NoteDetailsResponse : NoteResponse
 {
-    public string Content { get; set; }
-    public DateTime ModifiedAt { get; set; }
+    [JsonPropertyName("content")]
+    public string Content { get; init; }
+    [JsonPropertyName("modifiedAt")]
+    public DateTime ModifiedAt { get; init; }
 }

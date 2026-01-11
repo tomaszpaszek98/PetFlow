@@ -2,6 +2,7 @@ using Application.Pets.Queries.GetPetDetails;
 using Application.Common.Interfaces.Repositories;
 using Domain.Entities;
 using Domain.Exceptions;
+using Microsoft.Extensions.Logging;
 
 namespace Application.UnitTests.Pets.Queries.GetPetDetails;
 
@@ -26,7 +27,7 @@ public class GetPetDetailsQueryHandlerTests
         };
         var query = new GetPetDetailsQuery { PetId = petId };
         var petRepository = Substitute.For<IPetRepository>();
-        var handler = new GetPetDetailsQueryHandler(petRepository);
+        var handler = new GetPetDetailsQueryHandler(petRepository, Any.Instance<ILogger<GetPetDetailsQueryHandler>>());
         
         petRepository.GetByIdWithUpcomingEventAsync(petId, Arg.Any<CancellationToken>())
             .Returns(pet);
@@ -74,7 +75,7 @@ public class GetPetDetailsQueryHandlerTests
         };
         var query = new GetPetDetailsQuery { PetId = petId };
         var petRepository = Substitute.For<IPetRepository>();
-        var handler = new GetPetDetailsQueryHandler(petRepository);
+        var handler = new GetPetDetailsQueryHandler(petRepository, Any.Instance<ILogger<GetPetDetailsQueryHandler>>());
         
         petRepository.GetByIdWithUpcomingEventAsync(petId, Arg.Any<CancellationToken>())
             .Returns(pet);
@@ -118,7 +119,7 @@ public class GetPetDetailsQueryHandlerTests
         };
         var query = new GetPetDetailsQuery { PetId = petId };
         var petRepository = Substitute.For<IPetRepository>();
-        var handler = new GetPetDetailsQueryHandler(petRepository);
+        var handler = new GetPetDetailsQueryHandler(petRepository, Any.Instance<ILogger<GetPetDetailsQueryHandler>>());
         
         petRepository.GetByIdWithUpcomingEventAsync(petId, Arg.Any<CancellationToken>())
             .Returns(pet);
@@ -144,7 +145,7 @@ public class GetPetDetailsQueryHandlerTests
         var petId = 99;
         var query = new GetPetDetailsQuery { PetId = petId };
         var petRepository = Substitute.For<IPetRepository>();
-        var handler = new GetPetDetailsQueryHandler(petRepository);
+        var handler = new GetPetDetailsQueryHandler(petRepository, Any.Instance<ILogger<GetPetDetailsQueryHandler>>());
         
         petRepository.GetByIdWithUpcomingEventAsync(petId, Arg.Any<CancellationToken>())
             .Returns((Pet)null);

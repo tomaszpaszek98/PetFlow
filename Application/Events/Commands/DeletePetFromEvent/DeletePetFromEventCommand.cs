@@ -2,8 +2,8 @@ using MediatR;
 
 namespace Application.Events.Commands.DeletePetFromEvent;
 
-public class DeletePetFromEventCommand : IRequest
+public record DeletePetFromEventCommand : IRequest
 {
-    public int EventId { get; set; }
-    public int PetId { get; set; }
+    public int EventId { get; init; }
+    public int PetId { get; init; }
 }

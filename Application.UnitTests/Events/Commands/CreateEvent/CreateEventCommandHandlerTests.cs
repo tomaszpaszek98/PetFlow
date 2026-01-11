@@ -2,7 +2,7 @@ using Application.Common.Interfaces.Repositories;
 using Application.Events.Commands.CreateEvent;
 using Domain.Entities;
 using Domain.Exceptions;
-using FluentValidation;
+using Microsoft.Extensions.Logging;
 
 namespace Application.UnitTests.Events.Commands.CreateEvent;
 
@@ -40,7 +40,7 @@ public class CreateEventCommandHandlerTests
         
         var petRepository = Substitute.For<IPetRepository>();
         var eventRepository = Substitute.For<IEventRepository>();
-        var handler = new CreateEventCommandHandler(petRepository, eventRepository);
+        var handler = new CreateEventCommandHandler(petRepository, eventRepository, Any.Instance<ILogger<CreateEventCommandHandler>>());
         
         petRepository.GetByIdsAsync(Arg.Is<IEnumerable<int>>(ids => ids.SequenceEqual(petIds)), Arg.Any<CancellationToken>())
             .Returns(pets);
@@ -102,7 +102,7 @@ public class CreateEventCommandHandlerTests
         
         var petRepository = Substitute.For<IPetRepository>();
         var eventRepository = Substitute.For<IEventRepository>();
-        var handler = new CreateEventCommandHandler(petRepository, eventRepository);
+        var handler = new CreateEventCommandHandler(petRepository, eventRepository, Any.Instance<ILogger<CreateEventCommandHandler>>());
         
         eventRepository.CreateAsync(
                 Arg.Is<Event>(e => 
@@ -161,7 +161,7 @@ public class CreateEventCommandHandlerTests
         
         var petRepository = Substitute.For<IPetRepository>();
         var eventRepository = Substitute.For<IEventRepository>();
-        var handler = new CreateEventCommandHandler(petRepository, eventRepository);
+        var handler = new CreateEventCommandHandler(petRepository, eventRepository, Any.Instance<ILogger<CreateEventCommandHandler>>());
         
         eventRepository.CreateAsync(
                 Arg.Is<Event>(e => 
@@ -216,7 +216,7 @@ public class CreateEventCommandHandlerTests
         
         var petRepository = Substitute.For<IPetRepository>();
         var eventRepository = Substitute.For<IEventRepository>();
-        var handler = new CreateEventCommandHandler(petRepository, eventRepository);
+        var handler = new CreateEventCommandHandler(petRepository, eventRepository, Any.Instance<ILogger<CreateEventCommandHandler>>());
         
         petRepository.GetByIdsAsync(Arg.Is<IEnumerable<int>>(ids => ids.SequenceEqual(requestedPetIds)), Arg.Any<CancellationToken>())
             .Returns(foundPets);
@@ -249,7 +249,7 @@ public class CreateEventCommandHandlerTests
         
         var petRepository = Substitute.For<IPetRepository>();
         var eventRepository = Substitute.For<IEventRepository>();
-        var handler = new CreateEventCommandHandler(petRepository, eventRepository);
+        var handler = new CreateEventCommandHandler(petRepository, eventRepository, Any.Instance<ILogger<CreateEventCommandHandler>>());
         
         petRepository.GetByIdsAsync(Arg.Is<IEnumerable<int>>(ids => ids.SequenceEqual(requestedPetIds)), Arg.Any<CancellationToken>())
             .Returns(foundPets);
@@ -299,7 +299,7 @@ public class CreateEventCommandHandlerTests
         
         var petRepository = Substitute.For<IPetRepository>();
         var eventRepository = Substitute.For<IEventRepository>();
-        var handler = new CreateEventCommandHandler(petRepository, eventRepository);
+        var handler = new CreateEventCommandHandler(petRepository, eventRepository, Any.Instance<ILogger<CreateEventCommandHandler>>());
         
         petRepository.GetByIdsAsync(Arg.Is<IEnumerable<int>>(ids => ids.SequenceEqual(uniquePetIds)), Arg.Any<CancellationToken>())
             .Returns(pets);
@@ -325,5 +325,110 @@ public class CreateEventCommandHandlerTests
             Arg.Is<IEnumerable<int>>(ids => ids.SequenceEqual(uniquePetIds)),
             Arg.Any<CancellationToken>());
     }
+    
+    [Test]
+    public async Task ShouldLogSensitiveDetailsAtDebugLevelWhenHandlingCreateEventCommand()
+    {
+        // GIVEN
+        var petIds = new List<int> { 1, 2 };
+        var title = "Test Event";
+        var description = "Sensitive Description With Private Info";
+        var dateOfEvent = DateTime.Today.AddDays(10);
+        var eventId = 10;
+        var command = new CreateEventCommand
+        {
+            Title = title,
+            Description = description,
+            DateOfEvent = dateOfEvent,
+            Reminder = true,
+            PetToAssignIds = petIds
+        };
+        var pets = new List<Pet>
+        {
+            new() { Id = 1, Name = "Rex" },
+            new() { Id = 2, Name = "Milo" }
+        };
+        var createdEvent = new Event
+        {
+            Id = eventId,
+            Title = title,
+            Description = description,
+            DateOfEvent = dateOfEvent,
+            Reminder = true,
+            PetEvents = new List<PetEvent>()
+        };
+        var petRepository = Substitute.For<IPetRepository>();
+        var eventRepository = Substitute.For<IEventRepository>();
+        var logger = Substitute.For<ILogger<CreateEventCommandHandler>>();
+        var handler = new CreateEventCommandHandler(petRepository, eventRepository, logger);
+        
+        petRepository.GetByIdsAsync(Arg.Any<IEnumerable<int>>(), Arg.Any<CancellationToken>())
+            .Returns(pets);
+        eventRepository.CreateAsync(Arg.Any<Event>(), Arg.Any<CancellationToken>())
+            .Returns(createdEvent);
+        
+        // WHEN
+        await handler.Handle(command, CancellationToken.None);
+        
+        // THEN
+        logger.Received(1).Log(
+            LogLevel.Debug,
+            Arg.Any<EventId>(),
+            Arg.Is<object>(o => o.ToString()!.Contains(description)),
+            Arg.Any<Exception>(),
+            Arg.Any<Func<object, Exception?, string>>());
+    }
+    
+    [Test]
+    public async Task ShouldNotLogSensitiveDetailsAtInformationLevelWhenHandlingCreateEventCommand()
+    {
+        // GIVEN
+        var petIds = new List<int> { 1, 2 };
+        var title = "Test Event";
+        var description = "Sensitive Description With Private Info";
+        var dateOfEvent = DateTime.Today.AddDays(10);
+        var eventId = 10;
+        var command = new CreateEventCommand
+        {
+            Title = title,
+            Description = description,
+            DateOfEvent = dateOfEvent,
+            Reminder = true,
+            PetToAssignIds = petIds
+        };
+        var pets = new List<Pet>
+        {
+            new() { Id = 1, Name = "Rex" },
+            new() { Id = 2, Name = "Milo" }
+        };
+        var createdEvent = new Event
+        {
+            Id = eventId,
+            Title = title,
+            Description = description,
+            DateOfEvent = dateOfEvent,
+            Reminder = true,
+            PetEvents = new List<PetEvent>()
+        };
+        var petRepository = Substitute.For<IPetRepository>();
+        var eventRepository = Substitute.For<IEventRepository>();
+        var logger = Substitute.For<ILogger<CreateEventCommandHandler>>();
+        var handler = new CreateEventCommandHandler(petRepository, eventRepository, logger);
+        
+        petRepository.GetByIdsAsync(Arg.Any<IEnumerable<int>>(), Arg.Any<CancellationToken>())
+            .Returns(pets);
+        eventRepository.CreateAsync(Arg.Any<Event>(), Arg.Any<CancellationToken>())
+            .Returns(createdEvent);
+        
+        // WHEN
+        await handler.Handle(command, CancellationToken.None);
+        
+        // THEN
+        logger.DidNotReceive().Log(
+            LogLevel.Information,
+            Arg.Any<EventId>(),
+            Arg.Is<object>(o => o.ToString()!.Contains(description)),
+            Arg.Any<Exception>(),
+            Arg.Any<Func<object, Exception?, string>>());
+    }
 }
-

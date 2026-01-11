@@ -45,7 +45,7 @@ public static class MappingExtensions
     {
         return new NotesResponse
         {
-            Notes = notes.Select(MapToNoteDto)
+            Items = notes.Select(MapToNoteDto)
         };
     }
     

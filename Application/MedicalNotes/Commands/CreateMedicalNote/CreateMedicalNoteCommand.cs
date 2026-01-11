@@ -2,9 +2,9 @@
 
 namespace Application.MedicalNotes.Commands.CreateMedicalNote;
 
-public class CreateMedicalNoteCommand : IRequest<CreateMedicalNoteResponse>
+public record CreateMedicalNoteCommand : IRequest<CreateMedicalNoteResponse>
 {
-    public int PetId { get; set; }
-    public string Title { get; set; }
-    public string Description { get; set; }
+    public int PetId { get; init; }
+    public string Title { get; init; }
+    public string Description { get; init; }
 }
