@@ -330,7 +330,6 @@ public class UpdateEventCommandHandlerTests
         var title = "Updated Title";
         var description = "Sensitive Updated Description";
         var dateOfEvent = DateTime.Today.AddDays(20);
-        
         var command = new UpdateEventCommand
         {
             Id = eventId,
@@ -352,10 +351,10 @@ public class UpdateEventCommandHandlerTests
             new() { Id = 1, Name = "Rex" },
             new() { Id = 2, Name = "Milo" }
         };
-        
         var petRepository = Substitute.For<IPetRepository>();
         var eventRepository = Substitute.For<IEventRepository>();
         var logger = Substitute.For<ILogger<UpdateEventCommandHandler>>();
+        var handler = new UpdateEventCommandHandler(petRepository, eventRepository, logger);
         
         eventRepository.GetByIdWithPetEventsTrackedAsync(eventId, Arg.Any<CancellationToken>())
             .Returns(existingEvent);
@@ -363,8 +362,6 @@ public class UpdateEventCommandHandlerTests
             .Returns(pets);
         eventRepository.UpdateAsync(Arg.Any<Event>(), Arg.Any<CancellationToken>())
             .Returns(Task.CompletedTask);
-        
-        var handler = new UpdateEventCommandHandler(petRepository, eventRepository, logger);
         
         // WHEN
         await handler.Handle(command, CancellationToken.None);
