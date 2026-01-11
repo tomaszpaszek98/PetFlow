@@ -3,6 +3,7 @@ using Application.MedicalNotes;
 using Application.MedicalNotes.Queries.GetMedicalNotes;
 using Domain.Entities;
 using Domain.Exceptions;
+using Microsoft.Extensions.Logging;
 
 namespace Application.UnitTests.MedicalNotes.Queries.GetMedicalNotes;
 
@@ -20,7 +21,7 @@ public class GetMedicalNotesQueryHandlerTests
         };
         var medicalNoteRepository = Substitute.For<IMedicalNoteRepository>();
         var petRepository = Substitute.For<IPetRepository>();
-        var handler = new GetMedicalNotesQueryHandler(medicalNoteRepository, petRepository);
+        var handler = new GetMedicalNotesQueryHandler(medicalNoteRepository, petRepository, Any.Instance<ILogger<GetMedicalNotesQueryHandler>>());
         
         petRepository.ExistsAsync(query.PetId, Arg.Any<CancellationToken>())
             .Returns(true);
@@ -49,7 +50,7 @@ public class GetMedicalNotesQueryHandlerTests
         var query = new GetMedicalNotesQuery { PetId = 99 };
         var medicalNoteRepository = Substitute.For<IMedicalNoteRepository>();
         var petRepository = Substitute.For<IPetRepository>();
-        var handler = new GetMedicalNotesQueryHandler(medicalNoteRepository, petRepository);
+        var handler = new GetMedicalNotesQueryHandler(medicalNoteRepository, petRepository, Any.Instance<ILogger<GetMedicalNotesQueryHandler>>());
         
         petRepository.ExistsAsync(query.PetId, Arg.Any<CancellationToken>())
             .Returns(false);
@@ -73,7 +74,7 @@ public class GetMedicalNotesQueryHandlerTests
         var emptyNotes = new List<MedicalNote>();
         var medicalNoteRepository = Substitute.For<IMedicalNoteRepository>();
         var petRepository = Substitute.For<IPetRepository>();
-        var handler = new GetMedicalNotesQueryHandler(medicalNoteRepository, petRepository);
+        var handler = new GetMedicalNotesQueryHandler(medicalNoteRepository, petRepository, Any.Instance<ILogger<GetMedicalNotesQueryHandler>>());
         
         petRepository.ExistsAsync(query.PetId, Arg.Any<CancellationToken>())
             .Returns(true);

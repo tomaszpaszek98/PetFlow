@@ -34,7 +34,7 @@ public class UpdateMedicalNoteCommandHandlerTests
         };
         var medicalNoteRepository = Substitute.For<IMedicalNoteRepository>();
         var petRepository = Substitute.For<IPetRepository>();
-        var handler = new UpdateMedicalNoteCommandHandler(medicalNoteRepository, petRepository);
+        var handler = new UpdateMedicalNoteCommandHandler(medicalNoteRepository, petRepository, Any.Instance<ILogger<UpdateMedicalNoteCommandHandler>>());
 
         petRepository.ExistsAsync(command.PetId, Arg.Any<CancellationToken>())
             .Returns(true);
@@ -77,7 +77,7 @@ public class UpdateMedicalNoteCommandHandlerTests
         };
         var medicalNoteRepository = Substitute.For<IMedicalNoteRepository>();
         var petRepository = Substitute.For<IPetRepository>();
-        var handler = new UpdateMedicalNoteCommandHandler(medicalNoteRepository, petRepository);
+        var handler = new UpdateMedicalNoteCommandHandler(medicalNoteRepository, petRepository, Any.Instance<ILogger<UpdateMedicalNoteCommandHandler>>());
 
         petRepository.ExistsAsync(command.PetId, Arg.Any<CancellationToken>())
             .Returns(true);
@@ -112,7 +112,7 @@ public class UpdateMedicalNoteCommandHandlerTests
         };
         var medicalNoteRepository = Substitute.For<IMedicalNoteRepository>();
         var petRepository = Substitute.For<IPetRepository>();
-        var handler = new UpdateMedicalNoteCommandHandler(medicalNoteRepository, petRepository);
+        var handler = new UpdateMedicalNoteCommandHandler(medicalNoteRepository, petRepository, Any.Instance<ILogger<UpdateMedicalNoteCommandHandler>>());
 
         petRepository.ExistsAsync(command.PetId, Arg.Any<CancellationToken>())
             .Returns(true);
@@ -146,7 +146,7 @@ public class UpdateMedicalNoteCommandHandlerTests
         };
         var medicalNoteRepository = Substitute.For<IMedicalNoteRepository>();
         var petRepository = Substitute.For<IPetRepository>();
-        var handler = new UpdateMedicalNoteCommandHandler(medicalNoteRepository, petRepository);
+        var handler = new UpdateMedicalNoteCommandHandler(medicalNoteRepository, petRepository, Any.Instance<ILogger<UpdateMedicalNoteCommandHandler>>());
 
         petRepository.ExistsAsync(command.PetId, Arg.Any<CancellationToken>())
             .Returns(false);

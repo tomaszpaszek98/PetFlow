@@ -2,6 +2,7 @@ using Application.Common.Interfaces.Repositories;
 using Application.MedicalNotes.Queries.GetMedicalNoteDetails;
 using Domain.Entities;
 using Domain.Exceptions;
+using Microsoft.Extensions.Logging;
 
 namespace Application.UnitTests.MedicalNotes.Queries.GetMedicalNoteDetails;
 
@@ -32,7 +33,7 @@ public class GetMedicalNoteDetailsQueryHandlerTests
         };
         var medicalNoteRepository = Substitute.For<IMedicalNoteRepository>();
         var petRepository = Substitute.For<IPetRepository>();
-        var handler = new GetMedicalNoteDetailsQueryHandler(medicalNoteRepository, petRepository);
+        var handler = new GetMedicalNoteDetailsQueryHandler(medicalNoteRepository, petRepository, Any.Instance<ILogger<GetMedicalNoteDetailsQueryHandler>>());
         
         petRepository.ExistsAsync(query.PetId, Arg.Any<CancellationToken>())
             .Returns(true);
@@ -67,7 +68,7 @@ public class GetMedicalNoteDetailsQueryHandlerTests
         };
         var medicalNoteRepository = Substitute.For<IMedicalNoteRepository>();
         var petRepository = Substitute.For<IPetRepository>();
-        var handler = new GetMedicalNoteDetailsQueryHandler(medicalNoteRepository, petRepository);
+        var handler = new GetMedicalNoteDetailsQueryHandler(medicalNoteRepository, petRepository, Any.Instance<ILogger<GetMedicalNoteDetailsQueryHandler>>());
         
         petRepository.ExistsAsync(query.PetId, Arg.Any<CancellationToken>())
             .Returns(true);
@@ -99,7 +100,7 @@ public class GetMedicalNoteDetailsQueryHandlerTests
         };
         var medicalNoteRepository = Substitute.For<IMedicalNoteRepository>();
         var petRepository = Substitute.For<IPetRepository>();
-        var handler = new GetMedicalNoteDetailsQueryHandler(medicalNoteRepository, petRepository);
+        var handler = new GetMedicalNoteDetailsQueryHandler(medicalNoteRepository, petRepository, Any.Instance<ILogger<GetMedicalNoteDetailsQueryHandler>>());
         
         petRepository.ExistsAsync(query.PetId, Arg.Any<CancellationToken>())
             .Returns(true);
@@ -130,7 +131,7 @@ public class GetMedicalNoteDetailsQueryHandlerTests
         };
         var medicalNoteRepository = Substitute.For<IMedicalNoteRepository>();
         var petRepository = Substitute.For<IPetRepository>();
-        var handler = new GetMedicalNoteDetailsQueryHandler(medicalNoteRepository, petRepository);
+        var handler = new GetMedicalNoteDetailsQueryHandler(medicalNoteRepository, petRepository, Any.Instance<ILogger<GetMedicalNoteDetailsQueryHandler>>());
         
         petRepository.ExistsAsync(query.PetId, Arg.Any<CancellationToken>())
             .Returns(false);

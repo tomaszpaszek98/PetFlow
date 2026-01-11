@@ -2,6 +2,7 @@ using Application.Common.Interfaces.Repositories;
 using Application.MedicalNotes.Commands.DeleteMedicalNote;
 using Domain.Entities;
 using Domain.Exceptions;
+using Microsoft.Extensions.Logging;
 
 namespace Application.UnitTests.MedicalNotes.Commands.DeleteMedicalNote;
 
@@ -18,7 +19,7 @@ public class DeleteMedicalNoteCommandHandlerTests
         };
         var medicalNoteRepository = Substitute.For<IMedicalNoteRepository>();
         var petRepository = Substitute.For<IPetRepository>();
-        var handler = new DeleteMedicalNoteCommandHandler(medicalNoteRepository, petRepository);
+        var handler = new DeleteMedicalNoteCommandHandler(medicalNoteRepository, petRepository, Any.Instance<ILogger<DeleteMedicalNoteCommandHandler>>());
         
         petRepository.ExistsAsync(command.PetId, Arg.Any<CancellationToken>())
             .Returns(true);
@@ -47,7 +48,7 @@ public class DeleteMedicalNoteCommandHandlerTests
         };
         var medicalNoteRepository = Substitute.For<IMedicalNoteRepository>();
         var petRepository = Substitute.For<IPetRepository>();
-        var handler = new DeleteMedicalNoteCommandHandler(medicalNoteRepository, petRepository);
+        var handler = new DeleteMedicalNoteCommandHandler(medicalNoteRepository, petRepository, Any.Instance<ILogger<DeleteMedicalNoteCommandHandler>>());
         
         petRepository.ExistsAsync(command.PetId, Arg.Any<CancellationToken>())
             .Returns(true);
@@ -79,7 +80,7 @@ public class DeleteMedicalNoteCommandHandlerTests
         };
         var medicalNoteRepository = Substitute.For<IMedicalNoteRepository>();
         var petRepository = Substitute.For<IPetRepository>();
-        var handler = new DeleteMedicalNoteCommandHandler(medicalNoteRepository, petRepository);
+        var handler = new DeleteMedicalNoteCommandHandler(medicalNoteRepository, petRepository, Any.Instance<ILogger<DeleteMedicalNoteCommandHandler>>());
         
         petRepository.ExistsAsync(command.PetId, Arg.Any<CancellationToken>())
             .Returns(false);
