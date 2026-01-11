@@ -2,6 +2,7 @@ using Application.Pets.Queries.GetPetEvents;
 using Domain.Entities;
 using Application.Common.Interfaces.Repositories;
 using Domain.Exceptions;
+using Microsoft.Extensions.Logging;
 
 namespace Application.UnitTests.Pets.Queries.GetPetEvents;
 
@@ -31,7 +32,7 @@ public class GetPetEventsQueryHandlerTests
         };
         var query = new GetPetEventsQuery { PetId = petId };
         var petRepository = Substitute.For<IPetRepository>();
-        var handler = new GetPetEventsQueryHandler(petRepository);
+        var handler = new GetPetEventsQueryHandler(petRepository, Any.Instance<ILogger<GetPetEventsQueryHandler>>());
         
         petRepository.GetByIdWithEventsAsync(petId, Arg.Any<CancellationToken>())
             .Returns(pet);
@@ -70,7 +71,7 @@ public class GetPetEventsQueryHandlerTests
         };
         var query = new GetPetEventsQuery { PetId = petId };
         var petRepository = Substitute.For<IPetRepository>();
-        var handler = new GetPetEventsQueryHandler(petRepository);
+        var handler = new GetPetEventsQueryHandler(petRepository, Any.Instance<ILogger<GetPetEventsQueryHandler>>());
         
         petRepository.GetByIdWithEventsAsync(petId, Arg.Any<CancellationToken>())
             .Returns(pet);
@@ -92,7 +93,7 @@ public class GetPetEventsQueryHandlerTests
         var petId = 99;
         var query = new GetPetEventsQuery { PetId = petId };
         var petRepository = Substitute.For<IPetRepository>();
-        var handler = new GetPetEventsQueryHandler(petRepository);
+        var handler = new GetPetEventsQueryHandler(petRepository, Any.Instance<ILogger<GetPetEventsQueryHandler>>());
         
         petRepository.GetByIdWithEventsAsync(petId, Arg.Any<CancellationToken>())
             .Returns((Pet)null);

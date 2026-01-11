@@ -3,6 +3,7 @@ using Application.Notes.Commands.UpdateNote;
 using Domain.Entities;
 using Domain.Enums;
 using Domain.Exceptions;
+using Microsoft.Extensions.Logging;
 
 namespace Application.UnitTests.Notes.Commands.UpdateNote;
 
@@ -35,7 +36,7 @@ public class UpdateNoteCommandHandlerTests
         };
         var noteRepository = Substitute.For<INoteRepository>();
         var petRepository = Substitute.For<IPetRepository>();
-        var handler = new UpdateNoteCommandHandler(noteRepository, petRepository);
+        var handler = new UpdateNoteCommandHandler(noteRepository, petRepository, Any.Instance<ILogger<UpdateNoteCommandHandler>>());
         
         petRepository.ExistsAsync(request.PetId, Arg.Any<CancellationToken>())
             .Returns(true);
@@ -79,7 +80,7 @@ public class UpdateNoteCommandHandlerTests
         };
         var noteRepository = Substitute.For<INoteRepository>();
         var petRepository = Substitute.For<IPetRepository>();
-        var handler = new UpdateNoteCommandHandler(noteRepository, petRepository);
+        var handler = new UpdateNoteCommandHandler(noteRepository, petRepository, Any.Instance<ILogger<UpdateNoteCommandHandler>>());
         
         petRepository.ExistsAsync(request.PetId, Arg.Any<CancellationToken>())
             .Returns(false);
@@ -109,7 +110,7 @@ public class UpdateNoteCommandHandlerTests
         };
         var noteRepository = Substitute.For<INoteRepository>();
         var petRepository = Substitute.For<IPetRepository>();
-        var handler = new UpdateNoteCommandHandler(noteRepository, petRepository);
+        var handler = new UpdateNoteCommandHandler(noteRepository, petRepository, Any.Instance<ILogger<UpdateNoteCommandHandler>>());
         
         petRepository.ExistsAsync(request.PetId, Arg.Any<CancellationToken>())
             .Returns(true);
@@ -144,7 +145,7 @@ public class UpdateNoteCommandHandlerTests
         };
         var noteRepository = Substitute.For<INoteRepository>();
         var petRepository = Substitute.For<IPetRepository>();
-        var handler = new UpdateNoteCommandHandler(noteRepository, petRepository);
+        var handler = new UpdateNoteCommandHandler(noteRepository, petRepository, Any.Instance<ILogger<UpdateNoteCommandHandler>>());
         
         petRepository.ExistsAsync(request.PetId, Arg.Any<CancellationToken>())
             .Returns(true);
@@ -163,5 +164,99 @@ public class UpdateNoteCommandHandlerTests
             noteRepository.GetByIdWithPetAsync(request.NoteId, request.PetId, Arg.Any<CancellationToken>());
         });
         await noteRepository.DidNotReceive().UpdateAsync(default);
+    }
+    
+    [Test]
+    public async Task ShouldLogSensitiveDetailsAtDebugLevelWhenHandlingUpdateNoteCommand()
+    {
+        // GIVEN
+        var petId = 1;
+        var noteId = 1;
+        var noteContent = "Sensitive Updated Note Content";
+        var noteType = NoteType.General;
+        var request = new UpdateNoteCommand
+        {
+            PetId = petId,
+            NoteId = noteId,
+            Content = noteContent,
+            Type = noteType
+        };
+        var existingNote = new Note
+        {
+            Id = noteId,
+            PetId = petId,
+            Content = "Old Content",
+            Type = NoteType.Behaviour,
+            Created = DateTime.UtcNow.AddSeconds(-10)
+        };
+        var noteRepository = Substitute.For<INoteRepository>();
+        var petRepository = Substitute.For<IPetRepository>();
+        var logger = Substitute.For<ILogger<UpdateNoteCommandHandler>>();
+        var handler = new UpdateNoteCommandHandler(noteRepository, petRepository, logger);
+        
+        petRepository.ExistsAsync(petId, Arg.Any<CancellationToken>())
+            .Returns(true);
+        noteRepository.GetByIdWithPetAsync(noteId, petId, Arg.Any<CancellationToken>())
+            .Returns(existingNote);
+        noteRepository.UpdateAsync(Arg.Any<Note>(), Arg.Any<CancellationToken>())
+            .Returns(Task.CompletedTask);
+        
+        // WHEN
+        await handler.Handle(request, CancellationToken.None);
+        
+        // THEN
+        logger.Received(1).Log(
+            LogLevel.Debug,
+            Arg.Any<EventId>(),
+            Arg.Is<object>(o => o.ToString()!.Contains(noteContent)),
+            Arg.Any<Exception>(),
+            Arg.Any<Func<object, Exception?, string>>());
+    }
+    
+    [Test]
+    public async Task ShouldNotLogSensitiveDetailsAtInformationLevelWhenHandlingUpdateNoteCommand()
+    {
+        // GIVEN
+        var petId = 1;
+        var noteId = 1;
+        var noteContent = "Sensitive Updated Note Content";
+        var noteType = NoteType.General;
+        var request = new UpdateNoteCommand
+        {
+            PetId = petId,
+            NoteId = noteId,
+            Content = noteContent,
+            Type = noteType
+        };
+        var existingNote = new Note
+        {
+            Id = noteId,
+            PetId = petId,
+            Content = "Old Content",
+            Type = NoteType.Behaviour,
+            Created = DateTime.UtcNow.AddSeconds(-10)
+        };
+        var noteRepository = Substitute.For<INoteRepository>();
+        var petRepository = Substitute.For<IPetRepository>();
+        var logger = Substitute.For<ILogger<UpdateNoteCommandHandler>>();
+        var handler = new UpdateNoteCommandHandler(noteRepository, petRepository, logger);
+        
+        petRepository.ExistsAsync(petId, Arg.Any<CancellationToken>())
+            .Returns(true);
+        noteRepository.GetByIdWithPetAsync(noteId, petId, Arg.Any<CancellationToken>())
+            .Returns(existingNote);
+        noteRepository.UpdateAsync(Arg.Any<Note>(), Arg.Any<CancellationToken>())
+            .Returns(Task.CompletedTask);
+        
+        // WHEN
+        await handler.Handle(request, CancellationToken.None);
+        
+        // THEN
+        logger.DidNotReceive().Log(
+            LogLevel.Information,
+            Arg.Any<EventId>(),
+            Arg.Is<object>(o => o.ToString()!.Contains(noteContent)),
+            Arg.Any<Exception>(),
+            Arg.Any<Func<object, Exception?, string>>());
     }
 }

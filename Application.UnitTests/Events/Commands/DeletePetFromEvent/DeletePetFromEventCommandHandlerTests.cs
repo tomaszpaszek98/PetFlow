@@ -2,6 +2,7 @@ using Application.Common.Interfaces.Repositories;
 using Application.Events.Commands.DeletePetFromEvent;
 using Domain.Entities;
 using Domain.Exceptions;
+using Microsoft.Extensions.Logging;
 
 namespace Application.UnitTests.Events.Commands.DeletePetFromEvent;
 
@@ -22,7 +23,7 @@ public class DeletePetFromEventCommandHandlerTests
             PetEvents = new List<PetEvent> { new PetEvent { PetId = petId, EventId = eventId, Pet = pet } }
         };
         var eventRepository = Substitute.For<IEventRepository>();
-        var handler = new DeletePetFromEventCommandHandler(eventRepository);
+        var handler = new DeletePetFromEventCommandHandler(eventRepository, Any.Instance<ILogger<DeletePetFromEventCommandHandler>>());
         
         eventRepository.GetByIdWithPetEventsTrackedAsync(eventId, Arg.Any<CancellationToken>())
             .Returns(eventEntity);
@@ -49,7 +50,7 @@ public class DeletePetFromEventCommandHandlerTests
         var petId = 2;
         var command = new DeletePetFromEventCommand { EventId = eventId, PetId = petId };
         var eventRepository = Substitute.For<IEventRepository>();
-        var handler = new DeletePetFromEventCommandHandler(eventRepository);
+        var handler = new DeletePetFromEventCommandHandler(eventRepository,Any.Instance<ILogger<DeletePetFromEventCommandHandler>>());
         
         eventRepository.GetByIdWithPetEventsTrackedAsync(eventId, Arg.Any<CancellationToken>())
             .Returns((Event)null);
@@ -78,7 +79,7 @@ public class DeletePetFromEventCommandHandlerTests
             PetEvents = new List<PetEvent>()
         };
         var eventRepository = Substitute.For<IEventRepository>();
-        var handler = new DeletePetFromEventCommandHandler(eventRepository);
+        var handler = new DeletePetFromEventCommandHandler(eventRepository, Any.Instance<ILogger<DeletePetFromEventCommandHandler>>());
         
         eventRepository.GetByIdWithPetEventsTrackedAsync(eventId, Arg.Any<CancellationToken>())
             .Returns(eventEntity);

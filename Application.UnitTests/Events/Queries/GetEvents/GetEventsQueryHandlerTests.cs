@@ -1,6 +1,7 @@
 using Application.Common.Interfaces.Repositories;
 using Application.Events.Queries.GetEvents;
 using Domain.Entities;
+using Microsoft.Extensions.Logging;
 
 namespace Application.UnitTests.Events.Queries.GetEvents;
 
@@ -17,7 +18,7 @@ public class GetEventsQueryHandlerTests
         };
         var query = new GetEventsQuery();
         var repository = Substitute.For<IEventRepository>();
-        var handler = new GetEventsQueryHandler(repository);
+        var handler = new GetEventsQueryHandler(repository, Any.Instance<ILogger<GetEventsQueryHandler>>());
         
         repository.GetAllAsync(Arg.Any<CancellationToken>()).Returns(events);
         
@@ -39,7 +40,7 @@ public class GetEventsQueryHandlerTests
         // GIVEN
         var query = new GetEventsQuery();
         var repository = Substitute.For<IEventRepository>();
-        var handler = new GetEventsQueryHandler(repository);
+        var handler = new GetEventsQueryHandler(repository, Any.Instance<ILogger<GetEventsQueryHandler>>());
         
         repository.GetAllAsync(Arg.Any<CancellationToken>()).Returns(new List<Event>());
 

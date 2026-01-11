@@ -1,8 +1,8 @@
 using Application.Common.Interfaces.Repositories;
-using Application.MedicalNotes;
 using Application.MedicalNotes.Commands.UpdateMedicalNote;
 using Domain.Entities;
 using Domain.Exceptions;
+using Microsoft.Extensions.Logging;
 
 namespace Application.UnitTests.MedicalNotes.Commands.UpdateMedicalNote;
 
@@ -161,5 +161,97 @@ public class UpdateMedicalNoteCommandHandlerTests
         await petRepository.Received(1).ExistsAsync(command.PetId, Arg.Any<CancellationToken>());
         await medicalNoteRepository.DidNotReceive().GetByIdWithPetAsync(default, default);
         await medicalNoteRepository.DidNotReceive().UpdateAsync(default);
+    }
+    
+    [Test]
+    public async Task ShouldLogSensitiveDetailsAtDebugLevelWhenHandlingUpdateMedicalNoteCommand()
+    {
+        // GIVEN
+        var petId = 1;
+        var medicalNoteId = 1;
+        var title = "Sensitive Updated Title";
+        var description = "Sensitive Updated Medical Description";
+        var command = new UpdateMedicalNoteCommand
+        {
+            PetId = petId,
+            MedicalNoteId = medicalNoteId,
+            Title = title,
+            Description = description
+        };
+        var existingNote = new MedicalNote
+        {
+            Id = medicalNoteId,
+            PetId = petId,
+            Title = "Old Title",
+            Description = "Old Description"
+        };
+        var medicalNoteRepository = Substitute.For<IMedicalNoteRepository>();
+        var petRepository = Substitute.For<IPetRepository>();
+        var logger = Substitute.For<ILogger<UpdateMedicalNoteCommandHandler>>();
+        var handler = new UpdateMedicalNoteCommandHandler(medicalNoteRepository, petRepository, logger);
+        
+        petRepository.ExistsAsync(petId, Arg.Any<CancellationToken>())
+            .Returns(true);
+        medicalNoteRepository.GetByIdWithPetAsync(medicalNoteId, petId, Arg.Any<CancellationToken>())
+            .Returns(existingNote);
+        medicalNoteRepository.UpdateAsync(Arg.Any<MedicalNote>(), Arg.Any<CancellationToken>())
+            .Returns(Task.CompletedTask);
+        
+        // WHEN
+        await handler.Handle(command, CancellationToken.None);
+        
+        // THEN
+        logger.Received(1).Log(
+            LogLevel.Debug,
+            Arg.Any<EventId>(),
+            Arg.Is<object>(o => o.ToString()!.Contains(description)),
+            Arg.Any<Exception>(),
+            Arg.Any<Func<object, Exception?, string>>());
+    }
+    
+    [Test]
+    public async Task ShouldNotLogSensitiveDetailsAtInformationLevelWhenHandlingUpdateMedicalNoteCommand()
+    {
+        // GIVEN
+        var petId = 1;
+        var medicalNoteId = 1;
+        var title = "Sensitive Updated Title";
+        var description = "Sensitive Updated Medical Description";
+        var command = new UpdateMedicalNoteCommand
+        {
+            PetId = petId,
+            MedicalNoteId = medicalNoteId,
+            Title = title,
+            Description = description
+        };
+        var existingNote = new MedicalNote
+        {
+            Id = medicalNoteId,
+            PetId = petId,
+            Title = "Old Title",
+            Description = "Old Description"
+        };
+        var medicalNoteRepository = Substitute.For<IMedicalNoteRepository>();
+        var petRepository = Substitute.For<IPetRepository>();
+        var logger = Substitute.For<ILogger<UpdateMedicalNoteCommandHandler>>();
+        var handler = new UpdateMedicalNoteCommandHandler(medicalNoteRepository, petRepository, logger);
+        
+        petRepository.ExistsAsync(petId, Arg.Any<CancellationToken>())
+            .Returns(true);
+        medicalNoteRepository.GetByIdWithPetAsync(medicalNoteId, petId, Arg.Any<CancellationToken>())
+            .Returns(existingNote);
+        medicalNoteRepository.UpdateAsync(Arg.Any<MedicalNote>(), Arg.Any<CancellationToken>())
+            .Returns(Task.CompletedTask);
+        
+        // WHEN
+        await handler.Handle(command, CancellationToken.None);
+        
+        // THEN
+        logger.DidNotReceive().Log(
+            LogLevel.Information,
+            Arg.Any<EventId>(),
+            Arg.Is<object>(o => o.ToString()!.Contains(description)),
+            Arg.Any<Exception>(),
+            Arg.Any<Func<object, Exception?, string>>());
     }
 }

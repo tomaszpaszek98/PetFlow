@@ -36,4 +36,3 @@ public class GetNotesTests : BaseIntegrationTest
         response.Items.Should().NotBeNull();
     }
 }
-

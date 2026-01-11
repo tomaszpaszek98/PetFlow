@@ -3,6 +3,7 @@ using Application.Notes.Commands.DeleteNote;
 using Domain.Entities;
 using Domain.Enums;
 using Domain.Exceptions;
+using Microsoft.Extensions.Logging;
 
 namespace Application.UnitTests.Notes.Commands.DeleteNote;
 
@@ -19,7 +20,7 @@ public class DeleteNoteCommandHandlerTests
         };
         var noteRepository = Substitute.For<INoteRepository>();
         var petRepository = Substitute.For<IPetRepository>();
-        var handler = new DeleteNoteCommandHandler(noteRepository, petRepository);
+        var handler = new DeleteNoteCommandHandler(noteRepository, petRepository, Any.Instance<ILogger<DeleteNoteCommandHandler>>());
         
         petRepository.ExistsAsync(command.PetId, Arg.Any<CancellationToken>())
             .Returns(true);
@@ -48,7 +49,7 @@ public class DeleteNoteCommandHandlerTests
         };
         var noteRepository = Substitute.For<INoteRepository>();
         var petRepository = Substitute.For<IPetRepository>();
-        var handler = new DeleteNoteCommandHandler(noteRepository, petRepository);
+        var handler = new DeleteNoteCommandHandler(noteRepository, petRepository, Any.Instance<ILogger<DeleteNoteCommandHandler>>());
         
         petRepository.ExistsAsync(command.PetId, Arg.Any<CancellationToken>())
             .Returns(true);
@@ -80,7 +81,7 @@ public class DeleteNoteCommandHandlerTests
         };
         var noteRepository = Substitute.For<INoteRepository>();
         var petRepository = Substitute.For<IPetRepository>();
-        var handler = new DeleteNoteCommandHandler(noteRepository, petRepository);
+        var handler = new DeleteNoteCommandHandler(noteRepository, petRepository, Any.Instance<ILogger<DeleteNoteCommandHandler>>());
         
         petRepository.ExistsAsync(command.PetId, Arg.Any<CancellationToken>())
             .Returns(false);

@@ -23,9 +23,20 @@ public class UpdateEventCommandHandler : IRequestHandler<UpdateEventCommand, Upd
 
     public async Task<UpdateEventResponse> Handle(UpdateEventCommand request, CancellationToken cancellationToken)
     {
+        _logger.LogInformation("Handling UpdateEventCommand for EventId: {EventId}", request.Id);
+        _logger.LogDebug(
+            "UpdateEventCommand details - EventId: {EventId}, Title: {Title}, Description: {Description}, DateOfEvent: {DateOfEvent}, Reminder: {Reminder}, AssignedPetIds: {AssignedPetIds}",
+            request.Id,
+            request.Title,
+            request.Description,
+            request.DateOfEvent,
+            request.Reminder,
+            request.AssignedPetsIds != null ? string.Join(", ", request.AssignedPetsIds) : "none");
+        
         var existingEvent = await _eventRepository.GetByIdWithPetEventsTrackedAsync(request.Id, cancellationToken);
         if (existingEvent is null)
         {
+            _logger.LogError("Event with ID {EventId} not found", request.Id);
             throw new NotFoundException(nameof(Event), request.Id);
         }
 
@@ -34,6 +45,7 @@ public class UpdateEventCommandHandler : IRequestHandler<UpdateEventCommand, Upd
         UpdateEventProperties(existingEvent, request);
         await _eventRepository.UpdateAsync(existingEvent, cancellationToken);
         
+        _logger.LogInformation("Event with ID {EventId} updated successfully", request.Id);
         return existingEvent.MapToUpdateResponse(assignedPets);
     }
     
@@ -85,15 +97,15 @@ public class UpdateEventCommandHandler : IRequestHandler<UpdateEventCommand, Upd
         }
     }
 
-    private static void ValidateAllPetsExistOrThrow(IList<Pet> foundPets, IList<int> requestedPetIds)
+    private void ValidateAllPetsExistOrThrow(IList<Pet> foundPets, IList<int> requestedPetIds)
     {
         var foundPetIds = foundPets.Select(p => p.Id).Distinct();
         var missingPetIds = requestedPetIds.Where(id => !foundPetIds.Contains(id)).ToList();
 
         if (missingPetIds.Any())
         {
+            _logger.LogError("Pets not found during event update. Pet Ids {PetIds}", string.Join(", ", missingPetIds));
             throw new NotFoundException($"Pets not found. Ids: {string.Join(", ", missingPetIds)}");
         }
     }
 }
-

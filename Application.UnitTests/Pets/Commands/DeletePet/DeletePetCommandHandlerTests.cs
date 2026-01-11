@@ -1,6 +1,7 @@
 using Application.Common.Interfaces.Repositories;
 using Application.Pets.Commands.DeletePet;
 using Domain.Exceptions;
+using Microsoft.Extensions.Logging;
 
 namespace Application.UnitTests.Pets.Commands.DeletePet;
 
@@ -12,7 +13,7 @@ public class DeletePetCommandHandlerTests
         // GIVEN
         var command = new DeletePetCommand { PetId = 1 };
         var repository = Substitute.For<IPetRepository>();
-        var handler = new DeletePetCommandHandler(repository);
+        var handler = new DeletePetCommandHandler(repository, Any.Instance<ILogger<DeletePetCommandHandler>>());
         
         repository.DeleteAsync(command.PetId, Arg.Any<CancellationToken>()).Returns(true);
         
@@ -30,7 +31,7 @@ public class DeletePetCommandHandlerTests
         // GIVEN
         var command = new DeletePetCommand { PetId = 99 };
         var repository = Substitute.For<IPetRepository>();
-        var handler = new DeletePetCommandHandler(repository);
+        var handler = new DeletePetCommandHandler(repository, Any.Instance<ILogger<DeletePetCommandHandler>>());
 
         repository.DeleteAsync(command.PetId, Arg.Any<CancellationToken>()).Returns(false);
         

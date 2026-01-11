@@ -3,6 +3,7 @@ using Application.Common.Interfaces.Repositories;
 using Application.Events.Common;
 using Domain.Entities;
 using Domain.Exceptions;
+using Microsoft.Extensions.Logging;
 
 namespace Application.UnitTests.Events.Queries.GetEventDetails;
 
@@ -35,7 +36,7 @@ public class GetEventDetailsQueryHandlerTests
         };
         var query = new GetEventDetailsQuery { EventId = eventId };
         var eventRepository = Substitute.For<IEventRepository>();
-        var handler = new GetEventDetailsQueryHandler(eventRepository);
+        var handler = new GetEventDetailsQueryHandler(eventRepository, Any.Instance<ILogger<GetEventDetailsQueryHandler>>());
         
         eventRepository.GetByIdWithPetEventsAsync(eventId, Arg.Any<CancellationToken>())
             .Returns(eventEntity);
@@ -72,7 +73,7 @@ public class GetEventDetailsQueryHandlerTests
         };
         var query = new GetEventDetailsQuery { EventId = eventId };
         var eventRepository = Substitute.For<IEventRepository>();
-        var handler = new GetEventDetailsQueryHandler(eventRepository);
+        var handler = new GetEventDetailsQueryHandler(eventRepository, Any.Instance<ILogger<GetEventDetailsQueryHandler>>());
         
         eventRepository.GetByIdWithPetEventsAsync(eventId, Arg.Any<CancellationToken>())
             .Returns(eventEntity);
@@ -99,7 +100,7 @@ public class GetEventDetailsQueryHandlerTests
         var eventId = 99;
         var query = new GetEventDetailsQuery { EventId = eventId };
         var eventRepository = Substitute.For<IEventRepository>();
-        var handler = new GetEventDetailsQueryHandler(eventRepository);
+        var handler = new GetEventDetailsQueryHandler(eventRepository, Any.Instance<ILogger<GetEventDetailsQueryHandler>>());
         
         eventRepository.GetByIdWithPetEventsAsync(eventId, Arg.Any<CancellationToken>())
             .Returns((Event)null);
